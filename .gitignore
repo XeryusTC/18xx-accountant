@@ -1,0 +1,10 @@
+# VM
+.vagrant
+
+# Python
+__pycache__
+*.pyc
+
+# Django
+*.mo
+db.sqlite3
