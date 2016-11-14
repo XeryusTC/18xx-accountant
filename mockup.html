@@ -7,6 +7,17 @@
 	<link href="https://cdn.muicss.com/mui-0.9.4/css/mui.min.css"
 	   rel="stylesheet" type="text/css" />
 	<script src="https://cdn.muicss.com/mui-0.9.4/js/mui.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script>
+		$(document).ready(function() {
+			var companies = $(".company-detail");
+			companies.hide();
+			$(".company").click(function() {
+				$("#" + $(this).attr("id") + "-content").toggle();
+				companies.not($("#" + $(this).attr("id") + "-content")).hide();
+			});
+		});
+	</script>
 
 	<title>18xx moderator mockup</title>
 
@@ -36,7 +47,7 @@
 			color: #ffeb3b;
 			background-color: #9e9e9e;
 		}
-	</style
+	</style>
 </head>
 <body>
 
@@ -114,7 +125,7 @@
 		<div class="mui-col-md-1 mui--text-center">Pool</div>
 		<div class="mui-col-md-4 mui--text-center">Shares</div>
 	</div>
-	<div class="mui-row company1">
+	<div class="mui-row company company1" id="company1">
 		<div class="mui-col-md-2">
 			<span class="mui-caret"></span>
 			B&amp;O
@@ -137,13 +148,182 @@
 			<div class="mui--clearfix"></div>
 		</div>
 	</div>
-	<div class="mui-row company2">
+	<div class="company-detail" id="company1-content">
+		<div class="mui-row">
+			<div class="mui-col-md-6">
+				<div class="mui-container-fluid">
+					<div class="mui-row mui-panel">
+						<div class="mui-col-md-12 ">
+							<form class="mui-form--inline">
+								<div class="mui-textfield">
+									<input type="text" value="1000" size="4">
+								</div>
+								<button class="mui-btn mui-btn--small
+									mui-btn--raised	mui-btn--primary">
+									Pay full
+								</button>
+								<button class="mui-btn mui-btn--small
+									mui-btn--raised">50/50</button>
+								<button class="mui-btn mui-btn--small
+									mui-btn--raised	mui-btn--danger">
+									Withhold
+								</button>
+							</form>
+						</div>
+					</div>
+				<div class="mui-row mui-panel">
+					<form class="mui-form--inline">
+						<div class="mui-col-md-1">
+							<div class="mui-textfield">
+								<input type="text" value="0" size="4">
+							</div>
+						</div>
+						<div class="mui-col-md-1">to</div>
+						<div class="mui-col-md-7">
+							<div class="mui-radio mui--pull-left">
+								<label>
+									<input type="radio" name="transfer">Bank
+								</label>
+							</div>
+							<div class="mui-radio mui--pull-left">
+								<label><input type="radio" name="transfer">
+									Player 1</label>
+							</div>
+							<div class="mui-radio mui--pull-left">
+								<label><input type="radio" name="transfer">
+									Player 2</label>
+							</div>
+							<div class="mui-radio mui--pull-left">
+								<label><input type="radio" name="transfer">
+									Player 3</label>
+							</div>
+							<div class="mui-radio mui--pull-left">
+								<label><input type="radio" name="transfer">
+									Player 4</label>
+							</div>
+							<div class="mui-radio mui--pull-left">
+								<label><input type="radio" name="transfer">
+									B&amp;O</label>
+							</div>
+							<div class="mui-radio mui--pull-left company1">
+								<label><input type="radio" name="transfer">
+									B&amp;O</label>
+							</div>
+							<div class="mui-radio mui--pull-left company2">
+								<label><input type="radio" name="transfer">PRR
+								</label>
+							</div>
+							<div class="mui-radio mui--pull-left company3">
+								<label><input type="radio" name="transfer">ERIE
+								</label>
+							</div>
+							<div class="mui--clearfix"></div>
+						</div>
+						<div class="mui-col-md-3">
+							<button class="mui-btn mui-btn--small
+								mui-btn--raised">Transfer</button>
+						</div>
+					</form>
+				</div>
+			</div>
+				</div>
+			<div class="mui-col-md-6 mui-panel">
+				<form>
+					<div>One share of</div>
+
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">Bank</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 1</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 2</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 3</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 4</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							B&amp;O</label>
+					</div>
+					<div class="mui-radio mui--pull-left company1">
+						<label><input type="radio" name="transfer">B&amp;O
+						</label>
+					</div>
+					<div class="mui-radio mui--pull-left company2">
+						<label><input type="radio" name="transfer">PRR
+						</label>
+					</div>
+					<div class="mui-radio mui--pull-left company3">
+						<label><input type="radio" name="transfer">ERIE
+						</label>
+					</div>
+					<div class="mui--clearfix"></div>
+
+					<div>to</div>
+
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">Bank</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 1</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 2</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 3</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							Player 4</label>
+					</div>
+					<div class="mui-radio mui--pull-left">
+						<label><input type="radio" name="transfer">
+							B&amp;O</label>
+					</div>
+					<div class="mui-radio mui--pull-left company1">
+						<label><input type="radio" name="transfer">B&amp;O
+						</label>
+					</div>
+					<div class="mui-radio mui--pull-left company2">
+						<label><input type="radio" name="transfer">PRR
+						</label>
+					</div>
+					<div class="mui-radio mui--pull-left company3">
+						<label><input type="radio" name="transfer">ERIE
+						</label>
+					</div>
+					<div class="mui--clearfix"></div>
+					<button class="mui-btn mui-btn--primary mui-btn--raised">
+						Buy
+					</button>
+					<button class="mui-btn mui-btn--alert mui-btn--raised">
+						Sell
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="mui-row company company2" id="company2">
 		<div class="mui-col-md-2">
 			<span class="mui-caret"></span>
 			PRR
 		</div>
 		<div class="mui-col-md-1 mui--text-right">$0</div>
-		<div class="mui-col-md-2 mui--text-right">
+		<div class="mui-col-md-2">
 			<form class="mui-form--inline">
 				<div class="mui-textfield">
 					<input type="text" value="100" size="4">
@@ -160,13 +340,17 @@
 			<div class="mui--clearfix"></div>
 		</div>
 	</div>
-	<div class="mui-row company3">
+	<div class="mui-row company-detail" id="company2-content">
+		<div class="mui-col-md-12">Look at B&amp;O</div>
+	</div>
+
+	<div class="mui-row company company3" id="company3">
 		<div class="mui-col-md-2">
 			<span class="mui-caret"></span>
 			ERIE
 		</div>
 		<div class="mui-col-md-1 mui--text-right">$0</div>
-		<div class="mui-col-md-2 mui--text-right">
+		<div class="mui-col-md-2">
 			<form class="mui-form--inline">
 				<div class="mui-textfield">
 					<input type="text" value="100" size="4">
@@ -183,6 +367,9 @@
 			<div class="mui--pull-left company3">ERIE 10%</div>
 			<div class="mui--clearfix"></div>
 		</div>
+	</div>
+	<div class="mui-row company-detail" id="company3-content">
+		<div class="mui-col-md-12">Look at B&amp;O</div>
 	</div>
 </div>
 
