@@ -66,7 +66,8 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y python3 python3-pip python3-virtualenv virtualenv git
+    apt-get install -y python3 python3-pip python3-virtualenv virtualenv git \
+      gettext
     if [ ! -d "venv" ]; then
       virtualenv venv --python=python3
       echo "source venv/bin/activate" >> .bashrc
