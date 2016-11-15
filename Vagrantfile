@@ -73,5 +73,6 @@ Vagrant.configure("2") do |config|
     fi
     source venv/bin/activate
     pip install -r /vagrant/requirements.txt
+    chown -R vagrant:vagrant venv
   SHELL
 end
