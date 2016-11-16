@@ -8,3 +8,5 @@ __pycache__
 # Django
 *.mo
 db.sqlite3
+
+*.log
