@@ -134,6 +134,6 @@ LOCALE_PATHS = (
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.ancestor(1).child("static")
-STATIDFILES_DIRS = (
+STATICFILES_DIRS = (
     BASE_DIR.child("static"),
 )
