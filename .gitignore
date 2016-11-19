@@ -11,3 +11,7 @@ db.sqlite3
 /static/
 
 *.log
+
+# Coverage
+htmlcov
+.coverage

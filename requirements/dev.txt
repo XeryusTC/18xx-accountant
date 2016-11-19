@@ -2,3 +2,4 @@
 
 selenium==3.0.1
 page-objects==1.1.0
+coverage==4.2
