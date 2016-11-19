@@ -3,5 +3,9 @@
 {% block title %}18xx Accountant{% endblock title %}
 
 {% block content %}
-<button name='new_game'>Start new game</button>
+<form>
+	<button name='new_game' formaction="{% url 'game:game' %}">
+		Start new game
+	</button>
+</form>
 {% endblock content %}

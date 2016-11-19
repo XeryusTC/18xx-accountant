@@ -15,5 +15,6 @@ class HomePageTest(FunctionalTestCase):
         page.start_button.click()
 
         # She lands on a new page, it lists a code for the game name
+        self.assertIn('/en/game/', self.browser.current_url)
         housekeeping = game.Housekeeping(self.browser)
         self.assertEqual(len(housekeeping.game_name.text), 4)

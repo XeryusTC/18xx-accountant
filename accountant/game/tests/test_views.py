@@ -13,3 +13,12 @@ class HomepageViewTest(ViewTestMixin, TestCase):
     def setUp(self):
         self.url = reverse('game:start')
         self.view = views.HomepageView.as_view()
+
+
+class GameViewTests(ViewTestMixin, TestCase):
+    explicit_url = '/en/game/'
+    templates = ('base.html', 'game/game_base.html')
+
+    def setUp(self):
+        self.url = reverse('game:game')
+        self.view = views.GameView.as_view()
