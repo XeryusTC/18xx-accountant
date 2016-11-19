@@ -1,0 +1,33 @@
+dist: trusty
+sudo: false
+group: beta
+language: python
+python:
+    - "3.4"
+    - "3.5"
+cache:
+    directories:
+        - $HOME/.cache/pip
+before_cache:
+    - rm -f $HOME/.cache/pip/log/debug.log
+services:
+    postgresql
+addons:
+    postgresql: "9.4"
+env:
+    global:
+        - DJANGO_SETTINGS_MODULE="accountant.settings.ci"
+    matrix:
+        - REVERSE=
+        - REVERSE=--reverse
+install:
+    - pip install -r requirements/ci.txt
+before_script:
+    - psql -c "CREATE DATABASE accountant_ci" -U postgres
+script:
+    - cd accountant
+    - coverage run -p manage.py test functional_tests $REVERSE
+    - coverage run -p manage.py test game $REVERSE
+after_success:
+    - coverage combine
+    - codecov
