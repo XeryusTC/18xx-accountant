@@ -1,6 +1,11 @@
 #!/bin/bash
-# Install NodeJS and NPM
-if ! command -v node 2>/dev/null; then
+
+command_exists () {
+	command -v $1 2>/dev/null ;
+}
+
+# Add NodeJS and NPM repository
+if ! command_exists node ; then
 	NODE_KEY="9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280"
 	gpg --keyserver pgp.mit.edu --recv-keys $NODE_KEY
 	gpg -a --export $NODE_KEY | apt-key add -
@@ -13,7 +18,7 @@ apt-get install -y python3 python3-pip python3-virtualenv virtualenv git \
 	nodejs
 
 # Download and install PhantomJS
-if ! command -v phantomjs 2>/dev/null; then
+if ! command_exists phantomjs ; then
 	wget --quiet -O /tmp/phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 	tar -xjC /tmp/ -f /tmp/phantomjs.tar.bz2
 	mv /tmp/phantomjs-2.1.1-linux-x86_64/ /usr/local/share/phantomjs-2.1.1/
