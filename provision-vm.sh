@@ -32,6 +32,11 @@ if [[ $(sudo su - postgres -c 'psql -lqt | cut -d \| -f 1 | grep -w accountant |
 	su - postgres -c 'psql -c "GRANT ALL PRIVILEGES ON DATABASE accountant TO accountant"'
 fi
 
+# Install angular-cli
+if ! command_exists ng ; then
+	npm install -g angular-cli
+fi
+
 # Check if the virtualenv has been created
 if [ ! -d "venv" ]; then
 	virtualenv venv --python=python3
