@@ -43,6 +43,10 @@ if [ ! -d "venv" ]; then
 	echo "source venv/bin/activate" >> .bashrc
 fi
 
+# Install Python requirements
 source venv/bin/activate
 pip install -r /vagrant/requirements/dev.txt
 chown -R vagrant:vagrant venv
+
+# Install angular requirements
+cd /vagrant/ngApp && npm install
