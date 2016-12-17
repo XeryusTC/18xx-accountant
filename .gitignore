@@ -9,6 +9,7 @@ __pycache__
 *.mo
 db.sqlite3
 /static/
+screendumps/
 
 *.log
 
