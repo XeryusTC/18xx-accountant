@@ -24,6 +24,9 @@ install:
     - pip install -r requirements/ci.txt
 before_script:
     - psql -c "CREATE DATABASE accountant_ci" -U postgres
+    - cd ngApp
+    - ng build --base-href /app/
+    - cd ..
 script:
     - cd accountant
     - coverage run -p manage.py test functional_tests $REVERSE
