@@ -7,7 +7,7 @@ command_exists () {
 # Add NodeJS and NPM repository
 if ! command_exists node ; then
 	NODE_KEY="9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280"
-	gpg --keyserver pgp.mit.edu --recv-keys $NODE_KEY
+	gpg --keyserver pool.sks-keyservers.net --recv-keys $NODE_KEY
 	gpg -a --export $NODE_KEY | apt-key add -
 	echo 'deb http://deb.nodesource.com/node_6.x jessie main' > /etc/apt/sources.list.d/nodesource.list
 fi
