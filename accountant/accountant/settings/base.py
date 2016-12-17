@@ -132,8 +132,9 @@ LOCALE_PATHS = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/app/'
 STATIC_ROOT = BASE_DIR.ancestor(1).child("static")
 STATICFILES_DIRS = (
     BASE_DIR.child("static"),
+    BASE_DIR.ancestor(1).child('ngApp').child('dist'),
 )
