@@ -7,7 +7,7 @@ from common.test import ViewTestMixin
 from .. import views
 
 class HomepageViewTest(ViewTestMixin, TestCase):
-    explicit_url = '/en/'
+    explicit_url = '/en/api/'
     templates = ('base.html', 'game/homepage.html')
 
     def setUp(self):
@@ -16,7 +16,7 @@ class HomepageViewTest(ViewTestMixin, TestCase):
 
 
 class GameViewTests(ViewTestMixin, TestCase):
-    explicit_url = '/en/game/'
+    explicit_url = '/en/api/game/'
     templates = ('base.html', 'game/game_base.html')
 
     def setUp(self):
