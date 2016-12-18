@@ -19,11 +19,14 @@ from django.contrib import admin
 from django.views.generic import RedirectView
 import rest_framework.urls
 
+import core.urls
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns += i18n_patterns(
     url(r'^$', RedirectView.as_view(url='/app/index.html')),
+    url(r'^api/', include(core.urls)),
     url(r'api-auth/', include(rest_framework.urls, namespace=rest_framework)),
 )
