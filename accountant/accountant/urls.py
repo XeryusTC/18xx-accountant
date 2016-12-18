@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.views.generic import RedirectView
+import rest_framework.urls
 
 import game.urls
 
@@ -27,4 +28,5 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     url(r'^$', RedirectView.as_view(url='/app/index.html')),
     url(r'api/', include(game.urls, namespace='game')),
+    url(r'api-auth/', include(rest_framework.urls, namespace=rest_framework)),
 )
