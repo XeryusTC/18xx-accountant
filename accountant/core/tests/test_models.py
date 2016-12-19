@@ -151,11 +151,11 @@ class CompanyTests(TestCase):
 class ShareTests(TestCase):
     def setUp(self):
         self.game = factories.GameFactory.create()
+        self.player = factories.PlayerFactory.create(game=self.game)
         self.company = factories.CompanyFactory.create(game=self.game)
 
     def test_pk_is_uuid(self):
-        player = factories.PlayerFactory.create(game=self.game)
-        share = Share.objects.create(player=player, company=self.company)
+        share = Share.objects.create(player=self.player, company=self.company)
         self.assertIsInstance(share.pk, uuid.UUID)
 
     def test_company_knows_about_owning_players(self):
@@ -174,25 +174,20 @@ class ShareTests(TestCase):
         self.assertSequenceEqual(list(self.company.owners.all()), [players[0]])
 
     def test_player_knows_about_company_it_owns(self):
-        player = factories.PlayerFactory.create(game=self.game)
-
-        share = Share(player=player, company=self.company)
+        share = Share(player=self.player, company=self.company)
         share.save()
-
-        self.assertIn(self.company, list(player.shares.all()))
+        self.assertIn(self.company, list(self.player.shares.all()))
 
     def test_player_owns_one_share_by_default(self):
         player = factories.PlayerFactory.create(game=self.game)
-        share = Share(player=player, company=self.company)
+        share = Share(player=self.player, company=self.company)
         self.assertEqual(share.shares, 1)
 
     def test_game_is_equal_to_player_game(self):
-        player = factories.PlayerFactory.create(game=self.game)
-        share = Share(player=player, company=self.company)
-        self.assertEqual(player.game, share.game)
+        share = Share(player=self.player, company=self.company)
+        self.assertEqual(self.player.game, share.game)
 
     def test_cannot_create_duplicate_share_holdings(self):
-        player = factories.PlayerFactory.create(game=self.game)
-        Share.objects.create(player=player, company=self.company)
+        Share.objects.create(player=self.player, company=self.company)
         with self.assertRaises(IntegrityError):
-            Share.objects.create(player=player, company=self.company)
+            Share.objects.create(player=self.player, company=self.company)
