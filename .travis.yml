@@ -37,7 +37,7 @@ before_script:
 script:
     - cd accountant
     - coverage run -p manage.py test functional_tests $REVERSE
-    - coverage run -p manage.py test game $REVERSE
+    - coverage run -p manage.py test core $REVERSE
 after_success:
     - coverage combine
     - codecov
