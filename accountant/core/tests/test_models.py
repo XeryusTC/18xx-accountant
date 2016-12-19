@@ -36,6 +36,17 @@ class PlayerTests(TestCase):
         player = Player()
         self.assertEqual(player.name, 'Player')
 
+    def test_cannot_create_duplicate_players_in_the_same_game(self):
+        p1 = factories.PlayerFactory.create(name='Alice', game=self.game)
+        p2 = Player(name='Alice', game=self.game)
+        with self.assertRaises(IntegrityError):
+            p2.save()
+
+    def test_can_create_players_with_different_name_in_the_same_game(self):
+        p1 = factories.PlayerFactory.create(name='Alice', game=self.game)
+        p2 = Player(name='Bob', game=self.game)
+        p2.save()
+
     def test_game_required(self):
         player = Player()
         with self.assertRaises(IntegrityError):
@@ -71,6 +82,22 @@ class CompanyTests(TestCase):
     def test_default_name(self):
         company = Company()
         self.assertEqual(company.name, 'Company')
+
+    def test_cannot_create_duplicate_companies_in_the_same_game(self):
+        c1 = factories.CompanyFactory.create(name='B&O', game=self.game)
+        c2 = Company(name='B&O', game=self.game)
+        with self.assertRaises(IntegrityError):
+            c2.save()
+
+    def test_can_create_companies_with_different_name_in_the_same_game(self):
+        c1 = factories.CompanyFactory.create(name='B&O', game=self.game)
+        c2 = Company(name='C&O', game=self.game)
+        c2.save()
+
+    def test_can_create_same_company_for_different_game(self):
+        game2 = factories.GameFactory.create()
+        Company.objects.create(name='B&O', game=self.game)
+        Company.objects.create(name='B&O', game=game2)
 
     def test_game_required(self):
         company = Company()
@@ -163,3 +190,9 @@ class ShareTests(TestCase):
         player = factories.PlayerFactory.create(game=self.game)
         share = Share(player=player, company=self.company)
         self.assertEqual(player.game, share.game)
+
+    def test_cannot_create_duplicate_share_holdings(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        Share.objects.create(player=player, company=self.company)
+        with self.assertRaises(IntegrityError):
+            Share.objects.create(player=player, company=self.company)

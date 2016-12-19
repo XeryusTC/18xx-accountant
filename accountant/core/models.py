@@ -25,6 +25,9 @@ class Player(models.Model):
     game = models.ForeignKey(Game, related_name='players')
     cash = models.IntegerField(default=0)
 
+    class Meta:
+        unique_together = (('game', 'name'),)
+
     def __str__(self):
         return self.name
 
@@ -49,6 +52,9 @@ class Company(models.Model):
     owners = models.ManyToManyField(Player, related_name='shares',
         through='Share')
 
+    class Meta:
+        unique_together = (('game', 'name'),)
+
     def __str__(self):
         return self.name
 
@@ -59,6 +65,9 @@ class Share(models.Model):
     player = models.ForeignKey(Player)
     company = models.ForeignKey(Company)
     shares = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = (('player', 'company'),)
 
     @property
     def game(self):

@@ -20,3 +20,8 @@ class CompanyFactory(factory.django.DjangoModelFactory):
         model = models.Company
 
     name = factory.Sequence(lambda n: 'C%d' % n)
+
+
+class ShareFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Share
