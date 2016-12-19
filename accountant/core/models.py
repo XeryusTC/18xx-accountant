@@ -13,12 +13,18 @@ class Game(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
 
+    def __str__(self):
+        return 'Game {}'.format(self.uuid)
+
 
 class Player(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     name = models.CharField(max_length=16, default='Player')
     game = models.ForeignKey(Game, related_name='players')
+
+    def __str__(self):
+        return self.name
 
 class Company(models.Model):
     COLOR_CODES = tuple(((opt.replace(' ', '-'), opt.title())
@@ -32,3 +38,6 @@ class Company(models.Model):
         default='black', blank=False)
     background_color = models.CharField(max_length=16, choices=COLOR_CODES,
         default='white', blank=False)
+
+    def __str__(self):
+        return self.name

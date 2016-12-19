@@ -12,6 +12,11 @@ class GameTests(TestCase):
         game.save()
         self.assertIsInstance(game.pk, uuid.UUID)
 
+    def test_string_representation(self):
+        game = Game()
+        self.assertIn('Game', str(game))
+        self.assertIn(str(game.pk), str(game))
+
 
 class PlayerTests(TestCase):
     def setUp(self):
@@ -40,6 +45,10 @@ class PlayerTests(TestCase):
         player = Player(game=self.game)
         player.save()
         self.assertEqual(list(self.game.players.all()), [player])
+
+    def test_string_representation(self):
+        player = Player(game=self.game, name='Alice')
+        self.assertEqual('Alice', str(player))
 
 
 class CompanyTests(TestCase):
@@ -83,3 +92,7 @@ class CompanyTests(TestCase):
     def test_default_background_color_is_white(self):
         company = Company(game=self.game)
         self.assertEqual(company.background_color, 'white')
+
+    def test_string_representation(self):
+        company = Company(game=self.game, name='B&O')
+        self.assertEqual('B&O', str(company))
