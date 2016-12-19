@@ -3,3 +3,7 @@
 selenium==3.0.1
 page-objects==1.1.0
 coverage==4.2
+factory-boy==2.8.1
+Faker==0.7.5
+python-dateutil==2.6.0
+six==1.10.0

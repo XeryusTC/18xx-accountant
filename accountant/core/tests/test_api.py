@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .. import models
+from .. import factories
 
 class GameTests(APITestCase):
     def test_create_game(self):
@@ -19,8 +20,7 @@ class GameTests(APITestCase):
 class PlayerTests(APITestCase):
     def test_create_player(self):
         """Ensure that we can create players."""
-        game = models.Game()
-        game.save()
+        game = factories.GameFactory.create()
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': game.pk}
 
@@ -34,8 +34,7 @@ class PlayerTests(APITestCase):
 class CompanyTests(APITestCase):
     def test_create_company(self):
         """Ensure that we can create companies."""
-        game = models.Game()
-        game.save()
+        game = factories.GameFactory.create()
         url = reverse('company-list')
         data = {'name': 'B&O', 'game': game.pk}
 

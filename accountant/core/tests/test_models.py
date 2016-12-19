@@ -4,6 +4,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 import uuid
 
+from .. import factories
 from ..models import Game, Player, Company
 
 class GameTests(TestCase):
@@ -20,8 +21,7 @@ class GameTests(TestCase):
 
 class PlayerTests(TestCase):
     def setUp(self):
-        self.game = Game()
-        self.game.save()
+        self.game = factories.GameFactory.create()
 
     def test_pk_is_uuid(self):
         player = Player(game=self.game)
@@ -53,8 +53,7 @@ class PlayerTests(TestCase):
 
 class CompanyTests(TestCase):
     def setUp(self):
-        self.game = Game()
-        self.game.save()
+        self.game = factories.GameFactory.create()
 
     def test_pk_is_uuid(self):
         company = Company(game=self.game)
