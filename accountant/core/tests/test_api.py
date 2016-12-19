@@ -43,3 +43,19 @@ class CompanyTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create a company: " + str(response.data))
         self.assertEqual(models.Company.objects.count(), 1)
+
+
+class ShareTests(APITestCase):
+    def test_create_share(self):
+        """Ensure that we can create shares."""
+        game = factories.GameFactory.create()
+        player = factories.PlayerFactory.create(game=game)
+        company = factories.CompanyFactory.create(game=game)
+        url = reverse('share-list')
+        data = {'game': game.pk, 'player': player.pk, 'company': company.pk}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED,
+            "Could not create a share: " + str(response.data))
+        self.assertEqual(models.Share.objects.count(), 1)

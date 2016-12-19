@@ -20,3 +20,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = models.Company.objects.all()
     serializer_class = serializers.CompanySerializer
+
+
+class ShareViewSet(viewsets.ModelViewSet):
+    queryset = models.Share.objects.all()
+    serializer_class = serializers.ShareSerializer
