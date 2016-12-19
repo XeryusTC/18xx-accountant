@@ -12,6 +12,7 @@ color_options = ('black', 'white') + \
 class Game(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
+    bank_cash = models.IntegerField(default=12000)
 
     def __str__(self):
         return 'Game {}'.format(self.uuid)
@@ -22,9 +23,11 @@ class Player(models.Model):
         editable=False)
     name = models.CharField(max_length=16, default='Player')
     game = models.ForeignKey(Game, related_name='players')
+    cash = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
+
 
 class Company(models.Model):
     COLOR_CODES = tuple(((opt.replace(' ', '-'), opt.title())
@@ -38,6 +41,7 @@ class Company(models.Model):
         default='black', blank=False)
     background_color = models.CharField(max_length=16, choices=COLOR_CODES,
         default='white', blank=False)
+    cash = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

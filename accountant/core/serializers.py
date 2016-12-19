@@ -6,17 +6,17 @@ from . import models
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
-        fields = ('uuid', 'players', 'companies')
+        fields = ('url', 'uuid', 'players', 'companies')
 
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
-        fields = ('uuid', 'name', 'game')
+        fields = ('url', 'uuid', 'name', 'game', 'cash')
 
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Company
-        fields = ('uuid', 'name', 'text_color', 'background_color',
-            'game')
+        fields = ('url', 'uuid', 'name', 'text_color', 'background_color',
+            'game', 'cash')

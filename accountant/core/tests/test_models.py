@@ -13,6 +13,10 @@ class GameTests(TestCase):
         game.save()
         self.assertIsInstance(game.pk, uuid.UUID)
 
+    def test_bank_cash_is_12000_by_default(self):
+        game = Game()
+        self.assertEqual(game.bank_cash, 12000)
+
     def test_string_representation(self):
         game = Game()
         self.assertIn('Game', str(game))
@@ -36,6 +40,10 @@ class PlayerTests(TestCase):
         player = Player()
         with self.assertRaises(IntegrityError):
             player.save()
+
+    def test_player_has_no_cash_by_default(self):
+        player = Player()
+        self.assertEqual(player.cash, 0)
 
     def test_player_returns_associated_game_instance(self):
         player = Player(game=self.game)
@@ -68,6 +76,10 @@ class CompanyTests(TestCase):
         company = Company()
         with self.assertRaises(IntegrityError):
             company.save()
+
+    def test_company_has_no_cash_by_default(self):
+        company = Company()
+        self.assertEqual(company.cash, 0)
 
     def test_company_returns_associated_game_instance(self):
         company = Company(game=self.game)
