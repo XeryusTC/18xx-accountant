@@ -5,7 +5,7 @@ from django.test import TestCase
 import uuid
 
 from .. import factories
-from ..models import Game, Player, Company
+from ..models import Game, Player, Company, Share
 
 class GameTests(TestCase):
     def test_pk_is_uuid(self):
@@ -119,3 +119,47 @@ class CompanyTests(TestCase):
     def test_string_representation(self):
         company = Company(game=self.game, name='B&O')
         self.assertEqual('B&O', str(company))
+
+
+class ShareTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory.create()
+        self.company = factories.CompanyFactory.create(game=self.game)
+
+    def test_pk_is_uuid(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        share = Share.objects.create(player=player, company=self.company)
+        self.assertIsInstance(share.pk, uuid.UUID)
+
+    def test_company_knows_about_owning_players(self):
+        players = factories.PlayerFactory.create_batch(size=2, game=self.game)
+
+        list(Share.objects.create(player=p, company=self.company)
+            for p in players)
+
+        self.assertSequenceEqual(list(self.company.owners.all()), players)
+
+    def test_player_with_no_shares_is_not_in_company_owners_list(self):
+        players = factories.PlayerFactory.create_batch(size=2, game=self.game)
+
+        Share.objects.create(player=players[0], company=self.company)
+
+        self.assertSequenceEqual(list(self.company.owners.all()), [players[0]])
+
+    def test_player_knows_about_company_it_owns(self):
+        player = factories.PlayerFactory.create(game=self.game)
+
+        share = Share(player=player, company=self.company)
+        share.save()
+
+        self.assertIn(self.company, list(player.shares.all()))
+
+    def test_player_owns_one_share_by_default(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        share = Share(player=player, company=self.company)
+        self.assertEqual(share.shares, 1)
+
+    def test_game_is_equal_to_player_game(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        share = Share(player=player, company=self.company)
+        self.assertEqual(player.game, share.game)

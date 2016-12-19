@@ -46,6 +46,20 @@ class Company(models.Model):
     shares = models.IntegerField(default=10)
     ipo_shares = models.IntegerField(default=10)
     bank_shares = models.IntegerField(default=0)
+    owners = models.ManyToManyField(Player, related_name='shares',
+        through='Share')
 
     def __str__(self):
         return self.name
+
+
+class Share(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+        editable=False)
+    player = models.ForeignKey(Player)
+    company = models.ForeignKey(Company)
+    shares = models.IntegerField(default=1)
+
+    @property
+    def game(self):
+        return self.player.game
