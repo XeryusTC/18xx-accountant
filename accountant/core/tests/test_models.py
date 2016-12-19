@@ -104,6 +104,18 @@ class CompanyTests(TestCase):
         company = Company(game=self.game)
         self.assertEqual(company.background_color, 'white')
 
+    def test_has_ten_shares_by_default(self):
+        company = Company(game=self.game)
+        self.assertEqual(company.shares, 10)
+
+    def test_shares_are_in_ipo_by_default(self):
+        company = Company(game=self.game)
+        self.assertEqual(company.ipo_shares, 10)
+
+    def test_no_shares_in_bank_by_default(self):
+        company = Company(game=self.game)
+        self.assertEqual(company.bank_shares, 0)
+
     def test_string_representation(self):
         company = Company(game=self.game, name='B&O')
         self.assertEqual('B&O', str(company))

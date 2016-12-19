@@ -43,5 +43,9 @@ class Company(models.Model):
         default='white', blank=False)
     cash = models.IntegerField(default=0)
 
+    shares = models.IntegerField(default=10)
+    ipo_shares = models.IntegerField(default=10)
+    bank_shares = models.IntegerField(default=0)
+
     def __str__(self):
         return self.name
