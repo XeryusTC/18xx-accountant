@@ -12,7 +12,7 @@ color_options = ('black', 'white') + \
 class Game(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
-    bank_cash = models.IntegerField(default=12000)
+    cash = models.IntegerField(default=12000)
 
     def __str__(self):
         return 'Game {}'.format(self.uuid)

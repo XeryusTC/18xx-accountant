@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.db import models
 from django.db.utils import IntegrityError
 from django.test import TestCase
 import uuid
@@ -15,7 +14,7 @@ class GameTests(TestCase):
 
     def test_bank_cash_is_12000_by_default(self):
         game = Game()
-        self.assertEqual(game.bank_cash, 12000)
+        self.assertEqual(game.cash, 12000)
 
     def test_string_representation(self):
         game = Game()
