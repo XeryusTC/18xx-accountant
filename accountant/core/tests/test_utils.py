@@ -39,3 +39,11 @@ class TransferMoneyTests(TestCase):
         utils.transfer_money(self.company, self.player, 10)
         self.assertEqual(self.player.cash, 20)
         self.assertEqual(self.company.cash, 0)
+
+    def test_raises_SameEntityError_when_receiver_sender_are_the_bank(self):
+        with self.assertRaises(utils.SameEntityError):
+            utils.transfer_money(None, None, 0)
+
+    def test_raises_SameEntityError_when_receiver_sender_are_the_same(self):
+        with self.assertRaises(utils.SameEntityError):
+            utils.transfer_money(self.player, self.player, 0)
