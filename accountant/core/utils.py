@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+IPO_SHARES  = 1
+BANK_SHARES = 2
+
 class SameEntityError(Exception):
     pass
 
@@ -13,3 +16,6 @@ def transfer_money(sender, receiver, amount):
         receiver = sender.game
     sender.cash -= amount
     receiver.cash += amount
+
+def buy_share(buyer, company, source, amount, price):
+    pass
