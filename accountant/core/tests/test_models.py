@@ -132,7 +132,7 @@ class CompanyTests(TestCase):
 
     def test_has_ten_shares_by_default(self):
         company = Company(game=self.game)
-        self.assertEqual(company.shares, 10)
+        self.assertEqual(company.share_count, 10)
 
     def test_shares_are_in_ipo_by_default(self):
         company = Company(game=self.game)

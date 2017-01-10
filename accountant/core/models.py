@@ -46,7 +46,7 @@ class Company(models.Model):
         default='white', blank=False)
     cash = models.IntegerField(default=0)
 
-    shares = models.IntegerField(default=10)
+    share_count = models.IntegerField(default=10)
     ipo_shares = models.IntegerField(default=10)
     bank_shares = models.IntegerField(default=0)
     owners = models.ManyToManyField(Player, related_name='shares',
