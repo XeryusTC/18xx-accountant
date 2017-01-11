@@ -20,10 +20,10 @@ class CompanySerializer(serializers.ModelSerializer):
         model = models.Company
         fields = ('url', 'uuid', 'name', 'text_color', 'background_color',
             'game', 'cash', 'share_count', 'ipo_shares', 'bank_shares',
-            'owners')
+            'player_owners')
 
 
-class ShareSerializer(serializers.ModelSerializer):
+class PlayerShareSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Share
+        model = models.PlayerShare
         fields = ('url', 'uuid', 'player', 'company', 'shares')

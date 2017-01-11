@@ -22,6 +22,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CompanySerializer
 
 
-class ShareViewSet(viewsets.ModelViewSet):
-    queryset = models.Share.objects.all()
-    serializer_class = serializers.ShareSerializer
+class PlayerShareViewSet(viewsets.ModelViewSet):
+    queryset = models.PlayerShare.objects.all()
+    serializer_class = serializers.PlayerShareSerializer

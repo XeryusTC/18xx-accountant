@@ -49,8 +49,8 @@ class Company(models.Model):
     share_count = models.IntegerField(default=10)
     ipo_shares = models.IntegerField(default=10)
     bank_shares = models.IntegerField(default=0)
-    owners = models.ManyToManyField(Player, related_name='shares',
-        through='Share')
+    player_owners = models.ManyToManyField(Player, related_name='shares',
+        through='PlayerShare')
 
     class Meta:
         unique_together = (('game', 'name'),)
@@ -59,7 +59,7 @@ class Company(models.Model):
         return self.name
 
 
-class Share(models.Model):
+class PlayerShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     player = models.ForeignKey(Player)

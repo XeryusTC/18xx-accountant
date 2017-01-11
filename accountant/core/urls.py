@@ -8,7 +8,7 @@ router = DefaultRouter()
 router.register(r'game', views.GameViewSet)
 router.register(r'player', views.PlayerViewSet)
 router.register(r'company', views.CompanyViewSet)
-router.register(r'share', views.ShareViewSet)
+router.register(r'playershare', views.PlayerShareViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

@@ -22,6 +22,6 @@ class CompanyFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'C%d' % n)
 
 
-class ShareFactory(factory.django.DjangoModelFactory):
+class PlayerShareFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.Share
+        model = models.PlayerShare
