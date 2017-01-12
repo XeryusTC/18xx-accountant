@@ -4,7 +4,7 @@ from django.test import TestCase
 import uuid
 
 from .. import factories
-from ..models import Game, Player, Company, PlayerShare
+from ..models import Game, Player, Company, PlayerShare, CompanyShare
 
 class GameTests(TestCase):
     def test_pk_is_uuid(self):
@@ -190,3 +190,49 @@ class PlayerShareTests(TestCase):
         with self.assertRaises(IntegrityError):
             PlayerShare.objects.create(player=self.player,
                 company=self.company)
+
+
+class CompanyShareTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory.create()
+        self.company1, self.company2 = factories.CompanyFactory.create_batch(
+            size=2, game=self.game)
+
+    def test_pk_is_uuid(self):
+        share = CompanyShare.objects.create(owner=self.company1,
+            company=self.company2)
+        self.assertIsInstance(share.pk, uuid.UUID)
+
+    def test_company_knows_about_owning_companies(self):
+        CompanyShare.objects.create(owner=self.company1, company=self.company2)
+        self.assertSequenceEqual(list(self.company2.company_owners.all()),
+            [self.company1])
+
+    def test_company_with_no_shares_is_not_in_company_owners_list(self):
+        companies = factories.CompanyFactory.create_batch(size=2,
+            game=self.game)
+        CompanyShare.objects.create(owner=companies[0], company=self.company1)
+        self.assertSequenceEqual([companies[0]],
+            list(self.company1.company_owners.all()))
+
+    def test_company_knows_about_companies_it_owns(self):
+        share = CompanyShare.objects.create(owner=self.company1,
+            company=self.company2)
+        self.assertIn(self.company2, list(self.company1.shares.all()))
+
+    def test_company_owns_one_share_by_default(self):
+        share = CompanyShare(owner=self.company1, company=self.company2)
+        self.assertEqual(share.shares, 1)
+
+    def test_game_is_equal_to_company_game(self):
+        share = CompanyShare(owner=self.company1, company=self.company2)
+        self.assertEqual(self.company2.game, share.game)
+
+    def test_cannot_create_duplicate_share_holdings(self):
+        CompanyShare.objects.create(owner=self.company1, company=self.company2)
+        with self.assertRaises(IntegrityError):
+            CompanyShare.objects.create(owner=self.company1,
+                company=self.company2)
+
+    def test_company_can_own_its_own_shares(self):
+        CompanyShare.objects.create(owner=self.company1, company=self.company1)

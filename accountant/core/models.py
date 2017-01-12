@@ -51,6 +51,13 @@ class Company(models.Model):
     bank_shares = models.IntegerField(default=0)
     player_owners = models.ManyToManyField(Player, related_name='shares',
         through='PlayerShare')
+    company_owners = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='shares',
+        through='CompanyShare',
+        through_fields=('company', 'owner'),
+    )
 
     class Meta:
         unique_together = (('game', 'name'),)
@@ -72,3 +79,18 @@ class PlayerShare(models.Model):
     @property
     def game(self):
         return self.player.game
+
+
+class CompanyShare(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+        editable=False)
+    owner = models.ForeignKey(Company, related_name='+')
+    company = models.ForeignKey(Company)
+    shares = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = (('owner', 'company'),)
+
+    @property
+    def game(self):
+        return self.company.game
