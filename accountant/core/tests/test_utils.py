@@ -107,11 +107,15 @@ class PlayerShareTransactionTests(TestCase):
         with self.assertRaises(utils.InvalidShareTransaction):
             utils.buy_share(self.player, self.company, utils.IPO_SHARES, 10)
 
-    def test_player_buying_from_company_gives_share_to_player(self):
-        factories.CompanyShareFactory(owner=self.company, company=self.company)
-        utils.buy_share(self.player, self.company, self.company, 12)
-        self.assertEqual(0,
-            self.company.share_set.get(company=self.company).shares)
+    def test_player_buying_from_ipo_removes_share_from_ipo(self):
+        self.company.ipo_shares = 10
+        utils.buy_share(self.player, self.company, utils.IPO_SHARES, 1)
+        self.assertEqual(self.company.ipo_shares, 9)
+
+    def test_player_buying_from_bank_pool_removes_share_from_pool(self):
+        self.company.bank_shares = 10
+        utils.buy_share(self.player, self.company, utils.BANK_SHARES, 1)
+        self.assertEqual(self.company.bank_shares, 9)
 
     @mock.patch.object(utils, 'transfer_money')
     def test_player_buying_from_company_gives_money_to_company(self,
@@ -123,10 +127,10 @@ class PlayerShareTransactionTests(TestCase):
 
     def test_player_buying_from_company_removes_share_from_company(self):
         share = factories.CompanyShareFactory(owner=self.company,
-            company=self.company)
+            company=self.company, shares=3)
         utils.buy_share(self.player, self.company, self.company, 14)
         share.refresh_from_db()
-        self.assertEqual(share.shares, 0)
+        self.assertEqual(share.shares, 2)
 
     def test_player_cannot_buy_from_company_if_it_has_no_shares(self):
         with self.assertRaises(utils.InvalidShareTransaction):
@@ -138,7 +142,17 @@ class PlayerShareTransactionTests(TestCase):
         with self.assertRaises(utils.InvalidShareTransaction):
             utils.buy_share(self.player, self.company, self.company, 1)
 
-    def test_player_cannot_buy_from_company_if_has_not_enough_shares(self):
+    def test_player_cannot_buy_from_ipo_if_it_has_too_few_shares(self):
+        self.company.ipo_shares = 2
+        with self.assertRaises(utils.InvalidShareTransaction):
+            utils.buy_share(self.player, self.company, utils.IPO_SHARES, 1, 3)
+
+    def test_player_cannot_buy_from_bank_pool_if_it_has_too_few_shares(self):
+        self.company.bank_shares = 2
+        with self.assertRaises(utils.InvalidShareTransaction):
+            utils.buy_share(self.player, self.company, utils.BANK_SHARES, 1, 3)
+
+    def test_player_cannot_buy_from_company_if_it_has_too_few_shares(self):
         factories.CompanyShareFactory(owner=self.company, company=self.company,
             shares=2)
         with self.assertRaises(utils.InvalidShareTransaction):
@@ -299,3 +313,24 @@ class CompanyShareTransactionTests(TestCase):
         utils.buy_share(self.company1, self.company1, utils.BANK_SHARES, 1, 4)
         self.assertEqual(4,
             self.company1.share_set.get(company=self.company1).shares)
+
+    def test_company_buying_from_ipo_removes_share_from_ipo(self):
+        self.company2.ipo_shares = 10
+        utils.buy_share(self.company1, self.company2, utils.IPO_SHARES, 1)
+        self.assertEqual(9, self.company2.ipo_shares)
+
+    def test_company_buying_from_bank_pool_removes_share_from_pool(self):
+        self.company2.bank_shares = 10
+        utils.buy_share(self.company1, self.company2, utils.BANK_SHARES, 1)
+        self.company2.refresh_from_db()
+        self.assertEqual(9, self.company2.bank_shares)
+
+    def test_company_cannot_buy_from_ipo_if_it_has_too_few_shares(self):
+        self.company2.ipo_shares = 0
+        with self.assertRaises(utils.InvalidShareTransaction):
+            utils.buy_share(self.company1, self.company2, utils.IPO_SHARES, 1)
+
+    def test_company_cannot_buy_from_bank_pool_if_it_has_too_few_shares(self):
+        self.company2.bank_shares = 0
+        with self.assertRaises(utils.InvalidShareTransaction):
+            utils.buy_share(self.company1, self.company2, utils.BANK_SHARES, 1)

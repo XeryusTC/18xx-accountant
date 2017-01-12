@@ -24,14 +24,15 @@ def transfer_money(sender, receiver, amount):
 
 def buy_share(buyer, company, source, price, amount=1):
     # Check if shares are available
-    if source == IPO_SHARES and company.ipo_shares == 0:
+    if source == IPO_SHARES and company.ipo_shares < amount:
         raise InvalidShareTransaction()
-    elif source == BANK_SHARES and company.bank_shares == 0:
+    elif source == BANK_SHARES and company.bank_shares < amount:
         raise InvalidShareTransaction()
 
     if isinstance(source, models.Company): # Share comes from a company
         try:
-            source_share = source.companyshare_set.get(company=source)
+            source_share = models.CompanyShare.objects.get(owner=source,
+                company=source)
         except models.CompanyShare.DoesNotExist:
             raise InvalidShareTransaction()
         if source_share.shares < amount:
@@ -57,6 +58,12 @@ def buy_share(buyer, company, source, price, amount=1):
     if source_share:
         source_share.shares -= amount
         source_share.save()
+    elif source == IPO_SHARES:
+        company.ipo_shares -= amount
+        company.save()
+    elif source == BANK_SHARES:
+        company.bank_shares -= amount
+        company.save()
 
     # Transfer the money
     if source in (BANK_SHARES, IPO_SHARES):
