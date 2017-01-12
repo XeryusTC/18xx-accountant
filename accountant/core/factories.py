@@ -25,3 +25,8 @@ class CompanyFactory(factory.django.DjangoModelFactory):
 class PlayerShareFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.PlayerShare
+
+
+class CompanyShareFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.CompanyShare

@@ -104,3 +104,56 @@ class PlayerShareTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
             "Created duplicate share holdings: " + str(response.data))
         self.assertEqual(models.PlayerShare.objects.count(), 1)
+        self.assertIn('non_field_errors', response.data.keys())
+
+
+class CompanyShareTests(APITestCase):
+    def test_create_self_owning_share(self):
+        """Ensure that we can create company shares."""
+        game = factories.GameFactory.create()
+        company = factories.CompanyFactory.create(game=game)
+        url = reverse('companyshare-list')
+        data = {'owner': company.pk, 'company': company.pk}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED,
+            "Could not create a self owning share: " + str(response.data))
+        self.assertEqual(models.CompanyShare.objects.count(), 1)
+
+    def test_create_share_owning_other_company(self):
+        """Ensure that companies can own shares in other companies."""
+        game = factories.GameFactory.create()
+        company1, company2 = factories.CompanyFactory.create_batch(size=2,
+            game=game)
+        url = reverse('companyshare-list')
+        data = {'owner': company1.pk, 'company': company2.pk}
+
+        response = self.client.post(url, data, format='json')
+
+        share = models.CompanyShare.objects.first()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED,
+            "Could not create a company share: " + str(response.data))
+        self.assertEqual(models.CompanyShare.objects.count(), 1)
+        self.assertEqual(share.owner, company1)
+        self.assertEqual(share.company, company2)
+
+    def test_cannot_create_duplicate_share_holdings(self):
+        """
+        Ensure that a company doesn't have two share holding records for a
+        single company
+        """
+        game = factories.GameFactory.create()
+        company1, company2 = factories.CompanyFactory.create_batch(size=2,
+            game=game)
+        share = factories.CompanyShareFactory.create(owner=company1,
+            company=company2)
+        url = reverse('companyshare-list')
+        data = {'owner': company1.pk, 'company': company2.pk}
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+            "Created duplicate share holdings: " + str(response.data))
+        self.assertEqual(models.CompanyShare.objects.count(), 1)
+        self.assertIn('non_field_errors', response.data.keys())
