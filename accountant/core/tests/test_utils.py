@@ -240,3 +240,45 @@ class ShareTransactionTests(TestCase):
             shares=2)
         with self.assertRaises(utils.InvalidShareTransaction):
             utils.buy_share(self.company, company2, company2, 0, 3)
+
+    def test_player_can_buy_additional_share_from_ipo(self):
+        factories.PlayerShareFactory(owner=self.player, company=self.company)
+        utils.buy_share(self.player, self.company, utils.IPO_SHARES, 1)
+        self.assertEqual(2,
+            self.player.share_set.get(company=self.company).shares)
+
+    def test_player_can_buy_additional_share_from_bank_pool(self):
+        self.company.bank_shares = 10
+        factories.PlayerShareFactory(owner=self.player, company=self.company)
+        utils.buy_share(self.player, self.company, utils.BANK_SHARES, 2)
+        self.assertEqual(2,
+            self.player.share_set.get(company=self.company).shares)
+
+    def test_player_can_buy_additional_share_from_company(self):
+        factories.PlayerShareFactory(owner=self.player, company=self.company)
+        factories.CompanyShareFactory(owner=self.company, company=self.company)
+        utils.buy_share(self.player, self.company, self.company, 3)
+        self.assertEqual(2,
+            self.player.share_set.get(company=self.company).shares)
+
+    def test_company_can_buy_additional_share_from_ipo(self):
+        factories.CompanyShareFactory(owner=self.company, company=self.company)
+        utils.buy_share(self.company, self.company, utils.IPO_SHARES, 4)
+        self.assertEqual(2,
+            self.company.share_set.get(company=self.company).shares)
+
+    def test_company_can_buy_additional_share_from_bank_pool(self):
+        self.company.bank_shares = 10
+        factories.CompanyShareFactory(owner=self.company, company=self.company)
+        utils.buy_share(self.company, self.company, utils.BANK_SHARES, 5)
+        self.assertEqual(2,
+            self.company.share_set.get(company=self.company).shares)
+
+    def test_company_can_buy_additional_share_from_company(self):
+        company2 = factories.CompanyFactory(game=self.game)
+        factories.CompanyShareFactory(owner=self.company, company=company2)
+        factories.CompanyShareFactory(owner=company2, company=company2,
+            shares = 3)
+        utils.buy_share(self.company, company2, company2, 6)
+        self.assertEqual(2,
+            self.company.share_set.get(company=company2).shares)
