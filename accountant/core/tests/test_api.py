@@ -6,6 +6,15 @@ from rest_framework.test import APITestCase
 from .. import models
 from .. import factories
 
+game = None
+
+def setUpModule():
+    global game
+    game = factories.GameFactory.create()
+
+def tearDownModule():
+    game.delete()
+
 class GameTests(APITestCase):
     def test_create_game(self):
         """Ensure that we can create a game."""
@@ -14,13 +23,13 @@ class GameTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create game: " + str(response.data))
-        self.assertEqual(models.Game.objects.count(), 1)
+        # We have 2 games since there is also a global game
+        self.assertEqual(models.Game.objects.count(), 2)
 
 
 class PlayerTests(APITestCase):
     def test_create_player(self):
         """Ensure that we can create players."""
-        game = factories.GameFactory.create()
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': game.pk}
 
@@ -32,7 +41,6 @@ class PlayerTests(APITestCase):
 
     def test_cannot_create_duplicate_player_for_single_game(self):
         """Disallow creating two players with the same name in a game."""
-        game = factories.GameFactory.create()
         player = factories.PlayerFactory.create(game=game, name='Alice')
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': game.pk}
@@ -47,7 +55,6 @@ class PlayerTests(APITestCase):
 class CompanyTests(APITestCase):
     def test_create_company(self):
         """Ensure that we can create companies."""
-        game = factories.GameFactory.create()
         url = reverse('company-list')
         data = {'name': 'B&O', 'game': game.pk}
 
@@ -59,7 +66,6 @@ class CompanyTests(APITestCase):
 
     def test_cannot_create_duplicate_company_for_single_game(self):
         """Disallow creating two companies with the same name in a game."""
-        game = factories.GameFactory.create()
         company = factories.CompanyFactory.create(game=game, name='B&O')
         url = reverse('company-list')
         data = {'name': 'B&O', 'game': game.pk}
@@ -74,7 +80,6 @@ class CompanyTests(APITestCase):
 class PlayerShareTests(APITestCase):
     def test_create_share(self):
         """Ensure that we can create shares."""
-        game = factories.GameFactory.create()
         player = factories.PlayerFactory.create(game=game)
         company = factories.CompanyFactory.create(game=game)
         url = reverse('playershare-list')
@@ -91,7 +96,6 @@ class PlayerShareTests(APITestCase):
         Ensure that a player doesn't have two share holding records for
         a single company
         """
-        game = factories.GameFactory.create()
         player = factories.PlayerFactory.create(game=game)
         company = factories.CompanyFactory.create(game=game)
         share = factories.PlayerShareFactory.create(owner=player,
@@ -110,7 +114,6 @@ class PlayerShareTests(APITestCase):
 class CompanyShareTests(APITestCase):
     def test_create_self_owning_share(self):
         """Ensure that we can create company shares."""
-        game = factories.GameFactory.create()
         company = factories.CompanyFactory.create(game=game)
         url = reverse('companyshare-list')
         data = {'owner': company.pk, 'company': company.pk}
@@ -123,7 +126,6 @@ class CompanyShareTests(APITestCase):
 
     def test_create_share_owning_other_company(self):
         """Ensure that companies can own shares in other companies."""
-        game = factories.GameFactory.create()
         company1, company2 = factories.CompanyFactory.create_batch(size=2,
             game=game)
         url = reverse('companyshare-list')
@@ -143,7 +145,6 @@ class CompanyShareTests(APITestCase):
         Ensure that a company doesn't have two share holding records for a
         single company
         """
-        game = factories.GameFactory.create()
         company1, company2 = factories.CompanyFactory.create_batch(size=2,
             game=game)
         share = factories.CompanyShareFactory.create(owner=company1,
