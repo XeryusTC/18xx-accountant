@@ -78,7 +78,7 @@ class PlayerShareTests(APITestCase):
         player = factories.PlayerFactory.create(game=game)
         company = factories.CompanyFactory.create(game=game)
         url = reverse('playershare-list')
-        data = {'game': game.pk, 'player': player.pk, 'company': company.pk}
+        data = {'game': game.pk, 'owner': player.pk, 'company': company.pk}
 
         response = self.client.post(url, data, format='json')
 
@@ -94,10 +94,10 @@ class PlayerShareTests(APITestCase):
         game = factories.GameFactory.create()
         player = factories.PlayerFactory.create(game=game)
         company = factories.CompanyFactory.create(game=game)
-        share = factories.PlayerShareFactory.create(player=player,
+        share = factories.PlayerShareFactory.create(owner=player,
             company=company)
         url = reverse('playershare-list')
-        data = {'player': player.pk, 'company': company.pk}
+        data = {'owner': player.pk, 'company': company.pk}
 
         response = self.client.post(url, data, format='json')
 

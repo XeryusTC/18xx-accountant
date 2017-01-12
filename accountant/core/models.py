@@ -69,16 +69,16 @@ class Company(models.Model):
 class PlayerShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
-    player = models.ForeignKey(Player)
+    owner = models.ForeignKey(Player)
     company = models.ForeignKey(Company)
     shares = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = (('player', 'company'),)
+        unique_together = (('owner', 'company'),)
 
     @property
     def game(self):
-        return self.player.game
+        return self.company.game
 
 
 class CompanyShare(models.Model):
