@@ -69,7 +69,7 @@ class Company(models.Model):
 class PlayerShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
-    owner = models.ForeignKey(Player)
+    owner = models.ForeignKey(Player, related_name='share_set')
     company = models.ForeignKey(Company)
     shares = models.IntegerField(default=1)
 
@@ -84,7 +84,7 @@ class PlayerShare(models.Model):
 class CompanyShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
-    owner = models.ForeignKey(Company, related_name='+')
+    owner = models.ForeignKey(Company, related_name='share_set')
     company = models.ForeignKey(Company)
     shares = models.IntegerField(default=1)
 
