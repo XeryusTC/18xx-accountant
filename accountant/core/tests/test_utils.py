@@ -178,6 +178,21 @@ class PlayerShareTransactionTests(TestCase):
         self.assertEqual(2,
             self.player.share_set.get(company=self.company).shares)
 
+    @mock.patch.object(utils, 'transfer_money')
+    def test_buying_multiple_shares_charges_money_for_each_share(self,
+            mock_transfer_money):
+        utils.buy_share(self.player, self.company, utils.IPO_SHARES, 3, 2)
+        mock_transfer_money.assert_called_once_with(self.player, None, 6)
+
+    @mock.patch.object(utils, 'transfer_money')
+    def test_buying_multiple_shares_from_company_charges_for_each_share(self,
+            mock_transfer_money):
+        factories.CompanyShareFactory(owner=self.company, company=self.company,
+            shares=2)
+        utils.buy_share(self.player, self.company, self.company, 4, 2)
+        mock_transfer_money.assert_called_once_with(self.player, self.company,
+            8)
+
 
 class CompanyShareTransactionTests(TestCase):
     """Test buying and selling shares for companies"""
@@ -334,3 +349,18 @@ class CompanyShareTransactionTests(TestCase):
         self.company2.bank_shares = 0
         with self.assertRaises(utils.InvalidShareTransaction):
             utils.buy_share(self.company1, self.company2, utils.BANK_SHARES, 1)
+
+    @mock.patch.object(utils, 'transfer_money')
+    def test_buying_multiple_shares_charges_company_for_each_share(self,
+            mock_transfer_money):
+        utils.buy_share(self.company1, self.company2, utils.IPO_SHARES, 5, 3)
+        mock_transfer_money.assert_called_once_with(self.company1, None, 15)
+
+    @mock.patch.object(utils, 'transfer_money')
+    def test_buying_multiple_shares_from_company_charges_for_each_share(self,
+        mock_transfer_money):
+        factories.CompanyShareFactory(owner=self.company2,
+            company=self.company2, shares=3)
+        utils.buy_share(self.company1, self.company2, self.company2, 1, 3)
+        mock_transfer_money.assert_called_once_with(self.company1,
+            self.company2, 3)

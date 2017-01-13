@@ -67,6 +67,6 @@ def buy_share(buyer, company, source, price, amount=1):
 
     # Transfer the money
     if source in (BANK_SHARES, IPO_SHARES):
-        transfer_money(buyer, None, price)
+        transfer_money(buyer, None, price * amount)
     else:
-        transfer_money(buyer, source, price)
+        transfer_money(buyer, source, price * amount)
