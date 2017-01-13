@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
+from enum import Enum
 from . import models
-
-IPO_SHARES  = 1
-BANK_SHARES = 2
 
 class SameEntityError(Exception):
     pass
@@ -10,6 +8,11 @@ class SameEntityError(Exception):
 
 class InvalidShareTransaction(Exception):
     pass
+
+
+class Share(Enum):
+    IPO = 1
+    BANK = 2
 
 
 def transfer_money(sender, receiver, amount):
@@ -24,9 +27,9 @@ def transfer_money(sender, receiver, amount):
 
 def buy_share(buyer, company, source, price, amount=1):
     # Check if shares are available
-    if source == IPO_SHARES and company.ipo_shares < amount:
+    if source == Share.IPO and company.ipo_shares < amount:
         raise InvalidShareTransaction()
-    elif source == BANK_SHARES and company.bank_shares < amount:
+    elif source == Share.BANK and company.bank_shares < amount:
         raise InvalidShareTransaction()
 
     if isinstance(source, models.Company): # Share comes from a company
@@ -48,10 +51,10 @@ def buy_share(buyer, company, source, price, amount=1):
         source_share = None
 
     # Buy the shares
-    if buyer == IPO_SHARES:
+    if buyer == Share.IPO:
         company.ipo_shares += amount
         company.save()
-    elif buyer == BANK_SHARES:
+    elif buyer == Share.BANK:
         company.bank_shares += amount
         company.save()
     else: # Comes from company or player
@@ -71,17 +74,17 @@ def buy_share(buyer, company, source, price, amount=1):
     if source_share:
         source_share.shares -= amount
         source_share.save()
-    elif source == IPO_SHARES:
+    elif source == Share.IPO:
         company.ipo_shares -= amount
         company.save()
-    elif source == BANK_SHARES:
+    elif source == Share.BANK:
         company.bank_shares -= amount
         company.save()
 
     # Transfer the money
-    if buyer in (BANK_SHARES, IPO_SHARES):
+    if buyer in (Share.BANK, Share.IPO):
         buyer = None
-    if source in (BANK_SHARES, IPO_SHARES):
+    if source in (Share.BANK, Share.IPO):
         transfer_money(buyer, None, price * amount)
     else:
         transfer_money(buyer, source, price * amount)
