@@ -32,27 +32,40 @@ def buy_share(buyer, company, source, price, amount=1):
     if isinstance(source, models.Company): # Share comes from a company
         try:
             source_share = models.CompanyShare.objects.get(owner=source,
-                company=source)
+                company=company)
         except models.CompanyShare.DoesNotExist:
             raise InvalidShareTransaction()
         if source_share.shares < amount:
             raise InvalidShareTransaction()
+    elif isinstance(source, models.Player): # Share comes from a player
+        try:
+            source_share = models.PlayerShare.objects.get(owner=source,
+                company=company)
+        except models.PlayerShare.DoesNotExist:
+            source_share = models.PlayerShare.objects.create(owner=source,
+                company=company, shares=0)
     else:
         source_share = None
 
-    # Create share object if necessary
-    try:
-        share = buyer.share_set.get(company=company)
-    except models.PlayerShare.DoesNotExist:
-        share = models.PlayerShare.objects.create(owner=buyer,
-            company=company, shares=0)
-    except models.CompanyShare.DoesNotExist:
-        share = models.CompanyShare.objects.create(owner=buyer,
-            company=company, shares=0)
-
-    # Buy the share
-    share.shares += amount
-    share.save()
+    # Buy the shares
+    if buyer == IPO_SHARES:
+        company.ipo_shares += amount
+        company.save()
+    elif buyer == BANK_SHARES:
+        company.bank_shares += amount
+        company.save()
+    else: # Comes from company or player
+        # Create share object if necessary
+        try:
+            share = buyer.share_set.get(company=company)
+        except models.PlayerShare.DoesNotExist:
+            share = models.PlayerShare.objects.create(owner=buyer,
+                company=company, shares=0)
+        except models.CompanyShare.DoesNotExist:
+            share = models.CompanyShare.objects.create(owner=buyer,
+                company=company, shares=0)
+        share.shares += amount
+        share.save()
 
     # Remove the share from the source
     if source_share:
@@ -66,6 +79,8 @@ def buy_share(buyer, company, source, price, amount=1):
         company.save()
 
     # Transfer the money
+    if buyer in (BANK_SHARES, IPO_SHARES):
+        buyer = None
     if source in (BANK_SHARES, IPO_SHARES):
         transfer_money(buyer, None, price * amount)
     else:
