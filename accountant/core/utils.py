@@ -15,6 +15,11 @@ class Share(Enum):
     BANK = 2
 
 
+class OperateMethod(Enum):
+    FULL = 1
+    WITHHOLD = 2
+
+
 def transfer_money(sender, receiver, amount):
     if sender == receiver:
         raise SameEntityError()
@@ -88,3 +93,29 @@ def buy_share(buyer, company, source, price, amount=1):
         transfer_money(buyer, None, price * amount)
     else:
         transfer_money(buyer, source, price * amount)
+
+def operate(company, amount, method):
+    if method == OperateMethod.WITHHOLD:
+        transfer_money(None, company, amount)
+    elif method == OperateMethod.FULL:
+        total_paid = 0
+        dividends_per_share = int(amount / company.share_count)
+        # Pay dividend to players
+        for share in company.playershare_set.all():
+            if share.shares == company.share_count:
+                dividend = amount
+            else:
+                dividend = dividends_per_share * share.shares
+            total_paid += dividend
+            transfer_money(None, share.owner, dividend)
+        # Pay dividend to companies
+        for share in company.companyshare_set.all():
+            dividend = dividends_per_share * share.shares
+            total_paid += dividend
+            transfer_money(None, share.owner, int(dividend))
+        # Remove the money that stayed in the bank from the total
+        total_paid += dividends_per_share * company.ipo_shares
+        total_paid += dividends_per_share * company.bank_shares
+        # Pay remaining to the company
+        if amount != total_paid:
+            transfer_money(None, company, amount - total_paid)
