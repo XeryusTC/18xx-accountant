@@ -500,6 +500,94 @@ class CompanyShareTransactionTests(TestCase):
             utils.buy_share(utils.Share.IPO, self.company2, self.company1,
                 11, 4)
 
-
+@mock.patch.object(utils, 'transfer_money')
 class OperateTests(TestCase):
-    pass
+    def setUp(self):
+        self.game = factories.GameFactory(cash=0)
+        self.alice, self.bob = factories.PlayerFactory.create_batch(size=2,
+            game=self.game, cash=0)
+        self.company = factories.CompanyFactory(game=self.game, cash=0)
+
+    def setup_test_shares(self):
+        self.company.ipo_shares = 4
+        self.company.bank_shares = 1
+        factories.PlayerShareFactory(owner=self.alice, company=self.company,
+            shares=3)
+        factories.PlayerShareFactory(owner=self.bob, company=self.company,
+            shares=1)
+        factories.CompanyShareFactory(owner=self.company, company=self.company,
+            shares=1)
+
+    def test_withholding_gives_all_cash_to_the_company(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 180, utils.OperateMethod.WITHHOLD)
+        mock_transfer_money.assert_called_once_with(None, self.company, 180)
+
+    def test_withholding_gives_no_money_to_share_holders(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 240, utils.OperateMethod.WITHHOLD)
+        self.assertNotIn(mock.call(None, self.alice, 72),
+            mock_transfer_money.call_args_list)
+        self.assertNotIn(mock.call(None, self.bob, 24),
+            mock_transfer_money.call_args_list)
+
+    def test_operating_gives_money_to_company_if_it_owns_its_own_shares(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 140, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.company, 14)
+
+    def test_operating_gives_money_to_share_holders(self, mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 520, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.alice, 156)
+        mock_transfer_money.assert_any_call(None, self.bob, 52)
+
+    def test_operating_gives_money_to_different_company_that_owns_shares(self,
+            mock_transfer_money):
+        company2 = factories.CompanyFactory(game=self.game, cash=0)
+        factories.CompanyShareFactory(owner=company2, company=self.company,
+            shares=2)
+        utils.operate(self.company, 40, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, company2, 8)
+
+    def test_operating_doesnt_give_money_to_non_share_holders(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        charlie = factories.PlayerFactory(game=self.game, cash=0)
+        utils.operate(self.company, 100, utils.OperateMethod.FULL)
+        for call in mock_transfer_money.call_args_list:
+            self.assertNotEqual(charlie, call[1])
+
+    def test_remainder_after_paying_dividends_goes_to_company(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 76, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.company, 6)
+
+    def test_avoid_rounding_errors_in_calculating_remainder(self,
+            mock_transfer_money):
+        self.company.share_count = 2
+        self.company.ipo_shares = 0
+        self.company.bank_shares = 0
+        factories.PlayerShareFactory(owner=self.alice, company=self.company,
+            shares=2)
+        utils.operate(self.company, 5, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_called_once_with(None, self.alice, 5)
+
+    def test_players_hand_in_cash_if_they_have_shorted_shares(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        share = self.bob.share_set.filter(company=self.company).update(
+            shares=-1)
+        utils.operate(self.company, 120, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.bob, -12)
+
+    def test_player_owning_no_shares_gets_no_money(self, mock_transfer_money):
+        self.setup_test_shares()
+        share = self.bob.share_set.filter(company=self.company).update(
+            shares=0)
+        utils.operate(self.company, 90, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.bob, 0)
