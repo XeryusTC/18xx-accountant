@@ -524,15 +524,6 @@ class OperateTests(TestCase):
         utils.operate(self.company, 180, utils.OperateMethod.WITHHOLD)
         mock_transfer_money.assert_called_once_with(None, self.company, 180)
 
-    def test_withholding_gives_no_money_to_share_holders(self,
-            mock_transfer_money):
-        self.setup_test_shares()
-        utils.operate(self.company, 240, utils.OperateMethod.WITHHOLD)
-        self.assertNotIn(mock.call(None, self.alice, 72),
-            mock_transfer_money.call_args_list)
-        self.assertNotIn(mock.call(None, self.bob, 24),
-            mock_transfer_money.call_args_list)
-
     def test_operating_gives_money_to_company_if_it_owns_its_own_shares(self,
             mock_transfer_money):
         self.setup_test_shares()
@@ -552,14 +543,6 @@ class OperateTests(TestCase):
             shares=2)
         utils.operate(self.company, 40, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, company2, 8)
-
-    def test_operating_doesnt_give_money_to_non_share_holders(self,
-            mock_transfer_money):
-        self.setup_test_shares()
-        charlie = factories.PlayerFactory(game=self.game, cash=0)
-        utils.operate(self.company, 100, utils.OperateMethod.FULL)
-        for call in mock_transfer_money.call_args_list:
-            self.assertNotEqual(charlie, call[1])
 
     def test_remainder_after_paying_dividends_goes_to_company(self,
             mock_transfer_money):
@@ -591,3 +574,37 @@ class OperateTests(TestCase):
             shares=0)
         utils.operate(self.company, 90, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.bob, 0)
+
+
+class NoMoneyOperateTests(TestCase):
+    """Sometimes it is better to test database changes than using mocks"""
+    def setUp(self):
+        self.game = factories.GameFactory(cash=0)
+        self.alice, self.bob = factories.PlayerFactory.create_batch(size=2,
+            game=self.game, cash=0)
+        self.company = factories.CompanyFactory(game=self.game, cash=0)
+
+    def setup_test_shares(self):
+        self.company.ipo_shares = 4
+        self.company.bank_shares = 1
+        factories.PlayerShareFactory(owner=self.alice, company=self.company,
+            shares=3)
+        factories.PlayerShareFactory(owner=self.bob, company=self.company,
+            shares=1)
+        factories.CompanyShareFactory(owner=self.company, company=self.company,
+            shares=1)
+
+    def test_withholding_gives_no_money_to_share_holders(self):
+        self.setup_test_shares()
+        utils.operate(self.company, 240, utils.OperateMethod.WITHHOLD)
+        self.alice.refresh_from_db()
+        self.bob.refresh_from_db()
+        self.assertEqual(self.alice.cash, 0)
+        self.assertEqual(self.bob.cash, 0)
+
+    def test_operating_doesnt_give_money_to_non_share_holders(self):
+        self.setup_test_shares()
+        charlie = factories.PlayerFactory(game=self.game, cash=0)
+        utils.operate(self.company, 100, utils.OperateMethod.FULL)
+        charlie.refresh_from_db()
+        self.assertEqual(charlie.cash, 0)
