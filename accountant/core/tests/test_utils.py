@@ -575,6 +575,46 @@ class OperateTests(TestCase):
         utils.operate(self.company, 90, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.bob, 0)
 
+    def test_paying_half_gives_the_company_half_of_the_money(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 100, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.company, 50)
+
+    def test_paying_half_pays_half_dividends_to_the_shareholders(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 320, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.alice, 48)
+        mock_transfer_money.assert_any_call(None, self.bob, 16)
+
+    def test_paying_half_gives_company_additional_money_if_it_owns_shares(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 300, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.company, 15)
+
+    def test_paying_half_pays_remainder_to_company(self, mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 170, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.company, 85)
+        mock_transfer_money.assert_any_call(None, self.company, 8)
+        mock_transfer_money.assert_any_call(None, self.company, 5)
+
+    def test_players_with_shorted_shares_hand_in_cash_when_paying_half(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        self.bob.share_set.filter(company=self.company).update(shares=-1)
+        utils.operate(self.company, 200, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.bob, -10)
+
+    def test_paying_half_gives_no_money_to_players_without_shares(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        self.bob.share_set.filter(company=self.company).update(shares=0)
+        utils.operate(self.company, 280, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.bob, 0)
+
 
 class NoMoneyOperateTests(TestCase):
     """Sometimes it is better to test database changes than using mocks"""
