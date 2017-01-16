@@ -608,3 +608,11 @@ class NoMoneyOperateTests(TestCase):
         utils.operate(self.company, 100, utils.OperateMethod.FULL)
         charlie.refresh_from_db()
         self.assertEqual(charlie.cash, 0)
+
+    def test_players_with_shorted_shares_dont_pay_when_withholding(self):
+        self.setup_test_shares()
+        share = self.bob.share_set.filter(company=self.company).update(
+            shares=-1)
+        utils.operate(self.company, 640, utils.OperateMethod.WITHHOLD)
+        self.bob.refresh_from_db()
+        self.assertEqual(self.bob.cash, 0)
