@@ -18,6 +18,7 @@ class Share(Enum):
 class OperateMethod(Enum):
     FULL = 1
     WITHHOLD = 2
+    HALF = 3
 
 
 def transfer_money(sender, receiver, amount):
@@ -97,6 +98,9 @@ def buy_share(buyer, company, source, price, amount=1):
 def operate(company, amount, method):
     if method == OperateMethod.WITHHOLD:
         transfer_money(None, company, amount)
+    elif method == OperateMethod.HALF:
+        operate(company, int(amount / 2), OperateMethod.WITHHOLD)
+        operate(company, int(amount / 2), OperateMethod.FULL)
     elif method == OperateMethod.FULL:
         total_paid = 0
         dividends_per_share = int(amount / company.share_count)
