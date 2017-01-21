@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 from rest_framework import serializers
 
 from . import models
+
+SOURCE_OR_DEST_REQUIRED_ERROR = \
+    _('You cannot transfer money from the bank to the bank')
+DUPLICATE_SOURCE_OR_DEST_ERROR = \
+    _('Cannot send or receive money to two different entities')
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +40,47 @@ class CompanyShareSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CompanyShare
         fields = ('url', 'uuid', 'owner', 'company', 'shares')
+
+
+class TransferMoneySerializer(serializers.Serializer):
+    amount = serializers.IntegerField()
+    to_player = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+    from_player = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+    to_company = serializers.ModelField(required=False,
+        model_field=models.Company._meta.get_field('uuid'))
+    from_company = serializers.ModelField(required=False,
+        model_field=models.Company._meta.get_field('uuid'))
+
+    def validate(self, data):
+        if 'to_player' not in data.keys() \
+                and 'from_player' not in data.keys() \
+                and 'to_company' not in data.keys() \
+                and 'from_company' not in data.keys():
+            raise serializers.ValidationError(SOURCE_OR_DEST_REQUIRED_ERROR)
+        if 'from_player' in data.keys() and 'from_company' in data.keys():
+            raise serializers.ValidationError(DUPLICATE_SOURCE_OR_DEST_ERROR)
+        if 'to_player' in data.keys() and 'to_company' in data.keys():
+            raise serializers.ValidationError(DUPLICATE_SOURCE_OR_DEST_ERROR)
+        return data
+
+    @property
+    def source_instance(self):
+        if 'from_player' in self.validated_data.keys():
+            return get_object_or_404(models.Player,
+                uuid=self.validated_data['from_player'])
+        if 'from_company' in self.validated_data.keys():
+            return get_object_or_404(models.Company,
+                uuid=self.validated_data['from_company'])
+        return None
+
+    @property
+    def dest_instance(self):
+        if 'to_player' in self.validated_data.keys():
+            return get_object_or_404(models.Player,
+                uuid=self.validated_data['to_player'])
+        if 'to_company' in self.validated_data.keys():
+            return get_object_or_404(models.Company,
+                uuid=self.validated_data['to_company'])
+        return None
