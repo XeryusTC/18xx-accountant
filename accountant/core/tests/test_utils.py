@@ -14,26 +14,36 @@ class TransferMoneyTests(TestCase):
 
     def test_can_transfer_cash_from_bank_to_player(self):
         utils.transfer_money(None, self.player, 10)
+        self.game.refresh_from_db()
+        self.player.refresh_from_db()
         self.assertEqual(self.game.cash, 90)
         self.assertEqual(self.player.cash, 20)
 
     def test_can_transfer_cash_from_bank_to_company(self):
         utils.transfer_money(None, self.company, 10)
+        self.game.refresh_from_db()
+        self.company.refresh_from_db()
         self.assertEqual(self.game.cash, 90)
         self.assertEqual(self.company.cash, 20)
 
     def test_can_transfer_cash_from_player_to_bank(self):
         utils.transfer_money(self.player, None, 10)
+        self.game.refresh_from_db()
+        self.player.refresh_from_db()
         self.assertEqual(self.game.cash, 110)
         self.assertEqual(self.player.cash, 0)
 
     def test_can_transfer_cash_from_player_to_company(self):
         utils.transfer_money(self.player, self.company, 10)
+        self.player.refresh_from_db()
+        self.company.refresh_from_db()
         self.assertEqual(self.player.cash, 0)
         self.assertEqual(self.company.cash, 20)
 
     def test_can_transfer_cash_from_company_to_bank(self):
         utils.transfer_money(self.company, None, 10)
+        self.game.refresh_from_db()
+        self.company.refresh_from_db()
         self.assertEqual(self.game.cash, 110)
         self.assertEqual(self.company.cash, 0)
 

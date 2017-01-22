@@ -30,6 +30,8 @@ def transfer_money(sender, receiver, amount):
         receiver = sender.game
     sender.cash -= amount
     receiver.cash += amount
+    sender.save()
+    receiver.save()
 
 def buy_share(buyer, company, source, price, amount=1):
     # Check if shares are available
