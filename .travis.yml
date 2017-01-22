@@ -36,8 +36,8 @@ before_script:
     - cd ngApp; ng build --base-href /app/; cd ..
 script:
     - cd accountant
-    - coverage run -p manage.py test functional_tests $REVERSE
-    - coverage run -p manage.py test core $REVERSE
+    - coverage run -p manage.py test functional_tests -v2 $REVERSE
+    - coverage run -p manage.py test core -v2 $REVERSE
 after_success:
     - coverage combine
     - codecov
