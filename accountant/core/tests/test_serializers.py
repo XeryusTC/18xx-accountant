@@ -95,3 +95,44 @@ class TransferMoneySerializerTests(TestCase):
             s.is_valid(raise_exception=True)
         self.assertIn(serializers.DUPLICATE_SOURCE_OR_DEST_ERROR,
             s.errors['non_field_errors'])
+
+    def test_player_cannot_send_money_to_player_in_other_game(self):
+        game2 = factories.GameFactory()
+        player2 = factories.PlayerFactory(game=game2)
+        s = serializers.TransferMoneySerializer(data={'amount': 14,
+            'from_player': self.player.pk, 'to_player': player2.pk})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_company_cannot_send_money_to_company_in_other_game(self):
+        game2 = factories.GameFactory()
+        company2 = factories.CompanyFactory(game=game2)
+        s = serializers.TransferMoneySerializer(data={'amount': 15,
+            'from_company': self.company.pk, 'to_company': company2.pk})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_player_cannot_send_money_to_company_in_other_game(self):
+        game2 = factories.GameFactory()
+        company2 = factories.CompanyFactory(game=game2)
+        s = serializers.TransferMoneySerializer(data={'amount': 16,
+            'from_player': self.player.pk, 'to_company': company2.pk})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            s.errors['non_field_errors'])
+
+
+    def test_company_cannot_send_money_to_player_in_other_game(self):
+        game2 = factories.GameFactory()
+        company2 = factories.CompanyFactory(game=game2)
+        s = serializers.TransferMoneySerializer(data={'amount': 17,
+            'from_company': company2.pk, 'to_player': self.player.pk})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            s.errors['non_field_errors'])

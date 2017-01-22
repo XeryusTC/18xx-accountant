@@ -8,6 +8,7 @@ from unittest import mock
 from .. import models
 from .. import factories
 from .. import utils
+from .. import serializers
 
 game = None
 
@@ -219,14 +220,13 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(company, player, 94)
 
-    @unittest.expectedFailure
     def test_transfering_from_bank_to_bank_raises_error(self, mock):
         data = {'amount': 93}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.fail('Check for correct error message')
+        self.assertIn(serializers.SOURCE_OR_DEST_REQUIRED_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_transfer_from_player_to_company_in_other_game_raises_error(self,
             mock):
         game2 = factories.GameFactory()
@@ -234,11 +234,11 @@ class TransferMoneyTests(APITestCase):
         company = factories.CompanyFactory(game=game2, cash=100)
         data = {'from_player': player.pk, 'to_company': company.pk,
             'amount': 92}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.fail('Test for correct error message')
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_transfer_from_company_to_player_in_other_game_raises_error(self,
             mock):
         game2 = factories.GameFactory()
@@ -246,11 +246,11 @@ class TransferMoneyTests(APITestCase):
         company = factories.CompanyFactory(game=game2, cash=100)
         data = {'to_player': player.pk, 'from_company': company.pk,
             'amount': 91}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.fail('Test for correct error message')
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_transfer_between_players_in_different_games_raises_error(self,
             mock):
         game2 = factories.GameFactory()
@@ -258,11 +258,11 @@ class TransferMoneyTests(APITestCase):
         player2 = factories.PlayerFactory(game=game2, cash=100)
         data = {'from_player': player1.pk, 'to_player': player2.pk,
             'amount': 90}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.fail('Test for correct error message')
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_transfer_between_companies_in_different_games_raises_error(self,
             mock):
         game2 = factories.GameFactory()
@@ -270,6 +270,7 @@ class TransferMoneyTests(APITestCase):
         company2 = factories.CompanyFactory(game=game2, cash=100)
         data = {'from_company': company1.pk, 'to_company': company2.pk,
             'amount': 89}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.fail('Test for correct error message')
+        self.assertIn(serializers.DIFFERENT_GAME_ERROR,
+            response.data['non_field_errors'])
