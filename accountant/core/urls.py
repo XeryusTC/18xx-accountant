@@ -12,5 +12,7 @@ router.register(r'playershare', views.PlayerShareViewSet)
 router.register(r'companyshare', views.CompanyShareViewSet)
 
 urlpatterns = [
+    url(r'^transfer_money/', views.TransferMoneyView.as_view(),
+        name='transfer_money'),
     url(r'^', include(router.urls)),
 ]
