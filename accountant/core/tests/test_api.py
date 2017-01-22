@@ -170,6 +170,12 @@ class TransferMoneyTests(APITestCase):
         game.cash = 1000
         self.url = reverse('transfer_money')
 
+    def test_GET_request_is_empty(self, mock):
+        """GET is for debug (and doc) purposes only"""
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data)
+
     def test_can_transfer_money_from_player_to_bank(self, mock_transfer_money):
         player = factories.PlayerFactory(game=game, cash=100)
         data = {'from_player': player.pk, 'amount': 99}

@@ -23,7 +23,7 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 self._dump_html(filename + '.html')
         self.browser.quit()
 
-    def _test_has_failed(self):
+    def _test_has_failed(self): # pragma: no cover
         for method, error in self._outcome.errors:
             if error:
                 return True
