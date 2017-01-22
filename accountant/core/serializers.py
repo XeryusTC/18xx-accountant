@@ -64,29 +64,24 @@ class TransferMoneySerializer(serializers.Serializer):
             raise serializers.ValidationError(DUPLICATE_SOURCE_OR_DEST_ERROR)
         if 'to_player' in data.keys() and 'to_company' in data.keys():
             raise serializers.ValidationError(DUPLICATE_SOURCE_OR_DEST_ERROR)
-
-        if self.source_instance != None and self.dest_instance != None:
-            if self.source_instance.game != self.dest_instance.game:
-                raise serializers.ValidationError(DIFFERENT_GAME_ERROR)
-
         return data
 
     @property
     def source_instance(self):
-        if 'from_player' in self.initial_data.keys():
+        if 'from_player' in self.validated_data.keys():
             return get_object_or_404(models.Player,
-                uuid=self.initial_data['from_player'])
-        if 'from_company' in self.initial_data.keys():
+                uuid=self.validated_data['from_player'])
+        if 'from_company' in self.validated_data.keys():
             return get_object_or_404(models.Company,
-                uuid=self.initial_data['from_company'])
+                uuid=self.validated_data['from_company'])
         return None
 
     @property
     def dest_instance(self):
-        if 'to_player' in self.initial_data.keys():
+        if 'to_player' in self.validated_data.keys():
             return get_object_or_404(models.Player,
-                uuid=self.initial_data['to_player'])
-        if 'to_company' in self.initial_data.keys():
+                uuid=self.validated_data['to_player'])
+        if 'to_company' in self.validated_data.keys():
             return get_object_or_404(models.Company,
-                uuid=self.initial_data['to_company'])
+                uuid=self.validated_data['to_company'])
         return None

@@ -44,6 +44,13 @@ class TransferMoneyView(APIView):
     def post(self, request, format=None):
         serializer = serializers.TransferMoneySerializer(data=request.data)
         if serializer.is_valid():
+            if serializer.source_instance != None \
+                    and serializer.dest_instance != None \
+                    and serializer.source_instance.game != \
+                        serializer.dest_instance.game:
+                return Response(
+                    {'non_field_errors': serializers.DIFFERENT_GAME_ERROR},
+                    status=status.HTTP_400_BAD_REQUEST)
             utils.transfer_money(serializer.source_instance,
                 serializer.dest_instance, serializer.validated_data['amount'])
             return Response(serializer.validated_data,
