@@ -169,6 +169,8 @@ class TransferMoneyTests(APITestCase):
     def setUp(self):
         game.cash = 1000
         self.url = reverse('transfer_money')
+        self.player = factories.PlayerFactory(game=game, cash=100)
+        self.company = factories.CompanyFactory(game=game, cash=100)
 
     def test_GET_request_is_empty(self, mock):
         """GET is for debug (and doc) purposes only"""
@@ -177,54 +179,48 @@ class TransferMoneyTests(APITestCase):
         self.assertIsNone(response.data)
 
     def test_can_transfer_money_from_player_to_bank(self, mock_transfer_money):
-        player = factories.PlayerFactory(game=game, cash=100)
-        data = {'from_player': player.pk, 'amount': 99}
+        data = {'from_player': self.player.pk, 'amount': 99}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(player, None, 99)
+        mock_transfer_money.assert_called_once_with(self.player, None, 99)
 
     def test_can_transfer_money_from_bank_to_player(self, mock_transfer_money):
-        player = factories.PlayerFactory(game=game)
-        data = {'to_player': player.pk, 'amount': 98}
+        data = {'to_player': self.player.pk, 'amount': 98}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(None, player, 98)
+        mock_transfer_money.assert_called_once_with(None, self.player, 98)
 
     def test_can_transfer_money_from_company_to_bank(self,
             mock_transfer_money):
-        company = factories.CompanyFactory(game=game, cash=100)
-        data = {'from_company': company.pk, 'amount': 97}
+        data = {'from_company': self.company.pk, 'amount': 97}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(company, None, 97)
+        mock_transfer_money.assert_called_once_with(self.company, None, 97)
 
     def test_can_transfer_money_from_bank_to_company(self,
             mock_transfer_money):
-        company = factories.CompanyFactory(game=game, cash=100)
-        data = {'to_company': company.pk, 'amount': 96}
+        data = {'to_company': self.company.pk, 'amount': 96}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(None, company, 96)
+        mock_transfer_money.assert_called_once_with(None, self.company, 96)
 
     def test_can_transfer_money_from_player_to_company(self,
             mock_transfer_money):
-        player = factories.PlayerFactory(game=game, cash=100)
-        company = factories.CompanyFactory(game=game, cash=100)
-        data = {'from_player': player.pk, 'to_company': company.pk,
+        data = {'from_player': self.player.pk, 'to_company': self.company.pk,
             'amount': 95}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(player, company, 95)
+        mock_transfer_money.assert_called_once_with(self.player, self.company,
+            95)
 
     def test_can_transfer_money_from_company_to_player(self,
             mock_transfer_money):
-        player = factories.PlayerFactory(game=game, cash=100)
-        company = factories.CompanyFactory(game=game, cash=100)
-        data = {'to_player': player.pk, 'from_company': company.pk,
+        data = {'to_player': self.player.pk, 'from_company': self.company.pk,
             'amount': 94}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_transfer_money.assert_called_once_with(company, player, 94)
+        mock_transfer_money.assert_called_once_with(self.company, self.player,
+            94)
 
     def test_transfering_from_bank_to_bank_raises_error(self, mock):
         data = {'amount': 93}
@@ -236,9 +232,8 @@ class TransferMoneyTests(APITestCase):
     def test_transfer_from_player_to_company_in_other_game_raises_error(self,
             mock):
         game2 = factories.GameFactory()
-        player = factories.PlayerFactory(game=game, cash=100)
         company = factories.CompanyFactory(game=game2, cash=100)
-        data = {'from_player': player.pk, 'to_company': company.pk,
+        data = {'from_player': self.player.pk, 'to_company': company.pk,
             'amount': 92}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -248,9 +243,8 @@ class TransferMoneyTests(APITestCase):
     def test_transfer_from_company_to_player_in_other_game_raises_error(self,
             mock):
         game2 = factories.GameFactory()
-        player = factories.PlayerFactory(game=game, cash=100)
         company = factories.CompanyFactory(game=game2, cash=100)
-        data = {'to_player': player.pk, 'from_company': company.pk,
+        data = {'to_player': self.player.pk, 'from_company': company.pk,
             'amount': 91}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -260,9 +254,8 @@ class TransferMoneyTests(APITestCase):
     def test_transfer_between_players_in_different_games_raises_error(self,
             mock):
         game2 = factories.GameFactory()
-        player1 = factories.PlayerFactory(game=game, cash=100)
         player2 = factories.PlayerFactory(game=game2, cash=100)
-        data = {'from_player': player1.pk, 'to_player': player2.pk,
+        data = {'from_player': self.player.pk, 'to_player': player2.pk,
             'amount': 90}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -272,9 +265,8 @@ class TransferMoneyTests(APITestCase):
     def test_transfer_between_companies_in_different_games_raises_error(self,
             mock):
         game2 = factories.GameFactory()
-        company1 = factories.CompanyFactory(game=game, cash=100)
         company2 = factories.CompanyFactory(game=game2, cash=100)
-        data = {'from_company': company1.pk, 'to_company': company2.pk,
+        data = {'from_company': self.company.pk, 'to_company': company2.pk,
             'amount': 89}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
