@@ -272,3 +272,188 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.DIFFERENT_GAME_ERROR,
             response.data['non_field_errors'])
+
+
+@mock.patch.object(utils, 'buy_share')
+class ShareTransactionTests(APITestCase):
+    def setUp(self):
+        game.cash = 1000
+        self.url = reverse('transfer_share')
+        self.player = factories.PlayerFactory(game=game, cash=100)
+        self.source_company = factories.CompanyFactory(game=game, cash=0)
+        self.buy_company = factories.CompanyFactory(game=game, cash=0)
+
+    def test_GET_request_is_empty(self, mock):
+        """GET is for debug (and doc) purposes only"""
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data)
+
+    def test_player_can_buy_from_ipo(self, mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk, 'price': 1}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.player,
+            self.source_company, utils.Share.IPO, 1, 1)
+
+    def test_player_can_buy_from_bank_pool(self, mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'bank', 'share': self.source_company.pk, 'price': 2}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.player,
+            self.source_company, utils.Share.BANK, 2, 1)
+
+    def test_player_can_buy_from_company_treasury(self, mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'company', 'company_source': self.source_company.pk,
+            'share': self.source_company.pk, 'price': 3}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.player,
+            self.source_company, self.source_company, 3, 1)
+
+    def test_player_can_sell_to_ipo(self, mock_buy_share):
+        factories.PlayerShareFactory(owner=self.player,
+            company=self.source_company)
+        data = {'buyer_type': 'ipo', 'source_type': 'player',
+            'player_source': self.player.pk, 'share': self.source_company.pk,
+            'price': 4}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.IPO,
+            self.source_company, self.player, 4, 1)
+
+    def test_player_can_sell_to_bank_pool(self, mock_buy_share):
+        factories.PlayerShareFactory(owner=self.player,
+            company=self.source_company)
+        data = {'buyer_type': 'bank', 'source_type': 'player',
+            'player_source': self.player.pk, 'share': self.source_company.pk,
+            'price': 5}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.BANK,
+            self.source_company, self.player, 5, 1)
+
+    def test_company_can_buy_own_share_from_ipo(self, mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.buy_company.pk,
+            'price': 6}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.buy_company, utils.Share.IPO, 6, 1)
+
+    def test_company_can_buy_own_share_from_bank_pool(self, mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'bank', 'share': self.buy_company.pk,
+            'price': 7}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.buy_company, utils.Share.BANK, 7, 1)
+
+    def test_company_can_buy_from_other_company_ipo(self, mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk,
+            'price': 8}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.source_company, utils.Share.IPO, 8, 1)
+
+    def test_company_can_buy_from_other_company_bank_pool(self,
+            mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'bank', 'share': self.source_company.pk,
+            'price': 9}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.source_company, utils.Share.BANK, 9, 1)
+
+    def test_company_can_buy_from_other_company_treasury(self, mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'company', 'company_source': self.source_company.pk,
+            'share': self.source_company.pk, 'price': 10}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.source_company, self.source_company, 10, 1)
+
+    def test_company_can_sell_to_ipo(self, mock_buy_share):
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company)
+        data = {'buyer_type': 'ipo', 'source_type': 'company',
+            'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'price': 11}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.IPO,
+            self.source_company, self.buy_company, 11, 1)
+
+    def test_company_can_sell_to_bank_pool(self, mock_buy_share):
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company)
+        data = {'buyer_type': 'bank', 'source_type': 'company',
+            'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'price': 12}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.BANK,
+            self.source_company, self.buy_company, 12, 1)
+
+    @unittest.expectedFailure
+    def test_player_cannot_buy_from_ipo_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_player_cannot_buy_from_bank_pool_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_player_cannot_buy_from_company_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_player_cannot_sell_to_ipo_if_it_has_no_shares(self,
+        mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_player_cannot_sell_to_bank_pool_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_company_cannot_buy_from_ipo_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_company_cannot_buy_from_bank_pool_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_company_cannot_buy_from_other_company_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_company_cannot_sell_to_ipo_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_company_cannot_sell_to_bank_pool_if_it_has_no_shares(self,
+            mock_buy_share):
+        self.fail('implement error check')
+
+    @unittest.expectedFailure
+    def test_buying_negative_shares_turns_into_sell_action(self, mock):
+        self.fail('implement all cases')
