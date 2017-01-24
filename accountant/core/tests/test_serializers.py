@@ -95,3 +95,118 @@ class TransferMoneySerializerTests(TestCase):
             s.is_valid(raise_exception=True)
         self.assertIn(serializers.DUPLICATE_SOURCE_OR_DEST_ERROR,
             s.errors['non_field_errors'])
+
+
+class TransferShareSerializerTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+        self.player = factories.PlayerFactory(game=self.game)
+        self.buy_company = factories.CompanyFactory(game=self.game)
+        self.source_company = factories.CompanyFactory(game=self.game)
+
+    def test_share_price_is_required(self):
+        s = serializers.TransferShareSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('price', s.errors.keys())
+
+    def test_buyer_type_is_required(self):
+        s = serializers.TransferShareSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('buyer_type', s.errors.keys())
+
+    def test_source_type_is_required(self):
+        s = serializers.TransferShareSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('source_type', s.errors.keys())
+
+    def test_share_field_is_required(self):
+        s = serializers.TransferShareSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('share', s.errors.keys())
+
+    def test_amount_is_one_by_default(self):
+        s = serializers.TransferShareSerializer(data={'price': 1,
+            'buyer_type': 'ipo', 'source_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+        self.assertEqual(s.validated_data['amount'], 1)
+
+    def test_player_buyer_is_required_when_buyer_type_is_player(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'player', 'source_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertFalse(s.is_valid())
+        self.assertIn(serializers.BUYER_REQUIRED_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_company_buyer_is_required_when_buyer_type_is_company(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'company', 'source_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertFalse(s.is_valid())
+        self.assertIn(serializers.BUYER_REQUIRED_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_player_source_is_required_when_source_type_is_player(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'player', 'buyer_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertFalse(s.is_valid())
+        self.assertIn(serializers.SOURCE_REQUIRED_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_company_source_is_required_when_source_type_is_company(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'company', 'buyer_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertFalse(s.is_valid())
+        self.assertIn(serializers.SOURCE_REQUIRED_ERROR,
+            s.errors['non_field_errors'])
+
+    def test_player_buyer_is_not_required_when_buyer_type_is_ipo(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'ipo', 'source_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_player_buyer_is_not_required_when_buyer_type_is_bank_pool(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'bank', 'source_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_company_buyer_is_not_required_when_buyer_type_is_ipo(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'ipo', 'source_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_company_buyer_is_not_required_when_buyer_type_is_bank_pool(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'buyer_type': 'bank', 'source_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_player_source_is_not_required_when_source_type_is_ipo(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'ipo', 'buyer_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_player_source_is_not_required_when_source_type_is_bank_pool(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'bank', 'buyer_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_company_source_is_not_required_when_source_type_is_ipo(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'ipo', 'buyer_type': 'bank',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
+
+    def test_company_source_is_not_required_when_source_type_is_bank(self):
+        s = serializers.TransferShareSerializer(data={'price': 0,
+            'source_type': 'bank', 'buyer_type': 'ipo',
+            'share': self.source_company.uuid})
+        self.assertTrue(s.is_valid())
