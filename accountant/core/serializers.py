@@ -10,6 +10,8 @@ SOURCE_OR_DEST_REQUIRED_ERROR = \
 DUPLICATE_SOURCE_OR_DEST_ERROR = \
     _('Cannot send or receive money to two different entities.')
 DIFFERENT_GAME_ERROR = _('Sender and receiver must be part of the same game.')
+BUYER_REQUIRED_ERROR = _('You need to specify who buys the share')
+SOURCE_REQUIRED_ERROR = _('You need to specify where the share comes from')
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,3 +87,39 @@ class TransferMoneySerializer(serializers.Serializer):
             return get_object_or_404(models.Company,
                 uuid=self.validated_data['to_company'])
         return None
+
+
+class TransferShareSerializer(serializers.Serializer):
+    amount = serializers.IntegerField(required=False, default=1)
+    price = serializers.IntegerField()
+    share = serializers.ModelField(
+        model_field=models.Company._meta.get_field('uuid'))
+
+    buyer_type = serializers.ChoiceField(choices=['ipo', 'bank', 'player',
+        'company'])
+    player_buyer = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+    company_buyer = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+
+    source_type = serializers.ChoiceField(choices=['ipo', 'bank', 'player',
+        'company'])
+    player_source = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+    company_source = serializers.ModelField(required=False,
+        model_field=models.Player._meta.get_field('uuid'))
+
+    def validate(self, data):
+        if data['source_type'] == 'player' and \
+                'player_source' not in data.keys():
+            raise serializers.ValidationError(SOURCE_REQUIRED_ERROR)
+        if data['source_type'] == 'company' and \
+                'company_source' not in data.keys():
+            raise serializers.ValidationError(SOURCE_REQUIRED_ERROR)
+        if data['buyer_type'] == 'player' and \
+                'player_buyer' not in data.keys():
+            raise serializers.ValidationError(BUYER_REQUIRED_ERROR)
+        if data['buyer_type'] == 'company' and \
+                'company_buyer' not in data.keys():
+            raise serializers.ValidationError(BUYER_REQUIRED_ERROR)
+        return data
