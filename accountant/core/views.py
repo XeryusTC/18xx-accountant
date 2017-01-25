@@ -56,3 +56,47 @@ class TransferMoneyView(APIView):
             return Response(serializer.validated_data,
                 status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TransferShareView(APIView):
+    serializer_class = serializers.TransferShareSerializer
+
+    def get(self, request, format=None):
+        return Response()
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            # determine buyer
+            if serializer.validated_data['buyer_type'] == 'ipo':
+                buyer = utils.Share.IPO
+            elif serializer.validated_data['buyer_type'] == 'bank':
+                buyer = utils.Share.BANK
+            elif serializer.validated_data['buyer_type'] == 'player':
+                buyer = models.Player.objects.get(
+                    pk=serializer.validated_data['player_buyer'])
+            elif serializer.validated_data['buyer_type'] == 'company':
+                buyer = models.Company.objects.get(
+                    pk=serializer.validated_data['company_buyer'])
+
+            # determine source
+            if serializer.validated_data['source_type'] == 'ipo':
+                source = utils.Share.IPO
+            elif serializer.validated_data['source_type'] == 'bank':
+                source = utils.Share.BANK
+            elif serializer.validated_data['source_type'] == 'player':
+                source = models.Player.objects.get(
+                    pk=serializer.validated_data['player_source'])
+            elif serializer.validated_data['source_type'] == 'company':
+                source = models.Company.objects.get(
+                    pk=serializer.validated_data['company_source'])
+
+            # determine which company is being bought/sold
+            share = models.Company.objects.get(
+                pk=serializer.validated_data['share'])
+            # buy/sell the share
+            utils.buy_share(buyer, share, source,
+                serializer.validated_data['price'],
+                serializer.validated_data['amount'])
+            return Response({}, status=status.HTTP_200_OK)
+        return Response()
