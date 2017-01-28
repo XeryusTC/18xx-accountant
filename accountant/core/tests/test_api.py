@@ -231,8 +231,7 @@ class TransferMoneyTests(APITestCase):
 
     def test_transfer_from_player_to_company_in_other_game_raises_error(self,
             mock):
-        game2 = factories.GameFactory()
-        company = factories.CompanyFactory(game=game2, cash=100)
+        company = factories.CompanyFactory(cash=100)
         data = {'from_player': self.player.pk, 'to_company': company.pk,
             'amount': 92}
         response = self.client.post(self.url, data, format='json')
@@ -242,8 +241,7 @@ class TransferMoneyTests(APITestCase):
 
     def test_transfer_from_company_to_player_in_other_game_raises_error(self,
             mock):
-        game2 = factories.GameFactory()
-        company = factories.CompanyFactory(game=game2, cash=100)
+        company = factories.CompanyFactory(cash=100)
         data = {'to_player': self.player.pk, 'from_company': company.pk,
             'amount': 91}
         response = self.client.post(self.url, data, format='json')
@@ -253,8 +251,7 @@ class TransferMoneyTests(APITestCase):
 
     def test_transfer_between_players_in_different_games_raises_error(self,
             mock):
-        game2 = factories.GameFactory()
-        player2 = factories.PlayerFactory(game=game2, cash=100)
+        player2 = factories.PlayerFactory(cash=100)
         data = {'from_player': self.player.pk, 'to_player': player2.pk,
             'amount': 90}
         response = self.client.post(self.url, data, format='json')
@@ -264,8 +261,7 @@ class TransferMoneyTests(APITestCase):
 
     def test_transfer_between_companies_in_different_games_raises_error(self,
             mock):
-        game2 = factories.GameFactory()
-        company2 = factories.CompanyFactory(game=game2, cash=100)
+        company2 = factories.CompanyFactory(cash=100)
         data = {'from_company': self.company.pk, 'to_company': company2.pk,
             'amount': 89}
         response = self.client.post(self.url, data, format='json')

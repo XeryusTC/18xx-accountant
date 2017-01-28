@@ -13,6 +13,7 @@ class PlayerFactory(factory.django.DjangoModelFactory):
         model = models.Player
 
     name = factory.Sequence(lambda n: 'Player %d' % n)
+    game = factory.SubFactory(GameFactory)
 
 
 class CompanyFactory(factory.django.DjangoModelFactory):
@@ -20,6 +21,7 @@ class CompanyFactory(factory.django.DjangoModelFactory):
         model = models.Company
 
     name = factory.Sequence(lambda n: 'C%d' % n)
+    game = factory.SubFactory(GameFactory)
 
 
 class PlayerShareFactory(factory.django.DjangoModelFactory):

@@ -262,33 +262,28 @@ class PlayerShareTransactionTests(TestCase):
             self.player.share_set.get(company=self.company).shares)
 
     def test_player_cant_buy_share_from_ipo_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game, ipo_shares=2)
+        company = factories.CompanyFactory(ipo_shares=2)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(self.player, company, utils.Share.IPO, 10)
 
     def test_player_cant_buy_share_from_bank_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game, bank_shares=2)
+        company = factories.CompanyFactory(bank_shares=2)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(self.player, company, utils.Share.BANK, 11)
 
     def test_player_cant_buy_share_from_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         factories.CompanyShareFactory(owner=company, company=self.company)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(self.player, self.company, company, 12)
 
     def test_player_cant_sell_share_to_ipo_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(utils.Share.IPO, company, self.player, 13)
 
     def test_player_cant_sell_share_to_pool_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(utils.Share.BANK, company, self.player, 14)
 
@@ -542,35 +537,30 @@ class CompanyShareTransactionTests(TestCase):
                 11, 4)
 
     def test_company_cant_buy_share_from_ipo_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(self.company1, company, utils.Share.IPO, 12)
 
     def test_company_cant_buy_share_from_bank_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game, bank_shares=3)
+        company = factories.CompanyFactory(bank_shares=3)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(self.company1, company, utils.Share.BANK, 13)
 
     def test_company_cant_buy_share_from_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         factories.CompanyShareFactory(owner=self.company2,
             company=self.company1, shares=2)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(company, self.company1, self.company2, 14)
 
     def test_company_cant_sell_share_to_ipo_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         factories.CompanyShareFactory(owner=company, company=self.company1)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(utils.Share.IPO, self.company1, company, 15)
 
     def test_company_cant_sell_share_to_bank_when_company_in_other_game(self):
-        game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game)
+        company = factories.CompanyFactory()
         factories.CompanyShareFactory(owner=company, company=self.company1)
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(utils.Share.BANK, self.company1, company, 16)
