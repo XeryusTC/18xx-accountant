@@ -10,6 +10,10 @@ class InvalidShareTransaction(Exception):
     pass
 
 
+class DifferentGameException(InvalidShareTransaction):
+    pass
+
+
 class Share(Enum):
     IPO = 1
     BANK = 2
@@ -57,6 +61,12 @@ def buy_share(buyer, company, source, price, amount=1):
                 company=company, shares=0)
     else:
         source_share = None
+
+    # Check if the buyer, company and source are in the same game
+    if source not in Share and source.game != company.game:
+        raise DifferentGameException()
+    if buyer not in Share and buyer.game != company.game:
+        raise DifferentGameException()
 
     # Buy the shares
     if buyer == Share.IPO:
