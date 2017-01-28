@@ -9,6 +9,7 @@ from .. import models
 from .. import factories
 from .. import utils
 from .. import serializers
+from .. import views
 
 game = None
 
@@ -400,55 +401,105 @@ class ShareTransactionTests(APITestCase):
         mock_buy_share.assert_called_once_with(utils.Share.BANK,
             self.source_company, self.buy_company, 12, 1)
 
-    @unittest.expectedFailure
     def test_player_cannot_buy_from_ipo_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        self.source_company.ipo_shares = 0
+        self.source_company.save()
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk, 'price': 13}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_player_cannot_buy_from_bank_pool_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'bank', 'share': self.source_company.pk,
+            'price': 14}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_player_cannot_buy_from_company_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company, shares=0)
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'company', 'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'price': 15}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
-    def test_player_cannot_sell_to_ipo_if_it_has_no_shares(self,
-        mock_buy_share):
-        self.fail('implement error check')
-
-    @unittest.expectedFailure
-    def test_player_cannot_sell_to_bank_pool_if_it_has_no_shares(self,
-            mock_buy_share):
-        self.fail('implement error check')
-
-    @unittest.expectedFailure
     def test_company_cannot_buy_from_ipo_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        self.source_company.ipo_shares = 0
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk, 'price': 18}
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_company_cannot_buy_from_bank_pool_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        self.source_company.bank_shares = 0
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'bank', 'share': self.source_company.pk,
+            'price': 19}
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_company_cannot_buy_from_other_company_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        factories.CompanyShareFactory(owner=self.source_company,
+            company=self.source_company, shares=0)
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'company', 'company_source': self.source_company.pk,
+            'share': self.source_company.pk, 'price': 20}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_company_cannot_sell_to_ipo_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company, shares=0)
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'ipo', 'source_type': 'company',
+            'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'share': self.source_company.pk,
+            'price': 21}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
-    @unittest.expectedFailure
     def test_company_cannot_sell_to_bank_pool_if_it_has_no_shares(self,
             mock_buy_share):
-        self.fail('implement error check')
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company, shares=0)
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'bank', 'source_type': 'company',
+            'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'share': self.source_company.pk,
+            'price': 22}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
+            response.data['non_field_errors'])
 
     @unittest.expectedFailure
     def test_buying_negative_shares_turns_into_sell_action(self, mock):
