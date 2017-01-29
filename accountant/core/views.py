@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import ugettext as _
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import models, serializers, utils
+
+NO_AVAILABLE_SHARES_ERROR = _("Source doesn't have enough shares to sell")
 
 class GameViewSet(viewsets.ModelViewSet):
     """
@@ -95,8 +98,14 @@ class TransferShareView(APIView):
             share = models.Company.objects.get(
                 pk=serializer.validated_data['share'])
             # buy/sell the share
-            utils.buy_share(buyer, share, source,
-                serializer.validated_data['price'],
-                serializer.validated_data['amount'])
-            return Response({}, status=status.HTTP_200_OK)
-        return Response()
+            try:
+                utils.buy_share(buyer, share, source,
+                    serializer.validated_data['price'],
+                    serializer.validated_data['amount'])
+            except:
+                return Response(
+                    {'non_field_errors': [NO_AVAILABLE_SHARES_ERROR]},
+                    status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.validated_data,
+                status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
