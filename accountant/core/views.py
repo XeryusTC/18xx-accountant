@@ -97,11 +97,15 @@ class TransferShareView(APIView):
             # determine which company is being bought/sold
             share = models.Company.objects.get(
                 pk=serializer.validated_data['share'])
+            # turn negative shares into sell action
+            amount = serializer.validated_data['amount']
+            if amount < 0:
+                buyer, source = source, buyer
+                amount = -amount
             # buy/sell the share
             try:
                 utils.buy_share(buyer, share, source,
-                    serializer.validated_data['price'],
-                    serializer.validated_data['amount'])
+                    serializer.validated_data['price'], amount)
             except:
                 return Response(
                     {'non_field_errors': [NO_AVAILABLE_SHARES_ERROR]},

@@ -501,6 +501,62 @@ class ShareTransactionTests(APITestCase):
         self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
             response.data['non_field_errors'])
 
-    @unittest.expectedFailure
-    def test_buying_negative_shares_turns_into_sell_action(self, mock):
-        self.fail('implement all cases')
+    def test_player_buying_negative_ipo_shares_turns_into_sell_action(self,
+            mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk, 'price': 23,
+            'amount': -2}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.IPO,
+            self.source_company, self.player, 23, 2)
+
+    def test_player_buying_negative_bank_shares_turns_into_sell_action(self,
+            mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'bank', 'share': self.source_company.pk,
+            'price': 24, 'amount': -5}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.BANK,
+            self.source_company, self.player, 24, 5)
+
+    def test_company_buying_negative_ipo_shares_turns_into_sell_action(self,
+            mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk, 'price': 25,
+            'amount': -3}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.IPO,
+            self.source_company, self.buy_company, 25, 3)
+
+    def test_company_buying_negative_bank_shares_turns_into_sell_action(self,
+            mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'bank', 'share': self.source_company.pk,
+            'price': 26, 'amount': -1}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(utils.Share.BANK,
+            self.source_company, self.buy_company, 26, 1)
+
+    def test_player_buying_negative_company_shares_turns_into_sell_action(self,
+            mock_buy_share):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'company', 'company_source': self.buy_company.pk,
+            'share': self.source_company.pk, 'price': 27, 'amount': -1}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.buy_company,
+            self.source_company, self.player, 27, 1)
+
+    def test_company_buying_negative_company_shares_turns_into_sell_action(
+            self, mock_buy_share):
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'company', 'company_source': self.source_company.pk,
+            'share': self.source_company.pk, 'price': 28, 'amount': -2}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_buy_share.assert_called_once_with(self.source_company,
+            self.source_company, self.buy_company, 28, 2)
