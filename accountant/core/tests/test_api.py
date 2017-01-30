@@ -600,3 +600,7 @@ class ShareTransactionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_buy_share.assert_called_once_with(self.source_company,
             self.source_company, self.buy_company, 28, 2)
+
+    def test_gives_error_if_request_is_invalid(self, mock_buy_share):
+        response = self.client.post(self.url, {}, fromat='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
