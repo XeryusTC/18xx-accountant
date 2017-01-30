@@ -20,6 +20,46 @@ def setUpModule():
 def tearDownModule():
     game.delete()
 
+
+class ApiRootTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('api-root')
+
+    def test_Game_viewset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['game'].endswith(reverse('game-list')))
+
+    def test_Player_viewset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['player'].endswith(
+            reverse('player-list')))
+
+    def test_Company_viewset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['company'].endswith(
+            reverse('company-list')))
+
+    def test_PlayerShare_viewset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['playershare'].endswith(
+            reverse('playershare-list')))
+
+    def test_CompanyShare_viewset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['companyshare'].endswith(
+            reverse('companyshare-list')))
+
+    def test_transfer_money_view_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['transfer_money'].endswith(
+            reverse('transfer_money')))
+
+    def test_transfer_share_view_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['transfer_share'].endswith(
+            reverse('transfer_share')))
+
+
 class GameTests(APITestCase):
     def test_create_game(self):
         """Ensure that we can create a game."""
