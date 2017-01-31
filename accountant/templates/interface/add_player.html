@@ -1,0 +1,10 @@
+{% extends 'interface/base.html' %}
+
+{% block content %}
+<h1 name='title'>Add player</h1>
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Add player</button>
+</form>
+{% endblock content %}

@@ -9,3 +9,8 @@ class CreateGameForm(forms.Form):
         if data == None:
             data = 0
         return data
+
+
+class AddPlayerForm(forms.Form):
+    name = forms.CharField()
+    cash = forms.CharField()

@@ -24,3 +24,17 @@ class GameView(TemplateView):
         context = super(GameView, self).get_context_data(**kwargs)
         context['game'] = get_object_or_404(models.Game, pk=kwargs['uuid'])
         return context
+
+
+class AddPlayerView(FormView):
+    template_name = 'interface/add_player.html'
+    form_class = forms.AddPlayerForm
+
+    def get_success_url(self):
+        return reverse('ui:game', kwargs={'uuid': self.kwargs['uuid']})
+
+    def form_valid(self, form):
+        game = models.Game.objects.get(pk=self.kwargs['uuid'])
+        player = models.Player.objects.create(game=game,
+            name=form.cleaned_data['name'], cash=form.cleaned_data['cash'])
+        return super(FormView, self).form_valid(form)

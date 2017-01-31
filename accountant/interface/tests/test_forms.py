@@ -16,3 +16,15 @@ class CreateGameTests(TestCase):
         form = forms.CreateGameForm(data={})
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['bank_cash'], 0)
+
+
+class AddPlayerTests(TestCase):
+    def test_name_field_is_required(self):
+        form = forms.AddPlayerForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('name', form.errors.keys())
+
+    def test_cash_field_is_required(self):
+        form = forms.AddPlayerForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('cash', form.errors.keys())

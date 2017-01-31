@@ -7,4 +7,6 @@ from . import views
 urlpatterns = [
     url(r'^$', views.MainPageView.as_view(), name='main'),
     url(r'^game/(?P<uuid>[^/]+)/$', views.GameView.as_view(), name='game'),
+    url(r'^game/(?P<uuid>[^/]+)/add-player/$', views.AddPlayerView.as_view(),
+        name='add_player'),
 ]

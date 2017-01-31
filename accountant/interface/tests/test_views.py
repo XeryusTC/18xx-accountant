@@ -77,3 +77,42 @@ class GameViewTests(TestCase):
         with self.assertRaises(Http404):
             response = self.view(request,
                 uuid='00000000-0000-0000-0000-000000000000')
+
+
+class AddPlayerViewTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+        self.url = reverse('ui:add_player', kwargs={'uuid': self.game.pk})
+        self.view = views.AddPlayerView.as_view()
+        self.factory = RequestFactory()
+
+    def test_uses_correct_templates(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'interface/base.html')
+        self.assertTemplateUsed(response, 'interface/add_player.html')
+
+    def test_url_resolves_to_correct_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func.__name__, self.view.__name__)
+
+    def test_uses_add_player_form(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertIsInstance(response.context_data['form'],
+            forms.AddPlayerForm)
+
+    def test_adds_player_to_game_on_successful_POST_request(self):
+        self.assertEqual(self.game.players.count(), 0)
+        request = self.factory.post(self.url, data={'name': 'Bob', 'cash': 19})
+        self.view(request, uuid=self.game.pk)
+        self.assertEqual(self.game.players.count(), 1)
+        self.assertEqual(self.game.players.first().name, 'Bob')
+        self.assertEqual(self.game.players.first().cash, 19)
+
+    def test_adding_player_redirects_to_game(self):
+        request = self.factory.post(self.url, data={'name': 'Alice',
+            'cash': 1})
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.url,
+            reverse('ui:game', kwargs={'uuid': self.game.pk}))
