@@ -23,6 +23,7 @@ script:
     - cd accountant
     - coverage run -p manage.py test functional_tests -v2 $REVERSE
     - coverage run -p manage.py test core -v2 $REVERSE
+    - coverage run -p manage.py test interface -v2 $REVERSE
 after_success:
     - coverage combine
     - codecov
