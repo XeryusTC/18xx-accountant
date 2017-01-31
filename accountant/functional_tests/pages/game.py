@@ -9,3 +9,14 @@ class Homepage(PageObject):
 
 class BankDetailSection(PageObject):
     cash = PageElement(css="#bank #cash")
+
+
+class MenuSection(PageObject):
+    add_player = PageElement(name='add_player')
+
+
+class AddPlayerPage(PageObject):
+    name = PageElement(name='name')
+    cash = PageElement(name='cash')
+    add_button = PageElement(tag_name='button')
+    header = PageElement(name='title')
