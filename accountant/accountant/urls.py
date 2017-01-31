@@ -26,7 +26,6 @@ urlpatterns = [
 ]
 
 urlpatterns += i18n_patterns(
-    url(r'^$', RedirectView.as_view(url='/app/index.html')),
     url(r'^api/', include(core.urls)),
     url(r'api-auth/', include(rest_framework.urls, namespace=rest_framework)),
 )
