@@ -15,6 +15,8 @@ router.add_api_view('transfer_money', url(r'^transfer_money/$',
     views.TransferMoneyView.as_view(), name='transfer_money'))
 router.add_api_view('transfer_share', url(r'^transfer_share/$',
     views.TransferShareView.as_view(), name='transfer_share'))
+router.add_api_view('operate', url(r'^operate/$',
+    views.OperateView.as_view(), name='operate'))
 
 urlpatterns = [
     url(r'^', include(router.urls)),

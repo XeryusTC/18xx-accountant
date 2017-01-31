@@ -113,3 +113,27 @@ class TransferShareView(APIView):
             return Response(serializer.validated_data,
                 status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OperateView(APIView):
+    serializer_class = serializers.OperateSerializer
+
+    def get(self, request, format=None):
+        return Response()
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            if serializer.validated_data['method'] == 'full':
+                method = utils.OperateMethod.FULL
+            elif serializer.validated_data['method'] == 'half':
+                method = utils.OperateMethod.HALF
+            elif serializer.validated_data['method'] == 'withhold':
+                method = utils.OperateMethod.WITHHOLD
+
+            company = models.Company.objects.get(
+                pk=serializer.validated_data['company'])
+            utils.operate(company, serializer.validated_data['amount'], method)
+            return Response(serializer.validated_data,
+                status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
