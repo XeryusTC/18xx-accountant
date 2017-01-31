@@ -210,3 +210,38 @@ class TransferShareSerializerTests(TestCase):
             'source_type': 'bank', 'buyer_type': 'ipo',
             'share': self.source_company.uuid})
         self.assertTrue(s.is_valid())
+
+
+class OperateTests(TestCase):
+    def setUp(self):
+        self.company = factories.CompanyFactory()
+
+    def test_company_field_is_required(self):
+        s = serializers.OperateSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('company', s.errors.keys())
+
+    def test_amount_field_is_required(self):
+        s = serializers.OperateSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('amount', s.errors.keys())
+
+    def test_method_field_is_required(self):
+        s = serializers.OperateSerializer(data={})
+        self.assertFalse(s.is_valid())
+        self.assertIn('method', s.errors.keys())
+
+    def test_company_can_pay_full_dividends(self):
+        s = serializers.OperateSerializer(data={'company': self.company.pk,
+            'amount': 100, 'method': 'full'})
+        self.assertTrue(s.is_valid())
+
+    def test_company_can_pay_half_dividends(self):
+        s = serializers.OperateSerializer(data={'company': self.company.pk,
+            'amount': 200, 'method': 'half'})
+        self.assertTrue(s.is_valid())
+
+    def test_company_can_withhold_dividends(self):
+        s = serializers.OperateSerializer(data={'company': self.company.pk,
+            'amount': 300, 'method': 'withhold'})
+        self.assertTrue(s.is_valid())

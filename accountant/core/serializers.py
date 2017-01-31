@@ -123,3 +123,10 @@ class TransferShareSerializer(serializers.Serializer):
                 'company_buyer' not in data.keys():
             raise serializers.ValidationError(BUYER_REQUIRED_ERROR)
         return data
+
+
+class OperateSerializer(serializers.Serializer):
+    company = serializers.ModelField(
+        model_field=models.Company._meta.get_field('uuid'))
+    amount = serializers.IntegerField()
+    method = serializers.ChoiceField(choices=['full', 'half', 'withhold'])
