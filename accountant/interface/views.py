@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 from django.views.generic import FormView, TemplateView
 
 from . import forms
@@ -17,4 +18,9 @@ class MainPageView(FormView):
 
 
 class GameView(TemplateView):
-    template_name = 'interface/base.html'
+    template_name = 'interface/game.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GameView, self).get_context_data(**kwargs)
+        context['game'] = get_object_or_404(models.Game, pk=kwargs['uuid'])
+        return context

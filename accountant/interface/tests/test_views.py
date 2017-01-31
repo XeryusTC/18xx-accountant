@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import resolve, reverse
+from django.http.response import Http404
 from django.test import RequestFactory, TestCase
 
-from .. import forms
 from core import models
+from core import factories
+from .. import forms
 from .. import views
 
 class MainPageTests(TestCase):
@@ -45,3 +47,35 @@ class MainPageTests(TestCase):
         response = views.MainPageView.as_view()(request)
         game = models.Game.objects.last()
         self.assertEqual(game.cash, 22)
+
+
+class GameViewTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+
+    def test_uses_correct_templates(self):
+        response = self.client.get(reverse('ui:game',
+            kwargs={'uuid': self.game.pk}))
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'interface/base.html')
+        self.assertTemplateUsed(response, 'interface/game.html')
+
+    def test_url_resolves_to_correct_view(self):
+        found = resolve(reverse('ui:game', kwargs={'uuid': self.game.pk}))
+        self.assertEqual(found.func.__name__,
+            views.GameView.as_view().__name__)
+
+    def test_game_instance_is_added_to_context_data(self):
+        factory = RequestFactory()
+        request = factory.get(reverse('ui:game',
+            kwargs={'uuid': self.game.pk}))
+        response = views.GameView.as_view()(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['game'], self.game)
+
+    def test_returns_404_when_game_does_not_exist(self):
+        factory = RequestFactory()
+        request = factory.get(reverse('ui:game',
+            kwargs={'uuid': '00000000-0000-0000-0000-000000000000'}))
+        with self.assertRaises(Http404):
+            response = views.GameView.as_view()(request,
+                uuid='00000000-0000-0000-0000-000000000000')
