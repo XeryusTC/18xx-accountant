@@ -17,3 +17,17 @@ class HomePageTest(FunctionalTestCase):
 
         # She lands on a new page, it lists a code for the game name
         self.assertIn('/en/game/', self.browser.current_url)
+
+    def test_create_game_with_bank_size(self):
+        # Alice is a user who visits the website
+        self.browser.get(self.live_server_url)
+
+        # She wants to start a new game with a bank of 9000
+        page = game.Homepage(self.browser)
+        page.bank_cash.clear()
+        page.bank_cash.send_keys('9000\n')
+
+        # She lands on the game page, it says that the bank size is 9000
+        self.assertIn('/en/game/', self.browser.current_url)
+        bank_details = game.BankDetailSection(self.browser)
+        self.assertEqual(bank_details.cash.text, '9000')
