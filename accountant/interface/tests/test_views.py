@@ -38,3 +38,10 @@ class MainPageTests(TestCase):
         response = views.MainPageView.as_view()(request)
         self.assertEqual(response.url,
             reverse('ui:game', kwargs={'uuid': models.Game.objects.last().pk}))
+
+    def test_can_set_bank_cash_when_creating_game(self):
+        factory = RequestFactory()
+        request = factory.post(reverse('ui:main'), data={'bank_cash': 22})
+        response = views.MainPageView.as_view()(request)
+        game = models.Game.objects.last()
+        self.assertEqual(game.cash, 22)

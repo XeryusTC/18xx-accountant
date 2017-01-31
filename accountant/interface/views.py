@@ -11,7 +11,7 @@ class MainPageView(FormView):
     success_url = '/'
 
     def form_valid(self, form):
-        game = models.Game.objects.create()
+        game = models.Game.objects.create(cash=form.cleaned_data['bank_cash'])
         self.success_url = reverse('ui:game', kwargs={'uuid': game.pk})
         return super(FormView, self).form_valid(form)
 
