@@ -20,12 +20,14 @@ from django.views.generic import RedirectView
 import rest_framework.urls
 
 import core.urls
+import interface.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns += i18n_patterns(
+    url(r'^', include(interface.urls, namespace='ui')),
     url(r'^api/', include(core.urls)),
     url(r'api-auth/', include(rest_framework.urls, namespace=rest_framework)),
 )
