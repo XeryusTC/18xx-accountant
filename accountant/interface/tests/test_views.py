@@ -3,6 +3,7 @@ from django.core.urlresolvers import resolve, reverse
 from django.test import RequestFactory, TestCase
 
 from .. import forms
+from core import models
 from .. import views
 
 class MainPageTests(TestCase):
@@ -23,3 +24,17 @@ class MainPageTests(TestCase):
         response = views.MainPageView.as_view()(request)
         self.assertIsInstance(response.context_data['form'],
             forms.CreateGameForm)
+
+    def test_main_page_creates_game_on_successful_POST_request(self):
+        self.assertEqual(models.Game.objects.count(), 0)
+        factory = RequestFactory()
+        request = factory.post(reverse('ui:main'), data={})
+        views.MainPageView.as_view()(request)
+        self.assertEqual(models.Game.objects.count(), 1)
+
+    def test_main_page_redirects_to_game_after_creating_it(self):
+        factory = RequestFactory()
+        request = factory.post(reverse('ui:main'), data={})
+        response = views.MainPageView.as_view()(request)
+        self.assertEqual(response.url,
+            reverse('ui:game', kwargs={'uuid': models.Game.objects.last().pk}))
