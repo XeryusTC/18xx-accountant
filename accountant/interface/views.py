@@ -1,3 +1,8 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
+from django.views.generic import FormView
 
-# Create your views here.
+from . import forms
+
+class MainPageView(FormView):
+    template_name = 'interface/index.html'
+    form_class = forms.CreateGameForm
