@@ -29,5 +29,5 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     url(r'^', include(interface.urls, namespace='ui')),
     url(r'^api/', include(core.urls)),
-    url(r'api-auth/', include(rest_framework.urls, namespace=rest_framework)),
+    url(r'^api-auth/', include(rest_framework.urls, namespace=rest_framework)),
 )

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-from django.views import View
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 from . import forms
 from core import models
@@ -17,5 +16,5 @@ class MainPageView(FormView):
         return super(FormView, self).form_valid(form)
 
 
-class GameView(View):
-    pass
+class GameView(TemplateView):
+    template_name = 'interface/base.html'
