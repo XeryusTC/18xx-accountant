@@ -5,6 +5,15 @@
 	<a href="{% url 'ui:add_player' uuid=game.pk %}" name="add_player">Add player</a>
 </div>
 
+<div id="players">
+	{% for player in game.players.all %}
+		<div class="player">
+			<div class="name">{{ player.name }}</div>
+			<div class="cash">{{ player.cash }}</div>
+		</div>
+	{% endfor %}
+</div>
+
 <div id='bank'>
 	<div id='cash'>{{ game.cash }}</div>
 </div>
