@@ -31,5 +31,8 @@ class CreatePlayerTests(FunctionalTestCase):
         # Her name appears in the player list on the game page
         players = game.PlayerSection(self.browser)
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
-        self.assertIn('Alice', players.name_list)
-        self.assertEqual(players.list['alice'].cash.text, 700)
+
+        player_list = players.get_players()
+        self.assertEqual(len(player_list), 1)
+        self.assertEqual(player_list[0]['name'].text, 'Alice')
+        self.assertEqual(player_list[0]['cash'].text, '700')
