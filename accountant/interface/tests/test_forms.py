@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import NON_FIELD_ERRORS
 from unittest import TestCase
 
+from core import factories
 from .. import forms
 
 class CreateGameTests(TestCase):
@@ -28,3 +30,17 @@ class AddPlayerTests(TestCase):
         form = forms.AddPlayerForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('cash', form.errors.keys())
+
+    def test_game_field_is_required(self):
+        form = forms.AddPlayerForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('game', form.errors.keys())
+
+    def test_form_validation_for_duplicate_items(self):
+        player = factories.PlayerFactory()
+        form = forms.AddPlayerForm(data={'game': player.game.pk,
+            'name': player.name, 'cash': 10})
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors[NON_FIELD_ERRORS],
+            [forms.DUPLICATE_PLAYER_ERROR])

@@ -102,6 +102,12 @@ class AddPlayerViewTests(TestCase):
         self.assertIsInstance(response.context_data['form'],
             forms.AddPlayerForm)
 
+    def test_form_game_field_equals_uuid_in_url(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['form'].initial['game'],
+            self.game)
+
     def test_adds_player_to_game_on_successful_POST_request(self):
         self.assertEqual(self.game.players.count(), 0)
         request = self.factory.post(self.url, data={'name': 'Bob', 'cash': 19})
@@ -116,3 +122,11 @@ class AddPlayerViewTests(TestCase):
         response = self.view(request, uuid=self.game.pk)
         self.assertEqual(response.url,
             reverse('ui:game', kwargs={'uuid': self.game.pk}))
+
+    def test_creating_duplicate_player_shows_error(self):
+        player = factories.PlayerFactory(game=self.game)
+        request = self.factory.post(self.url, data={'name': player.name,
+            'cash': 2})
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(models.Player.objects.count(), 1)
+        self.assertContains(response, forms.DUPLICATE_PLAYER_ERROR)

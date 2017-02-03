@@ -30,11 +30,22 @@ class AddPlayerView(FormView):
     template_name = 'interface/add_player.html'
     form_class = forms.AddPlayerForm
 
+    def get_form_kwargs(self):
+        kwargs = super(AddPlayerView, self).get_form_kwargs()
+        if 'data' in kwargs.keys():
+            data = kwargs['data'].dict()
+            data['game'] = self.kwargs['uuid']
+            kwargs['data'] = data
+        return kwargs
+
     def get_success_url(self):
         return reverse('ui:game', kwargs={'uuid': self.kwargs['uuid']})
 
     def form_valid(self, form):
-        game = models.Game.objects.get(pk=self.kwargs['uuid'])
-        player = models.Player.objects.create(game=game,
-            name=form.cleaned_data['name'], cash=form.cleaned_data['cash'])
+        form.save()
         return super(FormView, self).form_valid(form)
+
+    def get_initial(self):
+        initial = super(AddPlayerView, self).get_initial()
+        initial['game'] = models.Game.objects.get(pk=self.kwargs['uuid'])
+        return initial
