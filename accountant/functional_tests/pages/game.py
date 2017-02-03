@@ -20,6 +20,7 @@ class AddPlayerPage(PageObject):
     cash = PageElement(name='cash')
     add_button = PageElement(tag_name='button')
     header = PageElement(name='title')
+    error_list = PageElement(css='.errorlist')
 
 
 class PlayerSection(PageObject):
