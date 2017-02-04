@@ -109,6 +109,11 @@ class AddPlayerViewTests(TestCase):
         self.assertEqual(response.context_data['form'].initial['game'],
             self.game)
 
+    def test_reference_to_game_is_available_in_template(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['game'], self.game)
+
     def test_adds_player_to_game_on_successful_POST_request(self):
         self.assertEqual(self.game.players.count(), 0)
         request = self.factory.post(self.url, data={'name': 'Bob', 'cash': 19})

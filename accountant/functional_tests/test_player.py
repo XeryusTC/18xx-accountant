@@ -69,3 +69,22 @@ class CreatePlayerTests(FunctionalTestCase):
             r'/en/game/([^/]+)/add-player/$')
         self.assertIn('There is already a player with this name in your game',
             add_player.error_list.text)
+
+    def test_can_return_to_game_page_from_add_player_page(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.start_button.click()
+
+        # She goes to the add player screen
+        menu = game.MenuSection(self.browser)
+        menu.add_player.click()
+        self.assertRegex(self.browser.current_url,
+            r'/en/game/([^/]+)/add-player/$')
+
+        # She doesn't want to add a player and clicks the back button
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.back.click()
+        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+        players = game.PlayerSection(self.browser)
+        self.assertEqual(players.get_players(), [])

@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1 name='title'>Add player</h1>
+<a id='back' href='{% url 'ui:game' game.pk %}'>Return to game</a>
 <form method="post">
 	{% csrf_token %}
 	{{ form.as_p }}

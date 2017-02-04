@@ -21,12 +21,13 @@ class AddPlayerPage(PageObject):
     add_button = PageElement(tag_name='button')
     header = PageElement(name='title')
     error_list = PageElement(css='.errorlist')
+    back = PageElement(id_='back')
 
 
 class PlayerSection(PageObject):
     name_list = MultiPageElement(css="div.player div.name")
 
-    _player_list = MultiPageElement(css="#players")
+    _player_list = MultiPageElement(class_name="player")
     _name = PageElement(css=".name", context=True)
     _cash = PageElement(css=".cash", context=True)
 

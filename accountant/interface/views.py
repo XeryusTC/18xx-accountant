@@ -50,3 +50,9 @@ class AddPlayerView(FormView):
         initial['game'] = get_object_or_404(models.Game,
             pk=self.kwargs['uuid'])
         return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(AddPlayerView, self).get_context_data(**kwargs)
+        context['game'] = get_object_or_404(models.Game,
+            pk=self.kwargs['uuid'])
+        return context
