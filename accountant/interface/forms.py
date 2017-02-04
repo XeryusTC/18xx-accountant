@@ -25,3 +25,6 @@ class AddPlayerForm(forms.ModelForm):
         error_messages = {
             NON_FIELD_ERRORS: {'unique_together': DUPLICATE_PLAYER_ERROR},
         }
+        widgets = {
+            'game': forms.HiddenInput(),
+        }
