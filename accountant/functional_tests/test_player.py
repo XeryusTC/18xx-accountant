@@ -12,8 +12,8 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
 
         # She sees an add player button
-        menu = game.MenuSection(self.browser)
-        menu.add_player.click()
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
 
         # She lands on a add player page
         add_player = game.AddPlayerPage(self.browser)
@@ -29,10 +29,9 @@ class CreatePlayerTests(FunctionalTestCase):
         add_player.add_button.click()
 
         # Her name appears in the player list on the game page
-        players = game.PlayerSection(self.browser)
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
 
-        player_list = players.get_players()
+        player_list = game_page.get_players()
         self.assertEqual(len(player_list), 1)
         self.assertEqual(player_list[0]['name'].text, 'Alice')
         self.assertEqual(player_list[0]['cash'].text, '700')
@@ -44,22 +43,21 @@ class CreatePlayerTests(FunctionalTestCase):
         page.start_button.click()
 
         # She goes to add a player
-        menu = game.MenuSection(self.browser)
-        menu.add_player.click()
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
         add_player = game.AddPlayerPage(self.browser)
         add_player.name.clear()
         add_player.cash.clear()
         add_player.name.send_keys('Alice')
         add_player.cash.send_keys('700\n')
         # The new player is added to the game
-        players = game.PlayerSection(self.browser)
-        player_list = players.get_players()
+        player_list = game_page.get_players()
         self.assertEqual(len(player_list), 1)
         self.assertEqual(player_list[0]['name'].text, 'Alice')
         self.assertEqual(player_list[0]['cash'].text, '700')
 
         # She goes to add another player
-        menu.add_player.click()
+        game_page.add_player_link.click()
         add_player.name.clear()
         add_player.cash.clear()
         add_player.name.send_keys('Alice')
@@ -77,8 +75,8 @@ class CreatePlayerTests(FunctionalTestCase):
         page.start_button.click()
 
         # She goes to the add player screen
-        menu = game.MenuSection(self.browser)
-        menu.add_player.click()
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
         self.assertRegex(self.browser.current_url,
             r'/en/game/([^/]+)/add-player/$')
 
@@ -86,5 +84,4 @@ class CreatePlayerTests(FunctionalTestCase):
         add_player = game.AddPlayerPage(self.browser)
         add_player.back.click()
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
-        players = game.PlayerSection(self.browser)
-        self.assertEqual(players.get_players(), [])
+        self.assertEqual(game_page.get_players(), [])

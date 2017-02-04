@@ -6,26 +6,11 @@ class Homepage(PageObject):
     start_button = PageElement(name='new_game')
     bank_cash = PageElement(name='bank_cash')
 
+class GamePage(PageObject):
+    add_player_link = PageElement(name='add_player')
+    bank_cash = PageElement(css="#bank #cash")
 
-class BankDetailSection(PageObject):
-    cash = PageElement(css="#bank #cash")
-
-
-class MenuSection(PageObject):
-    add_player = PageElement(name='add_player')
-
-
-class AddPlayerPage(PageObject):
-    name = PageElement(name='name')
-    cash = PageElement(name='cash')
-    add_button = PageElement(tag_name='button')
-    header = PageElement(name='title')
-    error_list = PageElement(css='.errorlist')
-    back = PageElement(id_='back')
-
-
-class PlayerSection(PageObject):
-    name_list = MultiPageElement(css="div.player div.name")
+    player_name_list = MultiPageElement(css="div.player div.name")
 
     _player_list = MultiPageElement(class_name="player")
     _name = PageElement(css=".name", context=True)
@@ -40,3 +25,12 @@ class PlayerSection(PageObject):
             }
             res.append(info)
         return res
+
+
+class AddPlayerPage(PageObject):
+    name = PageElement(name='name')
+    cash = PageElement(name='cash')
+    add_button = PageElement(tag_name='button')
+    header = PageElement(name='title')
+    error_list = PageElement(css='.errorlist')
+    back = PageElement(id_='back')

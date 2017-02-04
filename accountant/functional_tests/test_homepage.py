@@ -29,5 +29,5 @@ class HomePageTest(FunctionalTestCase):
 
         # She lands on the game page, it says that the bank size is 9000
         self.assertIn('/en/game/', self.browser.current_url)
-        bank_details = game.BankDetailSection(self.browser)
-        self.assertEqual(bank_details.cash.text, '9000')
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(game_page.bank_cash.text, '9000')
