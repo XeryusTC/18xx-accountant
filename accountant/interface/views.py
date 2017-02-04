@@ -47,5 +47,6 @@ class AddPlayerView(FormView):
 
     def get_initial(self):
         initial = super(AddPlayerView, self).get_initial()
-        initial['game'] = models.Game.objects.get(pk=self.kwargs['uuid'])
+        initial['game'] = get_object_or_404(models.Game,
+            pk=self.kwargs['uuid'])
         return initial

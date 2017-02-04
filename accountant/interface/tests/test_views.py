@@ -8,6 +8,8 @@ from core import factories
 from .. import forms
 from .. import views
 
+FAKE_UUID = '00000000-0000-0000-0000-000000000000'
+
 class MainPageTests(TestCase):
     def setUp(self):
         self.url = reverse('ui:main')
@@ -73,10 +75,9 @@ class GameViewTests(TestCase):
 
     def test_returns_404_when_game_does_not_exist(self):
         request = self.factory.get(reverse('ui:game',
-            kwargs={'uuid': '00000000-0000-0000-0000-000000000000'}))
+            kwargs={'uuid': FAKE_UUID}))
         with self.assertRaises(Http404):
-            response = self.view(request,
-                uuid='00000000-0000-0000-0000-000000000000')
+            response = self.view(request, uuid=FAKE_UUID)
 
 
 class AddPlayerViewTests(TestCase):
@@ -130,3 +131,15 @@ class AddPlayerViewTests(TestCase):
         response = self.view(request, uuid=self.game.pk)
         self.assertEqual(models.Player.objects.count(), 1)
         self.assertContains(response, forms.DUPLICATE_PLAYER_ERROR)
+
+    def test_returns_404_on_get_request_when_game_in_url_doesnt_exist(self):
+        request = self.factory.get(reverse('ui:game',
+            kwargs={'uuid': FAKE_UUID}))
+        with self.assertRaises(Http404):
+            response = self.view(request, uuid=FAKE_UUID)
+
+    def test_returns_404_on_post_request_when_game_in_url_doesnt_exist(self):
+        request = self.factory.post(reverse('ui:game',
+            kwargs={'uuid': FAKE_UUID}), data={})
+        with self.assertRaises(Http404):
+            response = self.view(request, uuid=FAKE_UUID)
