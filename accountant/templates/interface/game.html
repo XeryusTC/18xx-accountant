@@ -1,20 +1,50 @@
 {% extends 'interface/base.html' %}
 
 {% block content %}
-<div id='menu'>
-	<a href="{% url 'ui:add_player' uuid=game.pk %}" name="add_player">Add player</a>
-</div>
-
-<div id="players">
-	{% for player in game.players.all %}
-		<div class="player">
-			<div class="name">{{ player.name }}</div>
-			<div class="cash">{{ player.cash }}</div>
+<div class="wrapper">
+	<div id='menu' class="row">
+		<div class="indent-tp-1">
+		<div class="tp-3">
+			<a href="{% url 'ui:add_player' uuid=game.pk %}" name="add_player">
+				Add player
+			</a>
 		</div>
-	{% endfor %}
-</div>
+	</div>
 
-<div id='bank'>
-	<div id='cash'>{{ game.cash }}</div>
+	<div class="row nested">
+		<div class="tp-9">
+			<div class="row">
+				<h2>Players</h2>
+			</div>
+			<div class="row">
+				<div class="tp-2">Name</div>
+				<div class="tp-1">Cash</div>
+			</div>
+			<div id="players">
+				{% for player in game.players.all %}
+					<div class="row player">
+						<div class="tp-2 name">{{ player.name }}</div>
+						<div class="tp-1 cash">{{ player.cash }}</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="tp-3">
+			<div class="row">
+				<h2>Bank</h2>
+			</div>
+			<div id='bank'>
+				<div class="row">
+					<div class="tp-6">
+						Cash
+					</div>
+					<div id='cash' class="tp-6">
+						{{ game.cash }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock content %}
