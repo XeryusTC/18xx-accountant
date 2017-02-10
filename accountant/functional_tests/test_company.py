@@ -31,10 +31,10 @@ class CompanyTests(FunctionalTestCase):
         add_company.add_button.click()
 
         # The company appears in the company list on the game page
-        self.assertRegex(self.browser.current_url, r'/en/game([^/]+)/$')
+        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
 
         company_list = game_page.get_companies()
         self.assertEqual(len(company_list), 1)
         self.assertEqual(company_list[0]['name'].text, 'B&O')
-        self.assertEqual(company_list[0]['cash'].text, '700')
+        self.assertEqual(company_list[0]['cash'].text, '100')
         self.assertEqual(company_list[0]['ipo_shares'].text, '10')

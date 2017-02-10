@@ -50,5 +50,23 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="row">
+		<h2>Companies</h2>
+	</div>
+	<div class="row">
+		<div class="tp-2">Name</div>
+		<div class="tp-1">Cash</div>
+		<div class="tp-1">IPO</div>
+	</div>
+	<div id="companies">
+		{% for company in game.companies.all %}
+			<div class="row company">
+				<div class="tp-2 name">{{ company.name }}</div>
+				<div class="tp-1 cash">{{ company.cash }}</div>
+				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
+			</div>
+		{% endfor %}
+	</div>
 </div>
 {% endblock content %}

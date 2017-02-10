@@ -14,8 +14,10 @@ class GamePage(PageObject):
     player_name_list = MultiPageElement(css="div.player div.name")
 
     _player_list = MultiPageElement(class_name="player")
+    _company_list = MultiPageElement(class_name="company")
     _name = PageElement(css=".name", context=True)
     _cash = PageElement(css=".cash", context=True)
+    _ipo_shares = PageElement(css=".ipo", context=True)
 
     def get_players(self):
         res = []
@@ -23,6 +25,17 @@ class GamePage(PageObject):
             info = {
                 'name': self._name(row),
                 'cash': self._cash(row),
+            }
+            res.append(info)
+        return res
+
+    def get_companies(self):
+        res = []
+        for row in self._company_list:
+            info = {
+                'name': self._name(row),
+                'cash': self._cash(row),
+                'ipo_shares': self._ipo_shares(row),
             }
             res.append(info)
         return res
@@ -38,4 +51,8 @@ class AddPlayerPage(PageObject):
 
 
 class AddCompanyPage(PageObject):
-    pass
+    header = PageElement(name='title')
+    name = PageElement(name='name')
+    cash = PageElement(name='cash')
+    shares = PageElement(name='share_count')
+    add_button = PageElement(tag_name='button')
