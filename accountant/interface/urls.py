@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^game/(?P<uuid>[^/]+)/$', views.GameView.as_view(), name='game'),
     url(r'^game/(?P<uuid>[^/]+)/add-player/$', views.AddPlayerView.as_view(),
         name='add_player'),
+    url(r'^game/(?P<uuid>[^/]+)/add-company/$', views.AddCompanyView.as_view(),
+        name='add_company'),
 ]

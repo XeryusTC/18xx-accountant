@@ -28,3 +28,9 @@ class AddPlayerForm(forms.ModelForm):
         widgets = {
             'game': forms.HiddenInput(),
         }
+
+
+class AddCompanyForm(forms.ModelForm):
+    class Meta:
+        model = models.Company
+        fields = ('game', 'name', 'cash', 'share_count')

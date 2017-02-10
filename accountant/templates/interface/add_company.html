@@ -1,0 +1,13 @@
+{% extends 'interface/base.html' %}
+
+{% block title %}Add company{% endblock %}
+
+{% block content %}
+<h1 name='title'>Add company</h1>
+
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Add</button>
+</form>
+{% endblock content %}
