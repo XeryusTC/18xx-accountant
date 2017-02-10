@@ -44,3 +44,25 @@ class AddPlayerTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors[NON_FIELD_ERRORS],
             [forms.DUPLICATE_PLAYER_ERROR])
+
+
+class AddCompanyTests(TestCase):
+    def test_name_field_is_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('name', form.errors.keys())
+
+    def test_cash_field_is_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('cash', form.errors.keys())
+
+    def test_shares_field_is_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('share_count', form.errors.keys())
+
+    def test_game_field_is_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('game', form.errors.keys())

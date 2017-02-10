@@ -148,3 +148,51 @@ class AddPlayerViewTests(TestCase):
             kwargs={'uuid': FAKE_UUID}), data={})
         with self.assertRaises(Http404):
             response = self.view(request, uuid=FAKE_UUID)
+
+
+class AddCompanyViewwTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+        self.url = reverse('ui:add_company', kwargs={'uuid': self.game.pk})
+        self.view = views.AddCompanyView.as_view()
+        self.factory = RequestFactory()
+
+    def test_uses_correct_templates(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'interface/base.html')
+        self.assertTemplateUsed(response, 'interface/add_company.html')
+
+    def test_url_resolves_to_correct_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func.__name__, self.view.__name__)
+
+    def test_uses_add_company_form(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertIsInstance(response.context_data['form'],
+            forms.AddCompanyForm)
+
+    def test_form_game_field_equals_uuid_in_url(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['form'].initial['game'],
+            self.game)
+
+    def test_adds_company_to_game_on_successful_POST_request(self):
+        self.assertEqual(self.game.companies.count(), 0)
+        request = self.factory.post(self.url, data={'name': 'PRR', 'cash': 20,
+            'share_count': 5})
+        self.view(request, uuid=self.game.pk)
+        company = self.game.companies.first()
+        self.assertEqual(self.game.companies.count(), 1)
+        self.assertEqual(company.name, 'PRR')
+        self.assertEqual(company.cash, 20)
+        self.assertEqual(company.share_count, 5)
+
+    def test_adding_company_redirects_to_game(self):
+        request = self.factory.post(self.url, data={'name': 'C&O', 'cash': 21,
+            'share_count': 10})
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.url,
+            reverse('ui:game', kwargs={'uuid': self.game.pk}))
