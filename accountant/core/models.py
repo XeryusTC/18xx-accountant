@@ -47,7 +47,7 @@ class Company(models.Model):
     cash = models.IntegerField(default=0)
 
     share_count = models.IntegerField(default=10)
-    ipo_shares = models.IntegerField(default=10)
+    ipo_shares = models.IntegerField(default=None)
     bank_shares = models.IntegerField(default=0)
     player_owners = models.ManyToManyField(Player, related_name='shares',
         through='PlayerShare')
@@ -64,6 +64,11 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.ipo_shares:
+            self.ipo_shares = self.share_count
+        super(Company, self).save(*args, **kwargs)
 
 
 class PlayerShare(models.Model):
