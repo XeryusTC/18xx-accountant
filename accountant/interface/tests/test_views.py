@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.core.urlresolvers import resolve, reverse
 from django.http.response import Http404
 from django.test import RequestFactory, TestCase
@@ -196,3 +197,12 @@ class AddCompanyViewwTests(TestCase):
         response = self.view(request, uuid=self.game.pk)
         self.assertEqual(response.url,
             reverse('ui:game', kwargs={'uuid': self.game.pk}))
+
+    def test_creating_duplicate_company_shows_error(self):
+        company = factories.CompanyFactory(game=self.game, name='NYC')
+        request = self.factory.post(self.url, data={'name': 'NYC', 'cash': 22,
+            'share_count': 10})
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(models.Company.objects.count(), 1)
+        self.assertIn(forms.DUPLICATE_COMPANY_ERROR,
+            response.context_data['form'].errors[NON_FIELD_ERRORS])

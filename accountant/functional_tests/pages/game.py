@@ -62,3 +62,4 @@ class AddCompanyPage(PageObject):
     shares = PageElement(name='share_count')
     add_button = PageElement(tag_name='button')
     game = PageElement(name='game')
+    error_list = PageElement(css='.errorlist')

@@ -7,6 +7,9 @@ from core import models
 
 DUPLICATE_PLAYER_ERROR = \
     _('There is already a player with this name in your game')
+DUPLICATE_COMPANY_ERROR = \
+    _('There is already a company with this name in your game')
+
 class CreateGameForm(forms.Form):
     bank_cash = forms.IntegerField(required=False, initial=12000)
 
@@ -34,6 +37,10 @@ class AddCompanyForm(forms.ModelForm):
     class Meta:
         model = models.Company
         fields = ('game', 'name', 'cash', 'share_count')
+
+        error_messages = {
+            NON_FIELD_ERRORS: {'unique_together': DUPLICATE_COMPANY_ERROR},
+        }
 
         widgets = {
             'game': forms.HiddenInput(),

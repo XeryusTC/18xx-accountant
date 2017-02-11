@@ -59,7 +59,7 @@ class CompanyTests(FunctionalTestCase):
         # The company has been added to the game
         company_list = game_page.get_companies()
         self.assertEqual(len(company_list), 1)
-        self.assertEqual(company_list[0]['name'], 'NYC')
+        self.assertEqual(company_list[0]['name'].text, 'NYC')
 
         # Alice goes to add another company
         game_page.add_company_link.click()
