@@ -39,4 +39,6 @@ class CompanyTests(FunctionalTestCase):
         self.assertEqual(len(company_list), 1)
         self.assertEqual(company_list[0]['name'].text, 'B&O')
         self.assertEqual(company_list[0]['cash'].text, '100')
+        self.assertEqual(company_list[0]['share_count'].text, '10')
         self.assertEqual(company_list[0]['ipo_shares'].text, '10')
+        self.assertEqual(company_list[0]['bank_shares'].text, '0')

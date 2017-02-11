@@ -17,7 +17,9 @@ class GamePage(PageObject):
     _company_list = MultiPageElement(class_name="company")
     _name = PageElement(css=".name", context=True)
     _cash = PageElement(css=".cash", context=True)
+    _share_count = PageElement(css=".share_count", context=True)
     _ipo_shares = PageElement(css=".ipo", context=True)
+    _bank_shares = PageElement(css=".bank", context=True)
 
     def get_players(self):
         res = []
@@ -35,7 +37,9 @@ class GamePage(PageObject):
             info = {
                 'name': self._name(row),
                 'cash': self._cash(row),
+                'share_count': self._share_count(row),
                 'ipo_shares': self._ipo_shares(row),
+                'bank_shares': self._bank_shares(row),
             }
             res.append(info)
         return res
