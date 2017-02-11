@@ -42,3 +42,31 @@ class CompanyTests(FunctionalTestCase):
         self.assertEqual(company_list[0]['share_count'].text, '10')
         self.assertEqual(company_list[0]['ipo_shares'].text, '10')
         self.assertEqual(company_list[0]['bank_shares'].text, '0')
+
+    def test_cannot_create_duplicate_company(self):
+        # Alice is a user who starts a game
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        # She adds a company
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.clear()
+        add_company.name.send_keys('NYC\n')
+        # The company has been added to the game
+        company_list = game_page.get_companies()
+        self.assertEqual(len(company_list), 1)
+        self.assertEqual(company_list[0]['name'], 'NYC')
+
+        # Alice goes to add another company
+        game_page.add_company_link.click()
+        add_company.name.clear()
+        add_company.name.send_keys('NYC\n')
+        # She stays on the page and sees an error message
+        self.assertRegex(self.browser.current_url,
+            r'/en/game/([^/]+)/add-company/$')
+        self.assertIn('There is already a company with this name in your game',
+            add_company.error_list.text)
