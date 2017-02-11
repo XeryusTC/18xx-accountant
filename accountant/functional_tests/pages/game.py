@@ -63,3 +63,4 @@ class AddCompanyPage(PageObject):
     add_button = PageElement(tag_name='button')
     game = PageElement(name='game')
     error_list = PageElement(css='.errorlist')
+    back = PageElement(id_='back')

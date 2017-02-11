@@ -81,3 +81,8 @@ class AddCompanyView(FormView):
             data['game'] = self.kwargs['uuid']
             kwargs['data'] = data
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(AddCompanyView, self).get_context_data(**kwargs)
+        context['game'] = models.Game.objects.get(pk=self.kwargs['uuid'])
+        return context

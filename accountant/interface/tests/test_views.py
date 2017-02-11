@@ -168,6 +168,12 @@ class AddCompanyViewwTests(TestCase):
         found = resolve(self.url)
         self.assertEqual(found.func.__name__, self.view.__name__)
 
+    def test_reference_to_game_is_available_in_template(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['game'], self.game)
+
+
     def test_uses_add_company_form(self):
         request = self.factory.get(self.url)
         response = self.view(request, uuid=self.game.pk)
