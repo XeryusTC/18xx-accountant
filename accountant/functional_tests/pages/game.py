@@ -48,6 +48,7 @@ class AddPlayerPage(PageObject):
     header = PageElement(name='title')
     error_list = PageElement(css='.errorlist')
     back = PageElement(id_='back')
+    game = PageElement(name='game')
 
 
 class AddCompanyPage(PageObject):
@@ -56,3 +57,4 @@ class AddCompanyPage(PageObject):
     cash = PageElement(name='cash')
     shares = PageElement(name='share_count')
     add_button = PageElement(tag_name='button')
+    game = PageElement(name='game')

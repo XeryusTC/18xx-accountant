@@ -21,6 +21,8 @@ class CreatePlayerTests(FunctionalTestCase):
             r'/en/game/([^/]+)/add-player/$')
         self.assertEqual(add_player.header.text, 'Add player')
 
+        # The game field is not visible
+        self.assertEqual(add_player.game.get_attribute('type'), 'hidden')
         # She enters her name and a starting amount of cash
         add_player.name.clear()
         add_player.name.send_keys('Alice')

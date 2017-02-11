@@ -21,6 +21,8 @@ class CompanyTests(FunctionalTestCase):
         self.assertEqual(self.browser.title, 'Add company')
         self.assertEqual(add_company.header.text, 'Add company')
 
+        # The game field is hidden
+        self.assertEqual(add_company.game.get_attribute('type'), 'hidden')
         # She enters a name, an amount of starting cash and a share split
         add_company.name.clear()
         add_company.name.send_keys('B&O')
