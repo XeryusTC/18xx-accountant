@@ -71,7 +71,8 @@ class AddCompanyView(FormView):
 
     def get_initial(self):
         initial = super(AddCompanyView, self).get_initial()
-        initial['game'] = models.Game.objects.get(pk=self.kwargs['uuid'])
+        initial['game'] = get_object_or_404(models.Game,
+            pk=self.kwargs['uuid'])
         return initial
 
     def get_form_kwargs(self):
@@ -84,5 +85,6 @@ class AddCompanyView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(AddCompanyView, self).get_context_data(**kwargs)
-        context['game'] = models.Game.objects.get(pk=self.kwargs['uuid'])
+        context['game'] = get_object_or_404(models.Game,
+            pk=self.kwargs['uuid'])
         return context

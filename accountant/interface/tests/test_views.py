@@ -212,3 +212,15 @@ class AddCompanyViewwTests(TestCase):
         self.assertEqual(models.Company.objects.count(), 1)
         self.assertIn(forms.DUPLICATE_COMPANY_ERROR,
             response.context_data['form'].errors[NON_FIELD_ERRORS])
+
+    def test_returns_404_on_get_request_when_game_in_url_doesnt_exist(self):
+        request = self.factory.get(reverse('ui:game',
+            kwargs={'uuid': FAKE_UUID}))
+        with self.assertRaises(Http404):
+            response = self.view(request, uuid=FAKE_UUID)
+
+    def test_returns_404_on_post_request_when_game_in_url_doesnt_exist(self):
+        request = self.factory.post(reverse('ui:game',
+            kwargs={'uuid': FAKE_UUID}), data={})
+        with self.assertRaises(Http404):
+            response = self.view(request, uuid=FAKE_UUID)
