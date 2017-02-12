@@ -62,7 +62,9 @@
 	</div>
 	<div id="companies">
 		{% for company in game.companies.all %}
-			<div class="row company">
+			<div class="row company
+					bg-{{ company.background_color }}
+					fg-{{ company.text_color }}">
 				<div class="tp-2 name">{{ company.name }}</div>
 				<div class="tp-1 cash">{{ company.cash }}</div>
 				<div class="tp-1 share_count">{{ company.share_count }}</div>

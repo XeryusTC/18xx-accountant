@@ -224,3 +224,35 @@ class AddCompanyViewwTests(TestCase):
             kwargs={'uuid': FAKE_UUID}), data={})
         with self.assertRaises(Http404):
             response = self.view(request, uuid=FAKE_UUID)
+
+    def test_can_set_background_color(self):
+        request = self.factory.post(self.url, data={'name': 'CPR', 'cash': 23,
+            'share_count': 10, 'background_color': 'green-100'})
+        self.view(request, uuid=self.game.pk)
+        company = self.game.companies.first()
+        self.assertEqual(company.name, 'CPR')
+        self.assertEqual(company.background_color, 'green-100')
+
+    def test_background_color_is_white_by_default(self):
+        request = self.factory.post(self.url, data={'name': 'ERIE', 'cash': 24,
+            'share_count': 10})
+        self.view(request, uuid=self.game.pk)
+        company = self.game.companies.first()
+        self.assertEqual(company.name, 'ERIE')
+        self.assertEqual(company.background_color, 'white')
+
+    def test_can_set_text_color(self):
+        request = self.factory.post(self.url, data={'name': 'N&W', 'cash': 25,
+            'share_count': 10, 'text_color': 'yellow-700'})
+        self.view(request, uuid=self.game.pk)
+        company = self.game.companies.first()
+        self.assertEqual(company.name, 'N&W')
+        self.assertEqual(company.text_color, 'yellow-700')
+
+    def test_text_color_is_black_by_default(self):
+        request = self.factory.post(self.url, data={'name': 'B&M', 'cash': 26,
+            'share_count': 10})
+        self.view(request, uuid=self.game.pk)
+        company = self.game.companies.first()
+        self.assertEqual(company.name, 'B&M')
+        self.assertEqual(company.text_color, 'black')

@@ -34,9 +34,15 @@ class AddPlayerForm(forms.ModelForm):
 
 
 class AddCompanyForm(forms.ModelForm):
+    background_color = forms.ChoiceField(choices=models.Company.COLOR_CODES,
+        widget=forms.RadioSelect(), required=False)
+    text_color = forms.ChoiceField(choices=models.Company.COLOR_CODES,
+        widget=forms.RadioSelect(), required=False)
+
     class Meta:
         model = models.Company
-        fields = ('game', 'name', 'cash', 'share_count')
+        fields = ('game', 'name', 'cash', 'share_count', 'background_color',
+            'text_color')
 
         error_messages = {
             NON_FIELD_ERRORS: {'unique_together': DUPLICATE_COMPANY_ERROR},

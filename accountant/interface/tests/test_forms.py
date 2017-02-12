@@ -66,3 +66,13 @@ class AddCompanyTests(TestCase):
         form = forms.AddCompanyForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('game', form.errors.keys())
+
+    def test_background_color_field_is_not_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertNotIn('background_color', form.errors.keys())
+
+    def test_text_color_field_is_not_required(self):
+        form = forms.AddCompanyForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertNotIn('text_color', form.errors.keys())
