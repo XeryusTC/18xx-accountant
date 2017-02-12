@@ -77,7 +77,7 @@ class CompanyTests(FunctionalTestCase):
         page = game.Homepage(self.browser)
         page.start_button.click()
 
-        # She goes to the add play company screen
+        # She goes to the add company screen
         game_page = game.GamePage(self.browser)
         game_page.add_company_link.click()
         self.assertRegex(self.browser.current_url,
@@ -89,3 +89,44 @@ class CompanyTests(FunctionalTestCase):
         add_company.back.click()
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
         self.assertEqual(game_page.get_companies(), [])
+
+    def test_can_set_company_colors(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.start_button.click()
+
+        # She goes to the add company screen
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        # She enters some details
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.clear()
+        add_company.name.send_keys('C&O')
+
+        # She sees two color selectors, the first is for the background
+        # color, she picks the color blue
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'blue-500':
+                radio.click()
+                break
+
+        # She picks yellow for the text color
+        for radio in add_company.text_color:
+            if radio.get_attribute('value') == 'yellow-300':
+                radio.click()
+                break
+
+        # She adds the company and is returned to the game page
+        add_company.add_button.click()
+        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+
+        # She sees that the company row has the correct colors
+        company_list = game_page.get_companies()
+        self.assertEqual(len(company_list), 1)
+        self.assertEqual(company_list[0]['name'].text, 'C&O')
+        self.assertIn('bg-blue-500',
+            company_list[0]['elem'].get_attribute('class'))
+        self.assertIn('fg-yellow-300',
+            company_list[0]['elem'].get_attribute('class'))

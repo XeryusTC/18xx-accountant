@@ -35,6 +35,7 @@ class GamePage(PageObject):
         res = []
         for row in self._company_list:
             info = {
+                'elem': row,
                 'name': self._name(row),
                 'cash': self._cash(row),
                 'share_count': self._share_count(row),
@@ -64,3 +65,5 @@ class AddCompanyPage(PageObject):
     game = PageElement(name='game')
     error_list = PageElement(css='.errorlist')
     back = PageElement(id_='back')
+    text_color = MultiPageElement(name='text_color')
+    background_color = MultiPageElement(name='background_color')
