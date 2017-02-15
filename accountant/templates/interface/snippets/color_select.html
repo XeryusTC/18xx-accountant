@@ -1,0 +1,11 @@
+<div class="row">
+	{% for code in color_codes %}
+		<div class="tp-1 bg-{{ code.0 }}">
+			<input type="radio" name="{{ radio_name }}" value="{{ code.0 }}"
+				data-target="{{ target }}" data-color-select="true">
+		</div>
+		{% if forloop.counter|add:"-2"|get_digit:"1" == 0 %}
+			</div><div class="row">
+		{% endif %}
+	{% endfor %}
+</div>

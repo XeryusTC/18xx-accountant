@@ -87,4 +87,5 @@ class AddCompanyView(FormView):
         context = super(AddCompanyView, self).get_context_data(**kwargs)
         context['game'] = get_object_or_404(models.Game,
             pk=self.kwargs['uuid'])
+        context['color_codes'] = models.Company.COLOR_CODES
         return context

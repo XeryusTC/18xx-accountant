@@ -35,9 +35,9 @@ class AddPlayerForm(forms.ModelForm):
 
 class AddCompanyForm(forms.ModelForm):
     background_color = forms.ChoiceField(choices=models.Company.COLOR_CODES,
-        widget=forms.RadioSelect(), required=False)
+        widget=forms.HiddenInput(), required=False)
     text_color = forms.ChoiceField(choices=models.Company.COLOR_CODES,
-        widget=forms.RadioSelect(), required=False)
+        widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = models.Company
