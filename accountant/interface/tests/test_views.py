@@ -123,6 +123,12 @@ class AddPlayerViewTests(TestCase):
         self.assertEqual(self.game.players.first().name, 'Bob')
         self.assertEqual(self.game.players.first().cash, 19)
 
+    def test_decreases_bank_size_on_successful_POST_request(self):
+        request = self.factory.post(self.url, data={'name': 'Bob', 'cash': 20})
+        self.view(request, uuid=self.game.pk)
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.cash, 11980)
+
     def test_adding_player_redirects_to_game(self):
         request = self.factory.post(self.url, data={'name': 'Alice',
             'cash': 1})
@@ -201,6 +207,13 @@ class AddCompanyViewwTests(TestCase):
         self.assertEqual(company.name, 'PRR')
         self.assertEqual(company.cash, 20)
         self.assertEqual(company.share_count, 5)
+
+    def test_decreases_bank_size_on_successful_POST_request(self):
+        request = self.factory.post(self.url, data={'name': 'NNH', 'cash': 50,
+            'share_count': 10})
+        self.view(request, uuid=self.game.pk)
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.cash, 11950)
 
     def test_adding_company_redirects_to_game(self):
         request = self.factory.post(self.url, data={'name': 'C&O', 'cash': 21,

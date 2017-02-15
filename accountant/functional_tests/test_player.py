@@ -87,3 +87,23 @@ class CreatePlayerTests(FunctionalTestCase):
         add_player.back.click()
         self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
         self.assertEqual(game_page.get_players(), [])
+
+    def test_creating_player_with_cash_decreases_bank_cash(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.bank_cash.clear()
+        page.bank_cash.send_keys('1000\n')
+
+        # She goes to add a player
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.clear()
+        add_player.cash.clear()
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('400\n')
+
+        # On the game page she sees that the bank size has reduced
+        self.assertEqual(game_page.bank_cash.text, '600')

@@ -130,3 +130,23 @@ class CompanyTests(FunctionalTestCase):
             company_list[0]['elem'].get_attribute('class'))
         self.assertIn('fg-yellow-300',
             company_list[0]['elem'].get_attribute('class'))
+
+    def test_creating_company_with_cash_decreases_bank_cash(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.bank_cash.clear()
+        page.bank_cash.send_keys('1000\n')
+
+        # She goes to add a company
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.clear()
+        add_company.cash.clear()
+        add_company.name.send_keys('B&O')
+        add_company.cash.send_keys('300\n')
+
+        # On the game page she sees that the bank size has reduced
+        self.assertEqual(game_page.bank_cash.text, '700')

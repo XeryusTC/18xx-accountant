@@ -43,6 +43,9 @@ class AddPlayerView(FormView):
 
     def form_valid(self, form):
         form.save()
+        # Decrease the bank's cash
+        form.instance.game.cash -= form.instance.cash
+        form.instance.game.save()
         return super(FormView, self).form_valid(form)
 
     def get_initial(self):
@@ -64,6 +67,9 @@ class AddCompanyView(FormView):
 
     def form_valid(self, form):
         form.save()
+        # Decrease the bank's cash
+        form.instance.game.cash -= form.instance.cash
+        form.instance.game.save()
         return super(AddCompanyView, self).form_valid(form)
 
     def get_success_url(self):
