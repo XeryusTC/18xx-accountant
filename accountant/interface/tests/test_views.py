@@ -173,6 +173,11 @@ class AddCompanyViewwTests(TestCase):
         response = self.view(request, uuid=self.game.pk)
         self.assertEqual(response.context_data['game'], self.game)
 
+    def test_list_of_color_codes_is_available_in_template(self):
+        request = self.factory.get(self.url)
+        response = self.view(request, uuid=self.game.pk)
+        self.assertEqual(response.context_data['color_codes'],
+            models.Company.COLOR_CODES)
 
     def test_uses_add_company_form(self):
         request = self.factory.get(self.url)

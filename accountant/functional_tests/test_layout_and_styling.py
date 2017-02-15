@@ -19,3 +19,27 @@ class StylesheetTests(FunctionalTestCase):
 
         self.assertTrue(any('color.css' in s.get_attribute('href')
             for s in page.stylesheets))
+
+
+class JavascriptTests(FunctionalTestCase):
+    def test_jquery_loaded(self):
+        # Go to the company creation page
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        self.assertTrue(any('jquery' in s.get_attribute('src')
+            for s in homepage.scripts))
+
+    def test_game_js_loaded(self):
+        # Go to the company creation page
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        self.assertTrue(any('static/game.js' in s.get_attribute('src')
+            for s in homepage.scripts))

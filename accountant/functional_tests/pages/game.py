@@ -3,6 +3,7 @@ from page_objects import PageObject, PageElement, MultiPageElement
 
 class Homepage(PageObject):
     stylesheets = MultiPageElement(tag_name='link')
+    scripts = MultiPageElement(tag_name='script')
     start_button = PageElement(name='new_game')
     bank_cash = PageElement(name='bank_cash')
 
@@ -65,5 +66,5 @@ class AddCompanyPage(PageObject):
     game = PageElement(name='game')
     error_list = PageElement(css='.errorlist')
     back = PageElement(id_='back')
-    text_color = MultiPageElement(name='text_color')
-    background_color = MultiPageElement(name='background_color')
+    text_color = MultiPageElement(name='text-color-select')
+    background_color = MultiPageElement(name='background-color-select')
