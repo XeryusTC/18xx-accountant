@@ -1,3 +1,7 @@
+.centered {
+	text-align: center;
+}
+
 .fg-black { color: #000; }
 .bg-black { background-color: #000; }
 .fg-white { color: #fff; }
