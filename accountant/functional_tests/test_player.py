@@ -20,6 +20,7 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertRegex(self.browser.current_url,
             r'/en/game/([^/]+)/add-player/$')
         self.assertEqual(add_player.header.text, 'Add player')
+        self.assertEqual(self.browser.title, 'Add player')
 
         # The game field is not visible
         self.assertEqual(add_player.game.get_attribute('type'), 'hidden')
