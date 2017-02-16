@@ -3,9 +3,34 @@
 {% block content %}
 <h1 id='title'>Add player</h1>
 <a id='back' href='{% url 'ui:game' game.pk %}'>Return to game</a>
-<form method="post">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<button type="submit">Add player</button>
-</form>
+
+<div class="wrapper">
+	<form method="post">
+		{% csrf_token %}
+		{% for hidden in form.hidden_fields %}
+			{{ hidden }}
+		{% endfor %}
+		{% if form.non_field_errors %}
+			<div class="row">
+				<div class="tp-12">{{ form.non_field_errors }}</div>
+			</div>
+		{% endif %}
+		{% for field in form.visible_fields %}
+			{% if field.errors %}
+				<div class="row">
+					<div class="tp-12">{{ field.errors }}</div>
+				</div>
+			{% endif %}
+			<div class="row">
+				<div class="tp-3">{{ field.label_tag }}</div>
+				<div class="tp-9">{{ field }}</div>
+			</div>
+		{% endfor %}
+		<div class="row">
+			<div class="indent-tp-1 tp-9">
+				<button type="submit">Add player</button>
+			</div>
+		</div>
+	</form>
+</div>
 {% endblock content %}
