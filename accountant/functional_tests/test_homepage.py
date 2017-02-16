@@ -17,6 +17,7 @@ class HomePageTest(FunctionalTestCase):
 
         # She lands on a new page, it lists a code for the game name
         self.assertIn('/en/game/', self.browser.current_url)
+        self.assertEqual(self.browser.title, '18xx Accountant')
 
     def test_create_game_with_bank_size(self):
         # Alice is a user who visits the website
