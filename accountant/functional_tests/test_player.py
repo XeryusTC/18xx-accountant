@@ -148,3 +148,32 @@ class ManagePlayerTests(FunctionalTestCase):
         players[1]['row'].click()
         self.assertFalse(players[0]['detail'].is_displayed())
         self.assertTrue(players[1]['detail'].is_displayed())
+
+    def test_clicking_player_closes_company_detail_section(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        # She adds a player
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.add_button.click()
+
+        # She also adds a company
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.add_button.click()
+
+        # She clicks the company to open its detail section
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        self.assertFalse(player['detail'].is_displayed())
+        self.assertTrue(company['detail'].is_displayed())
+
+        # When she clicks the player the company detail closes
+        player['row'].click()
+        self.assertTrue(player['detail'].is_displayed())
+        self.assertFalse(company['detail'].is_displayed())
