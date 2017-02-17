@@ -4,6 +4,7 @@ from .base import FunctionalTestCase
 from .pages import game
 
 class CreatePlayerTests(FunctionalTestCase):
+    """Tests for creating players at the start of a game"""
     def test_can_create_player(self):
         # Alice is a user who starts a new game
         self.browser.get(self.live_server_url)
@@ -108,3 +109,42 @@ class CreatePlayerTests(FunctionalTestCase):
 
         # On the game page she sees that the bank size has reduced
         self.assertEqual(game_page.bank_cash.text, '600')
+
+
+class ManagePlayerTests(FunctionalTestCase):
+    """Tests for managing player actions during a game"""
+    def test_clicking_player_opens_player_detail_section(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        # She adds two players
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.clear()
+        add_player.name.send_keys('Alice\n')
+
+        game_page.add_player_link.click()
+        add_player.name.clear()
+        add_player.name.send_keys('Bob\n')
+
+        # Check that the two players are in the list
+        self.assertSequenceEqual(['Alice', 'Bob'],
+            list(player.text for player in game_page.player_name_list))
+
+        # The player detail sections are both hidden
+        players = game_page.get_players()
+        self.assertFalse(any(player['detail'].is_displayed()
+            for player in players), 'Some detail section is displayed')
+
+        # She clicks the first player and the details appear
+        players[0]['row'].click()
+        self.assertTrue(players[0]['detail'].is_displayed())
+
+        # She clicks the second player, the first player's details
+        # disappear and the second player's appear
+        players[1]['row'].click()
+        self.assertFalse(players[0]['detail'].is_displayed())
+        self.assertTrue(players[1]['detail'].is_displayed())
