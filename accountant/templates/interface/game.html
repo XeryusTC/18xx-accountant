@@ -69,14 +69,20 @@
 	</div>
 	<div id="companies">
 		{% for company in game.companies.all %}
-			<div class="row company
-					bg-{{ company.background_color }}
-					fg-{{ company.text_color }}">
-				<div class="tp-2 name">{{ company.name }}</div>
-				<div class="tp-1 cash">{{ company.cash }}</div>
-				<div class="tp-1 share_count">{{ company.share_count }}</div>
-				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
-				<div class="tp-1 bank">{{ company.bank_shares }}</div>
+			<div class="company">
+				<div class="row bg-{{ company.background_color }}
+						fg-{{ company.text_color }}">
+					<div class="tp-2 name">{{ company.name }}</div>
+					<div class="tp-1 cash">{{ company.cash }}</div>
+					<div class="tp-1 share_count">
+						{{ company.share_count }}
+					</div>
+					<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
+					<div class="tp-1 bank">{{ company.bank_shares }}</div>
+				</div>
+				<div class="row">
+					<div class="detail"></div>
+				</div>
 			</div>
 		{% endfor %}
 	</div>

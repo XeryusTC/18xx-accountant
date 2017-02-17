@@ -3,7 +3,7 @@ $(document).ready(function() {
 		$("#" + $(this).data('target')).val($(this).val());
 	});
 
-	$(".player").on('click', function(e) {
+	$(".player,.company").on('click', function(e) {
 		$('.detail').hide();
 		$(this).find(".detail").show();
 	});

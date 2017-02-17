@@ -150,3 +150,36 @@ class CompanyTests(FunctionalTestCase):
 
         # On the game page she sees that the bank size has reduced
         self.assertEqual(game_page.bank_cash.text, '700')
+
+    def test_clicking_company_opens_company_detail_section(self):
+        # Alice is a user who starts a new game
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        # She adds two companies
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.clear()
+        add_company.name.send_keys('B&O\n')
+
+        game_page.add_company_link.click()
+        add_company.name.clear()
+        add_company.name.send_keys('C&O\n')
+
+        # The company detail sections are both hidden
+        companies = game_page.get_companies()
+        self.assertFalse(any(company['detail'].is_displayed()
+            for company in companies), 'Some detail section is displayed')
+
+        # She clicks the first company and the detail appear
+        companies[0]['elem'].click()
+        self.assertTrue(companies[0]['detail'].is_displayed())
+        self.assertFalse(companies[1]['detail'].is_displayed())
+
+        # She clicks the second company, the first company's details
+        # disappear and the second company's details appear
+        companies[1]['elem'].click()
+        self.assertFalse(companies[0]['detail'].is_displayed())
+        self.assertTrue(companies[1]['detail'].is_displayed())

@@ -22,6 +22,7 @@ class GamePage(PageObject):
     _ipo_shares = PageElement(css=".ipo", context=True)
     _bank_shares = PageElement(css=".bank", context=True)
     _detail = PageElement(css=".detail", context=True)
+    _summary = PageElement(css=".row", context=True)
 
     def get_players(self):
         res = []
@@ -39,12 +40,13 @@ class GamePage(PageObject):
         res = []
         for row in self._company_list:
             info = {
-                'elem': row,
+                'elem': self._summary(row),
                 'name': self._name(row),
                 'cash': self._cash(row),
                 'share_count': self._share_count(row),
                 'ipo_shares': self._ipo_shares(row),
                 'bank_shares': self._bank_shares(row),
+                'detail': self._detail(row),
             }
             res.append(info)
         return res
