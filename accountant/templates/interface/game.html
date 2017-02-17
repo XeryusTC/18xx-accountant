@@ -28,9 +28,14 @@
 			</div>
 			<div id="players">
 				{% for player in game.players.all %}
-					<div class="row player">
-						<div class="tp-2 name">{{ player.name }}</div>
-						<div class="tp-1 cash">{{ player.cash }}</div>
+					<div class="player">
+						<div class="row">
+							<div class="tp-2 name">{{ player.name }}</div>
+							<div class="tp-1 cash">{{ player.cash }}</div>
+						</div>
+						<div class="row">
+							<div class="tp-12 detail"></div>
+						</div>
 					</div>
 				{% endfor %}
 			</div>

@@ -20,6 +20,14 @@ class StylesheetTests(FunctionalTestCase):
         self.assertTrue(any('color.css' in s.get_attribute('href')
             for s in page.stylesheets))
 
+    def test_main_stylesheet_loaded(self):
+        # Load the start page
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+
+        self.assertTrue(any('style.css' in s.get_attribute('href')
+            for s in page.stylesheets))
+
 
 class JavascriptTests(FunctionalTestCase):
     def test_jquery_loaded(self):
