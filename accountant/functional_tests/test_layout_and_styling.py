@@ -46,8 +46,14 @@ class JavascriptTests(FunctionalTestCase):
         self.browser.get(self.live_server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
+
+        # game.js should be loaded on the main game page
+        self.assertTrue(any('static/game.js' in s.get_attribute('src')
+            for s in homepage.scripts))
+
         game_page = game.GamePage(self.browser)
         game_page.add_company_link.click()
 
+        # game.js should be loaded on the add company page
         self.assertTrue(any('static/game.js' in s.get_attribute('src')
             for s in homepage.scripts))

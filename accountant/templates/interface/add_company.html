@@ -3,10 +3,6 @@
 
 {% block title %}Add company{% endblock %}
 
-{% block scripts %}
-	<script src="{% static 'game.js' %}" type="text/javascript"></script>
-{% endblock %}
-
 {% block content %}
 <h1 id='title'>Add company</h1>
 <a id='back' href='{% url 'ui:game' game.pk %}'>Return to game</a>
