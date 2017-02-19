@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+import signal
 from selenium import webdriver
 from unipath import Path
 
@@ -21,6 +22,7 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 filename = self._get_filename(ix)
                 self._take_screenshot(filename + '.png')
                 self._dump_html(filename + '.html')
+        self.browser.service.process.send_signal(signal.SIGTERM)
         self.browser.quit()
 
     def _test_has_failed(self): # pragma: no cover
