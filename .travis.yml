@@ -13,11 +13,12 @@ env:
     global:
         - DJANGO_SETTINGS_MODULE="accountant.settings.ci"
     matrix:
-        - REVERSE=
-        - REVERSE=--reverse
-        - SUITE=functional_tests
-        - SUITE=core
-        - SUITE=interface
+        - REVERSE= SUITE=functional_tests
+        - REVERSE= SUITE=core
+        - REVERSE= SUITE=interface
+        - REVERSE=--reverse SUITE=functional_tests
+        - REVERSE=--reverse SUITE=core
+        - REVERSE=--reverse SUITE=interface
 install:
     - pip install -r requirements/ci.txt
 before_script:
