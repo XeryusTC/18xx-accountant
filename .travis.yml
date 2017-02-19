@@ -15,15 +15,15 @@ env:
     matrix:
         - REVERSE=
         - REVERSE=--reverse
+        - SUITE=functional_tests
+        - SUITE=core
+        - SUITE=interface
 install:
     - pip install -r requirements/ci.txt
 before_script:
     - psql -c "CREATE DATABASE accountant_ci" -U postgres
 script:
     - cd accountant
-    - coverage run -p manage.py test functional_tests -v2 $REVERSE
-    - coverage run -p manage.py test core -v2 $REVERSE
-    - coverage run -p manage.py test interface -v2 $REVERSE
+    - coverage run manage.py test $SUITE $REVERSE -v2
 after_success:
-    - coverage combine
     - codecov
