@@ -36,7 +36,7 @@ fi
 
 # Install angular-cli
 if ! command_exists ng ; then
-	npm install -g angular-cli
+	npm install -g @angular/cli
 fi
 
 # Check if the virtualenv has been created
