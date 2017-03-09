@@ -16,7 +16,7 @@ SOURCE_REQUIRED_ERROR = _('You need to specify where the share comes from')
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
-        fields = ('url', 'uuid', 'players', 'companies')
+        fields = ('url', 'uuid', 'players', 'companies', 'cash')
 
 
 class PlayerSerializer(serializers.ModelSerializer):
