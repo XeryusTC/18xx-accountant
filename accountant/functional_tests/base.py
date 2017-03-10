@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+import inspect
 import signal
 from selenium import webdriver
 from unipath import Path
@@ -14,6 +15,10 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         self.browser = self.webdriver()
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
+        self.verbosity = self._get_verbosity()
+        if self.verbosity >= 2:
+            print() # Start stories on a fresh line
+
     def tearDown(self):
         if self._test_has_failed(): # pragma: no cover
             SCREEN_DUMP_LOCATION.mkdir()
@@ -23,6 +28,10 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 self._take_screenshot(filename + '.png')
                 self._dump_html(filename + '.html')
         self.browser.quit()
+
+    def story(self, text):
+        if self.verbosity >= 2:
+            print('-', text)
 
     def _test_has_failed(self): # pragma: no cover
         for method, error in self._outcome.errors:
@@ -44,3 +53,12 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             '{cls}.{method}-window{windowid}-{timestamp}'.format(
                 cls=self.__class__.__name__, method=self._testMethodName,
                 windowid=windowid, timestamp=timestamp))
+
+    def _get_verbosity(self):
+        """Get value of verbosity level argument given to manage.py"""
+        # Code taken from http://stackoverflow.com/questions/27456881/
+        for s in reversed(inspect.stack()):
+            options = s[0].f_locals.get('options')
+            if isinstance(options, dict):
+                return int(options['verbosity'])
+        return 1
