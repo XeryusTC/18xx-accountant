@@ -24,6 +24,7 @@ if [ ! -e /etc/systemd/system/xvfb.service ]; then
 	systemctl enable xvfb.service
 	systemctl start xvfb.service
 	echo "export PATH=$PATH:/usr/lib/chromium" >> .bashrc
+	echo "export DISPLAY=:99" >> .bashrc
 fi
 
 # Set up PostgreSQL
