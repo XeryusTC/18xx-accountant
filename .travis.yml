@@ -16,12 +16,8 @@ env:
     global:
         - DJANGO_SETTINGS_MODULE="accountant.settings.ci"
     matrix:
-        - REVERSE= SUITE=functional_tests
-        - REVERSE= SUITE=core
-        - REVERSE= SUITE=interface
-        - REVERSE=--reverse SUITE=functional_tests
-        - REVERSE=--reverse SUITE=core
-        - REVERSE=--reverse SUITE=interface
+        - REVERSE=
+        - REVERSE=--reverse
 install:
     - pip install -r requirements/ci.txt
 before_script:
@@ -34,6 +30,6 @@ before_script:
     - export PATH=$PATH:$(pwd)
 script:
     - cd accountant
-    - coverage run manage.py test $SUITE $REVERSE -v2
+    - coverage run manage.py test $REVERSE -v2
 after_success:
     - codecov
