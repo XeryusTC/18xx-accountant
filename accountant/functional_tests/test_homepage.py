@@ -4,6 +4,15 @@ from .base import FunctionalTestCase
 from .pages import game
 
 class HomePageTest(FunctionalTestCase):
+    def test_loads_angular_app(self):
+        self.story('Alice is a user who visits the website')
+        self.browser.get(self.live_server_url)
+
+        self.story('There is an angular root element in the DOM')
+        page = game.Homepage(self.browser)
+        self.assertIsNotNone(page.app_root)
+        self.assertEqual(page.app_root.get_attribute('ng-version'), '2.4.9')
+
     def test_create_game(self):
         self.story('Alice is a user who visits the website')
         self.browser.get(self.live_server_url)

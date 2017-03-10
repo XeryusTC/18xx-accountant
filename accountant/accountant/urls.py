@@ -21,13 +21,15 @@ import rest_framework.urls
 
 import core.urls
 import interface.urls
+import ng.urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns += i18n_patterns(
-    url(r'^', include(interface.urls, namespace='ui')),
+    url(r'^ui/', include(interface.urls, namespace='ui')),
     url(r'^api/', include(core.urls)),
     url(r'^api-auth/', include(rest_framework.urls, namespace=rest_framework)),
+    url(r'^', include(ng.urls, namespace='ng')),
 )
