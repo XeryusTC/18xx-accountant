@@ -10,7 +10,7 @@ SCREEN_DUMP_LOCATION = Path('screendumps')
 
 class FunctionalTestCase(StaticLiveServerTestCase):
     def setUp(self):
-        self.webdriver = webdriver.PhantomJS
+        self.webdriver = webdriver.Chrome
         self.browser = self.webdriver()
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
@@ -22,7 +22,6 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 filename = self._get_filename(ix)
                 self._take_screenshot(filename + '.png')
                 self._dump_html(filename + '.html')
-        self.browser.service.process.send_signal(signal.SIGTERM)
         self.browser.quit()
 
     def _test_has_failed(self): # pragma: no cover

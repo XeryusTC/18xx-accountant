@@ -15,14 +15,15 @@ fi
 apt-get update
 apt-get install -y python3 python3-pip python3-virtualenv virtualenv git \
 	gettext postgresql-9.4 postgresql-server-dev-9.4 libfontconfig \
-	nodejs
+	nodejs xvfb chromium chromedriver
 
-# Download and install PhantomJS
-if ! command_exists phantomjs ; then
-	wget --quiet -O /tmp/phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-	tar -xjC /tmp/ -f /tmp/phantomjs.tar.bz2
-	mv /tmp/phantomjs-2.1.1-linux-x86_64/ /usr/local/share/phantomjs-2.1.1/
-	ln -s /usr/local/share/phantomjs-2.1.1/bin/phantomjs /usr/bin/phantomjs
+# Set up xvfb
+if [ ! -e /etc/systemd/system/xvfb.service ]; then
+	cp /vagrant/xvfb.service /etc/systemd/system/xvfb.service
+	systemctl daemon-reload
+	systemctl enable xvfb.service
+	systemctl start xvfb.service
+	echo "export PATH=$PATH:/usr/lib/chromium" >> .bashrc
 fi
 
 # Set up PostgreSQL
