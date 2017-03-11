@@ -19,8 +19,4 @@ htmlcov
 
 # Angular generated files being served by Django
 accountant/templates/ng/index.html
-accountant/static/inline.bundle.js
-accountant/static/polyfills.bundle.js
-accountant/static/styles.bundle.js
-accountant/static/vendor.bundle.js
-accountant/static/main.bundle.js
+accountant/static/*.bundle.js
