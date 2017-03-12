@@ -4,7 +4,6 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Game } from './models/game';
-import { GAMES } from './mock-games';
 
 @Injectable()
 export class GameService {
