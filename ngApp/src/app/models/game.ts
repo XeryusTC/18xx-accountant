@@ -1,4 +1,8 @@
 export class Game {
-	uuid: string;
-	cash: int;
+	companies = [];
+	players = [];
+	constructor(
+		public uuid: string,
+		public cash: number
+	) { }
 }

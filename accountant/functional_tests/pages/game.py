@@ -5,7 +5,7 @@ class Homepage(PageObject):
     stylesheets = MultiPageElement(tag_name='link')
     scripts = MultiPageElement(tag_name='script')
     start_button = PageElement(name='new_game')
-    bank_cash = PageElement(name='bank_cash')
+    bank_cash = PageElement(name='cash')
     app_root = PageElement(tag_name='app-root')
 
 class GamePage(PageObject):
