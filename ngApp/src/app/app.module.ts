@@ -10,16 +10,21 @@ import { StartGameFormComponent } from
 
 import { GameService } from './game.service';
 
+import { GameRoutingModule } from './game-routing.module';
+import { GamePageComponent } from './game-page/game-page.component';
+
 @NgModule({
 	declarations: [
 		AppComponent,
 		StartGameFormComponent,
-		StartPageComponent
+		StartPageComponent,
+		GamePageComponent
 	],
 	imports: [
 		BrowserModule,
 		FormsModule,
-		HttpModule
+		HttpModule,
+		GameRoutingModule
 	],
 	providers: [
 		GameService

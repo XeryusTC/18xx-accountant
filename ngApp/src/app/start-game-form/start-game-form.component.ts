@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router }            from '@angular/router';
 
 import { Game } from '../models/game';
 import { GameService } from '../game.service';
@@ -11,16 +12,18 @@ import { GameService } from '../game.service';
 export class StartGameFormComponent implements OnInit {
 	model = new Game('', 12000);
 
-	constructor(private gameService: GameService) { }
+	constructor(
+		private router: Router,
+		private gameService: GameService) { }
 
 	ngOnInit() {
 	}
 
 	onSubmit() {
-		console.log('submit');
 		this.gameService.create(this.model)
 			.then(game => {
 				console.log(game);
+				this.router.navigate(['game/', game.uuid, '']);
 			});
 	}
 }
