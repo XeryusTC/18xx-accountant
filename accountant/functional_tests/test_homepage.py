@@ -27,7 +27,7 @@ class HomePageTest(FunctionalTestCase):
         page.start_button.click()
 
         self.story('She lands on a new page')
-        self.assertIn('/en/game/', self.browser.current_url)
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         self.assertEqual(self.browser.title, '18xx Accountant')
 
     def test_create_game_with_bank_size(self):
@@ -41,6 +41,6 @@ class HomePageTest(FunctionalTestCase):
 
         self.story('She lands on the game page, it says that the bank size is '
             '9000')
-        self.assertIn('/en/game/', self.browser.current_url)
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         game_page = game.GamePage(self.browser)
         self.assertEqual(game_page.bank_cash.text, '9000')

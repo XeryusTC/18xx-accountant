@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import inspect
 import signal
-from selenium import webdriver
+from pytractor import webdriver
 from unipath import Path
 
 DEFAULT_WAIT = 3

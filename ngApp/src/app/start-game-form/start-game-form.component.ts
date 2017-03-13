@@ -23,7 +23,7 @@ export class StartGameFormComponent implements OnInit {
 		this.gameService.create(this.model)
 			.then(game => {
 				console.log(game);
-				this.router.navigate(['game/', game.uuid, '']);
+				this.router.navigate(['game/', game.uuid]);
 			});
 	}
 }

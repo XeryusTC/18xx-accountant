@@ -7,7 +7,7 @@ import { Game } from './models/game';
 
 @Injectable()
 export class GameService {
-	private gameUrl = "/en/api/game/";
+	private gameUrl = "/api/game/";
 	private headers = new Headers({'Content-Type': 'application/json'})
 
 	constructor(private http: Http) { }

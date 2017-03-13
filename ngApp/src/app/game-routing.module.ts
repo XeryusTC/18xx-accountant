@@ -6,7 +6,7 @@ import { GamePageComponent }  from './game-page/game-page.component';
 
 const routes: Routes = [
 	{path: '', component: StartPageComponent},
-	{path: 'game/:uuid/', component: GamePageComponent}
+	{path: 'game/:uuid', component: GamePageComponent}
 ];
 
 @NgModule({

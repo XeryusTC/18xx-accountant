@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
-urlpatterns += i18n_patterns(
+urlpatterns = (
     url(r'^ui/', include(interface.urls, namespace='ui')),
     url(r'^api/', include(core.urls)),
     url(r'^api-auth/', include(rest_framework.urls, namespace=rest_framework)),
