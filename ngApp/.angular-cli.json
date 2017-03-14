@@ -7,10 +7,7 @@
     {
       "root": "src",
       "outDir": "dist",
-      "assets": [
-        "static",
-        "favicon.ico"
-      ],
+      "assets": [],
       "index": "index.html",
       "main": "main.ts",
       "polyfills": "polyfills.ts",
