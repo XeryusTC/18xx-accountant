@@ -19,6 +19,13 @@ export class GameService {
 			.catch(this.handleError);
 	}
 
+	getGame(uuid: string): Promise<Game> {
+		return this.http.get(this.gameUrl + uuid + '/')
+			.toPromise()
+			.then(response => response.json() as Game)
+			.catch(this.handleError);
+	}
+
 	create(game: Game): Promise<Game> {
 		return this.http
 			.post(this.gameUrl, JSON.stringify(game), {headers: this.headers})

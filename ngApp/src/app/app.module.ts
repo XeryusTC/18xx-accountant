@@ -12,13 +12,15 @@ import { GameService } from './game.service';
 
 import { GameRoutingModule } from './game-routing.module';
 import { GamePageComponent } from './game-page/game-page.component';
+import { BankDetailComponent } from './bank-detail/bank-detail.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		StartGameFormComponent,
 		StartPageComponent,
-		GamePageComponent
+		GamePageComponent,
+		BankDetailComponent
 	],
 	imports: [
 		BrowserModule,
