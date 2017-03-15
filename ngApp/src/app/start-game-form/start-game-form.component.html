@@ -1,6 +1,5 @@
 <form (ngSubmit)="onSubmit()" #gameForm="ngForm">
-	<label for="cash">Bank cash</label>
+	<label for="cash">Bank size</label>
 	<input type="number" name="cash" id="cash" [(ngModel)]="model.cash">
-
 	<button type="submit" name="new_game">Start new game</button>
 </form>

@@ -1,3 +1,12 @@
 <div *ngIf="game">
-	<bank-detail [game]="game"></bank-detail>
+	<div class="row">
+		<div class="column column-75"></div>
+		<div class="column column-25">
+			<bank-detail [game]="game"></bank-detail>
+		</div>
+	</div>
+</div>
+
+<div *ngIf="!game">
+	Loading game...
 </div>
