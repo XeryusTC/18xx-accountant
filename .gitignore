@@ -18,5 +18,4 @@ htmlcov
 .coverage
 
 # Angular generated files being served by Django
-accountant/templates/ng/index.html
-accountant/static/*.bundle.js
+ng/
