@@ -23,7 +23,7 @@ class HomePageTest(FunctionalTestCase):
         self.story('There is a button that says "Start new game", she clicks '
             'it')
         page = game.Homepage(self.browser)
-        self.assertEqual(page.start_button.text, 'Start new game')
+        self.assertEqual(page.start_button.text.lower(), 'start new game')
         page.start_button.click()
 
         self.story('She lands on a new page')
