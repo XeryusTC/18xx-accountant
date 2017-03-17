@@ -13,6 +13,8 @@ import { GameService } from './game.service';
 import { GameRoutingModule } from './game-routing.module';
 import { GamePageComponent } from './game-page/game-page.component';
 import { BankDetailComponent } from './bank-detail/bank-detail.component';
+import { MenuComponent } from './menu/menu.component';
+import { AddPlayerComponent } from './add-player/add-player.component';
 
 @NgModule({
 	declarations: [
@@ -20,7 +22,9 @@ import { BankDetailComponent } from './bank-detail/bank-detail.component';
 		StartGameFormComponent,
 		StartPageComponent,
 		GamePageComponent,
-		BankDetailComponent
+		BankDetailComponent,
+		MenuComponent,
+		AddPlayerComponent
 	],
 	imports: [
 		BrowserModule,
