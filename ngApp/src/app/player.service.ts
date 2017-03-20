@@ -12,6 +12,13 @@ export class PlayerService {
 
 	constructor(private http: Http) { }
 
+	getPlayer(uuid: string): Promise<Player> {
+		return this.http.get(this.playerUrl + uuid + '/')
+			.toPromise()
+			.then(response => response.json() as Player)
+			.catch(this.handleError);
+	}
+
 	create (player: Player): Promise<Player> {
 		return this.http
 			.post(this.playerUrl, JSON.stringify(player),
