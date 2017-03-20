@@ -11,7 +11,8 @@ class HomePageTest(FunctionalTestCase):
         self.story('There is an angular root element in the DOM')
         page = game.Homepage(self.browser)
         self.assertIsNotNone(page.app_root)
-        self.assertEqual(page.app_root.get_attribute('ng-version'), '2.4.9')
+        self.assertTrue(
+            page.app_root.get_attribute('ng-version').startswith('2.4'))
 
     def test_create_game(self):
         self.story('Alice is a user who visits the website')
