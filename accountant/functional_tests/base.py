@@ -54,7 +54,7 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 cls=self.__class__.__name__, method=self._testMethodName,
                 windowid=windowid, timestamp=timestamp))
 
-    def _get_verbosity(self):
+    def _get_verbosity(self): # pragma: no cover
         """Get value of verbosity level argument given to manage.py"""
         # Code taken from http://stackoverflow.com/questions/27456881/
         for s in reversed(inspect.stack()):
