@@ -1,10 +1,11 @@
 <nav>
-	<a routerLink="/game/{{game.uuid}}" routerLinkActive="button-outline"
-		class="button">
+	<a routerLink="/game/{{game_id}}" routerLinkActive="button-outline"
+		class="button" id="back">
 		Return to game
 	</a>
-	<a routerLink="/game/{{game.uuid}}/add-player" id="add_player"
-		routerLinkActive="button-outline" class="button">
+	<a routerLink="/game/{{game_id}}/add-player"
+		routerLinkActive="button-outline"
+		class="button" id="add_player">
 		Add player
 	</a>
 </nav>

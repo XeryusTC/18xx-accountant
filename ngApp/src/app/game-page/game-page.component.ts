@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Title }                  from '@angular/platform-browser';
 
 import 'rxjs/add/operator/switchMap';
 
@@ -19,6 +20,7 @@ export class GamePageComponent implements OnInit {
 	players: Player[] = [];
 
 	constructor(
+		private titleService: Title,
 		private route: ActivatedRoute,
 		private gameService: GameService,
 		private playerService: PlayerService
@@ -34,6 +36,7 @@ export class GamePageComponent implements OnInit {
 	}
 
 	ngOnInit() {
+		this.titleService.setTitle('18xx Accountant')
 		this.route.params
 		.switchMap((params: Params) =>
 				   this.gameService.getGame(params['uuid']))

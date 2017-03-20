@@ -73,7 +73,6 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertIn('There is already a player with this name in your game',
             add_player.error_list.text)
 
-    @unittest.expectedFailure
     def test_can_return_to_game_page_from_add_player_page(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -84,13 +83,14 @@ class CreatePlayerTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         game_page.add_player_link.click()
         self.assertRegex(self.browser.current_url,
-            r'/en/game/([^/]+)/add-player/$')
+            r'/game/([^/]+)/add-player$')
 
         self.story("She doesn't want to add a player and clicks the back "
             "button")
         add_player = game.AddPlayerPage(self.browser)
         add_player.back.click()
-        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+        self.assertEqual(self.browser.title, '18xx Accountant')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         self.assertEqual(game_page.get_players(), [])
 
     @unittest.expectedFailure
