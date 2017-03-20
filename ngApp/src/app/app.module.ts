@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -9,12 +9,15 @@ import { StartGameFormComponent } from
 	'./start-game-form/start-game-form.component';
 
 import { GameService } from './game.service';
+import { PlayerService } from './player.service';
 
 import { GameRoutingModule } from './game-routing.module';
 import { GamePageComponent } from './game-page/game-page.component';
 import { BankDetailComponent } from './bank-detail/bank-detail.component';
 import { MenuComponent } from './menu/menu.component';
 import { AddPlayerComponent } from './add-player/add-player.component';
+import { AddPlayerFormComponent } from 
+	'./add-player-form/add-player-form.component';
 
 @NgModule({
 	declarations: [
@@ -24,7 +27,8 @@ import { AddPlayerComponent } from './add-player/add-player.component';
 		GamePageComponent,
 		BankDetailComponent,
 		MenuComponent,
-		AddPlayerComponent
+		AddPlayerComponent,
+		AddPlayerFormComponent
 	],
 	imports: [
 		BrowserModule,
@@ -33,7 +37,9 @@ import { AddPlayerComponent } from './add-player/add-player.component';
 		GameRoutingModule
 	],
 	providers: [
-		GameService
+		GameService,
+		PlayerService,
+		Title
 	],
 	bootstrap: [AppComponent]
 })
