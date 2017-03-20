@@ -9,7 +9,7 @@ class Homepage(PageObject):
     app_root = PageElement(tag_name='app-root')
 
 class GamePage(PageObject):
-    add_player_link = PageElement(name='add_player')
+    add_player_link = PageElement(id_='add_player')
     add_company_link = PageElement(name='add_company')
     bank_cash = PageElement(css="#bank #cash")
 
