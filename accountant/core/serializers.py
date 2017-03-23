@@ -24,6 +24,14 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = models.Player
         fields = ('url', 'uuid', 'name', 'game', 'cash', 'shares')
 
+    def create(self, validated_data):
+        player = models.Player.objects.create(**validated_data)
+        if 'cash' in validated_data:
+            game = player.game
+            game.cash -= validated_data['cash']
+            game.save()
+        return player
+
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
