@@ -40,7 +40,6 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertEqual(player_list[0]['name'].text, 'Alice')
         self.assertEqual(player_list[0]['cash'].text, '700')
 
-    @unittest.expectedFailure
     def test_cannot_create_duplicate_player(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -69,7 +68,7 @@ class CreatePlayerTests(FunctionalTestCase):
         add_player.cash.send_keys('100\n')
         self.story('She stays on the same page and sees an error message')
         self.assertRegex(self.browser.current_url,
-            r'/en/game/([^/]+)/add-player/$')
+            r'/game/([^/]+)/add-player$')
         self.assertIn('There is already a player with this name in your game',
             add_player.error_list.text)
 

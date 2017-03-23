@@ -1,4 +1,9 @@
 <form (ngSubmit)="onSubmit()" #playerForm="ngForm">
+	<div *ngIf="errors" class="errorlist row">
+		<div *ngFor="let error of errors" class="column">
+			{{error}}
+		</div>
+	</div>
 	<div class="row">
 		<div class="column column-33">
 			<label for="name">Player name</label>
