@@ -49,7 +49,7 @@
     }
   },
   "defaults": {
-	"poll": 1000,
+	"poll": 5000,
     "styleExt": "css",
     "component": {}
   }
