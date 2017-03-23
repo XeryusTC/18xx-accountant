@@ -101,7 +101,8 @@ class PlayerTests(APITestCase):
         self.assertEqual(models.Player.objects.count(), 1)
 
     def test_creating_player_decreases_cash_in_bank(self):
-        self.assertEqual(game.cash, 12000)
+        game.cash = 12000
+        game.save()
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': game.pk, 'cash': 500}
 
