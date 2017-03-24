@@ -10,7 +10,7 @@ class Homepage(PageObject):
 
 class GamePage(PageObject):
     add_player_link = PageElement(id_='add_player')
-    add_company_link = PageElement(name='add_company')
+    add_company_link = PageElement(id_='add_company')
     bank_cash = PageElement(css="#bank #cash")
 
     player_name_list = MultiPageElement(css="div.player div.name")

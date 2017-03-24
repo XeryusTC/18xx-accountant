@@ -4,7 +4,6 @@ from .base import FunctionalTestCase
 from .pages import game
 
 class CompanyTests(FunctionalTestCase):
-    @unittest.expectedFailure
     def test_can_create_company(self):
         self.story('Alice is a user who starts a game')
         self.browser.get(self.live_server_url)
@@ -13,18 +12,17 @@ class CompanyTests(FunctionalTestCase):
 
         self.story('She sees a button that says "Add company" and clicks it')
         game_page = game.GamePage(self.browser)
-        self.assertEqual(game_page.add_company_link.text, 'Add company')
+        self.assertEqual(game_page.add_company_link.text.lower(),
+            'add company')
         game_page.add_company_link.click()
 
         self.story('She lands on a add company page')
         add_company = game.AddCompanyPage(self.browser)
         self.assertRegex(self.browser.current_url,
-            r'/en/game/([^/]+)/add-company/$')
+            r'/game/([^/]+)/add-company$')
         self.assertEqual(self.browser.title, 'Add company')
         self.assertEqual(add_company.header.text, 'Add company')
 
-        self.story('The game field is hidden')
-        self.assertEqual(add_company.game.get_attribute('type'), 'hidden')
         self.story('She enters a name, an amount of starting cash and a share '
             'split')
         add_company.name.clear()
@@ -36,7 +34,7 @@ class CompanyTests(FunctionalTestCase):
         add_company.add_button.click()
 
         self.story('The company appears in the company list on the game page')
-        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
 
         company_list = game_page.get_companies()
         self.assertEqual(len(company_list), 1)
