@@ -138,6 +138,19 @@ class CompanyTests(APITestCase):
             "Created duplicate company: " + str(response.data))
         self.assertEqual(models.Company.objects.count(), 1)
 
+    def test_creating_company_decreases_cash_in_bank(self):
+        game.cash = 1000
+        game.save()
+        url = reverse('company-list')
+        data = {'name': 'PRR', 'game': game.pk, 'cash': 300}
+
+        response = self.client.post(url, data, format='json')
+
+        game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(models.Company.objects.first().cash, 300)
+        self.assertEqual(game.cash, 700)
+
 
 class PlayerShareTests(APITestCase):
     def test_create_share(self):

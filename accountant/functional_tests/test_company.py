@@ -133,7 +133,6 @@ class CompanyTests(FunctionalTestCase):
         self.assertIn('fg-yellow-300',
             company_list[0]['elem'].get_attribute('class'))
 
-    @unittest.expectedFailure
     def test_creating_company_with_cash_decreases_bank_cash(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)

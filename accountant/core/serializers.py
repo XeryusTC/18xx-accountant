@@ -40,6 +40,14 @@ class CompanySerializer(serializers.ModelSerializer):
             'game', 'cash', 'share_count', 'ipo_shares', 'bank_shares',
             'player_owners')
 
+    def create(self, validated_data):
+        company = models.Company.objects.create(**validated_data)
+        if 'cash' in validated_data:
+            game = company.game
+            game.cash -= validated_data['cash']
+            game.save()
+        return company
+
 
 class PlayerShareSerializer(serializers.ModelSerializer):
     class Meta:
