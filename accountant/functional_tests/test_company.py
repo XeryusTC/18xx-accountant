@@ -44,7 +44,6 @@ class CompanyTests(FunctionalTestCase):
         self.assertEqual(company_list[0]['ipo_shares'].text, '10')
         self.assertEqual(company_list[0]['bank_shares'].text, '0')
 
-    @unittest.expectedFailure
     def test_cannot_create_duplicate_company(self):
         self.story('Alice is a user who starts a game')
         self.browser.get(self.live_server_url)
@@ -69,7 +68,7 @@ class CompanyTests(FunctionalTestCase):
         add_company.name.send_keys('NYC\n')
         self.story('She stays on the page and sees an error message')
         self.assertRegex(self.browser.current_url,
-            r'/en/game/([^/]+)/add-company/$')
+            r'/game/([^/]+)/add-company$')
         self.assertIn('There is already a company with this name in your game',
             add_company.error_list.text)
 

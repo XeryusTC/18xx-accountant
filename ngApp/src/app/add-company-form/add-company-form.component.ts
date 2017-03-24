@@ -4,6 +4,9 @@ import { Router }                   from '@angular/router';
 import { Company }        from '../models/company';
 import { CompanyService } from '../company.service';
 
+const DUPLICATE_COMPANY_ERROR =
+	'There is already a company with this name in your game';
+
 @Component({
 	selector: 'add-company-form',
 	templateUrl: './add-company-form.component.html',
@@ -12,6 +15,7 @@ import { CompanyService } from '../company.service';
 export class AddCompanyFormComponent implements OnInit {
 	model = new Company('', '', '', 0, 10);
 	@Input() game_id: string;
+	errors: string[];
 
 	constructor(
 		private router: Router,
@@ -27,6 +31,14 @@ export class AddCompanyFormComponent implements OnInit {
 			.then(company => {
 				console.log('Created company', company);
 				this.router.navigate(['game/', company.game]);
+			})
+			.catch(error => {
+				this.errors = [];
+				console.log(error.json());
+				if (error.json()['non_field_errors'][0] ==
+					'The fields game, name must make a unique set.') {
+					this.errors.push(DUPLICATE_COMPANY_ERROR);
+				}
 			});
 	}
 }
