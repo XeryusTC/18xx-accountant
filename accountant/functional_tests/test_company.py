@@ -72,8 +72,7 @@ class CompanyTests(FunctionalTestCase):
         self.assertIn('There is already a company with this name in your game',
             add_company.error_list.text)
 
-    @unittest.expectedFailure
-    def test_can_return_to_game_page_from_add_player_page(self):
+    def test_can_return_to_game_page_from_add_company_page(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
         page = game.Homepage(self.browser)
@@ -83,13 +82,13 @@ class CompanyTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         game_page.add_company_link.click()
         self.assertRegex(self.browser.current_url,
-            r'/en/game/([^/]+)/add-company/$')
+            r'/game/([^/]+)/add-company$')
 
         self.story("She realises she doesn't want to create a company and "
             "clicks the back button")
         add_company = game.AddCompanyPage(self.browser)
         add_company.back.click()
-        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         self.assertEqual(game_page.get_companies(), [])
 
     @unittest.expectedFailure
