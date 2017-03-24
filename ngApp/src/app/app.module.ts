@@ -10,6 +10,7 @@ import { StartGameFormComponent } from
 
 import { GameService } from './game.service';
 import { PlayerService } from './player.service';
+import { CompanyService } from './company.service';
 
 import { GameRoutingModule } from './game-routing.module';
 import { GamePageComponent } from './game-page/game-page.component';
@@ -18,6 +19,8 @@ import { MenuComponent } from './menu/menu.component';
 import { AddPlayerComponent } from './add-player/add-player.component';
 import { AddPlayerFormComponent } from 
 	'./add-player-form/add-player-form.component';
+import { AddCompanyComponent } from './add-company/add-company.component';
+import { AddCompanyFormComponent } from './add-company-form/add-company-form.component';
 
 @NgModule({
 	declarations: [
@@ -28,7 +31,9 @@ import { AddPlayerFormComponent } from
 		BankDetailComponent,
 		MenuComponent,
 		AddPlayerComponent,
-		AddPlayerFormComponent
+		AddPlayerFormComponent,
+		AddCompanyComponent,
+		AddCompanyFormComponent
 	],
 	imports: [
 		BrowserModule,
@@ -39,6 +44,7 @@ import { AddPlayerFormComponent } from
 	providers: [
 		GameService,
 		PlayerService,
+		CompanyService,
 		Title
 	],
 	bootstrap: [AppComponent]

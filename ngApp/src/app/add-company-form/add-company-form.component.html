@@ -1,0 +1,33 @@
+<form (ngSubmit)="onSubmit()" #companyForm="ngForm">
+	<div class="row">
+		<div class="column column-33">
+			<label for="name">Name</label>
+		</div>
+		<div class="column column-66">
+			<input name="name" id="name" [(ngModel)]="model.name">
+		</div>
+	</div>
+	<div class="row">
+		<div class="column column-33">
+			<label for="cash">Cash</label>
+		</div>
+		<div class="column column-66">
+			<input name="cash" id="cash" type="number"
+				[(ngModel)]="model.cash">
+		</div>
+	</div>
+	<div class="row">
+		<div class="column column-33">
+			<label for="share_count">Number of shares</label>
+		</div>
+		<div class="column column-66">
+			<input name="share_count" id="share_count" type="number"
+				[(ngModel)]="model.share_count">
+		</div>
+	</div>
+	<div class="row">
+		<div class="column column-33">
+			<button type="submit">Add company</button>
+		</div>
+	</div>
+</form>

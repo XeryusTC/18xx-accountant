@@ -6,8 +6,10 @@ import 'rxjs/add/operator/switchMap';
 
 import { Game }          from '../models/game';
 import { Player }        from '../models/player';
+import { Company }       from '../models/company';
 import { GameService }   from '../game.service';
 import { PlayerService } from '../player.service';
+import { CompanyService } from '../company.service';
 
 @Component({
 	selector: 'app-game-page',
@@ -18,12 +20,14 @@ export class GamePageComponent implements OnInit {
 	uuid: string;
 	game: Game;
 	players: Player[] = [];
+	companies: Company[] = [];
 
 	constructor(
 		private titleService: Title,
 		private route: ActivatedRoute,
 		private gameService: GameService,
-		private playerService: PlayerService
+		private playerService: PlayerService,
+		private companyService: CompanyService
 	) { }
 
 	getPlayers() {
@@ -35,6 +39,15 @@ export class GamePageComponent implements OnInit {
 		}
 	}
 
+	getCompanies(): void {
+		for (var company_uuid of this.game.companies) {
+			this.companyService.getCompany(company_uuid)
+				.then(company => {
+					this.companies.push(company);
+				});
+		}
+	}
+
 	ngOnInit() {
 		this.titleService.setTitle('18xx Accountant')
 		this.route.params
@@ -43,6 +56,7 @@ export class GamePageComponent implements OnInit {
 				   .subscribe((game) => {
 					   this.game = game;
 					   this.getPlayers();
+					   this.getCompanies();
 				   });
 	}
 }
