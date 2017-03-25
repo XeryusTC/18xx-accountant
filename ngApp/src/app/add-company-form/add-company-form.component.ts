@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router }                   from '@angular/router';
 
+import { COLORS }         from '../colors';
 import { Company }        from '../models/company';
 import { CompanyService } from '../company.service';
 
@@ -14,6 +15,7 @@ const DUPLICATE_COMPANY_ERROR =
 })
 export class AddCompanyFormComponent implements OnInit {
 	model = new Company('', '', '', 0, 10);
+	colors = COLORS;
 	@Input() game_id: string;
 	errors: string[];
 
@@ -40,5 +42,19 @@ export class AddCompanyFormComponent implements OnInit {
 					this.errors.push(DUPLICATE_COMPANY_ERROR);
 				}
 			});
+	}
+
+	colorRows(): string[] {
+		let rows = [];
+		let row = [];
+		let specials = [];
+		for (let i=0; i<= this.colors.length; i++) {
+			if ((i - 2) % 10 == 0) {
+				rows.push(row);
+				row = [];
+			}
+			row.push(this.colors[i]);
+		}
+		return rows;
 	}
 }

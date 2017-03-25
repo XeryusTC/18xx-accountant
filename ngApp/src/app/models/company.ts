@@ -6,6 +6,8 @@ export class Company {
 		public game: string,
 		public name: string,
 		public cash: number,
-		public share_count: number
+		public share_count: number,
+		public text_color: string = "black",
+		public background_color: string = "white"
 	) { }
 }

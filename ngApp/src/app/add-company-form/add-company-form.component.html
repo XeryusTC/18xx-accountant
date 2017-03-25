@@ -31,6 +31,44 @@
 		</div>
 	</div>
 	<div class="row">
+		<div class="column column-50">
+			<strong>Text color</strong>
+		</div>
+		<div class="column column-50">
+			<strong>Background color</strong>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="column column-50">
+			{{ model.text_color }}
+			<div class="row" *ngFor="let row of colorRows(); let i=index">
+				<ng-container *ngFor="let color of row; let j=index">
+					<label class="column column-10 bg-{{ color }}">
+						<input type="radio" name="text-color-select"
+							(click)="model.text_color = color"
+							[checked]="color === model.text_color"
+							[value]="color">
+					</label>
+				</ng-container>
+			</div>
+		</div>
+		<div class="column column-50">
+			{{ model.background_color }}
+			<div class="row" *ngFor="let row of colorRows(); let i=index">
+				<ng-container *ngFor="let color of row; let j=index">
+					<label class="column column-10 bg-{{ color }}">
+						<input type="radio" name="background-color-select"
+							(click)="model.background_color = color"
+							[checked]="color == model.background_color"
+							[value]="color">
+					</label>
+				</ng-container>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
 		<div class="column column-33">
 			<button type="submit">Add company</button>
 		</div>

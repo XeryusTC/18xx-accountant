@@ -22,14 +22,18 @@
 			<h2>Companies</h2>
 		</div>
 	</div>
-	<div *ngFor="let company of companies" class="row company">
-		<div class="column column-20 name">{{ company.name }}</div>
-		<div class="column column-10 cash">{{ company.cash }}</div>
-		<div class="column column-10 share_count">
-			{{ company.share_count }}
+	<div *ngFor="let company of companies"
+		class="company">
+		<div class="row bg-{{company.background_color}}
+				fg-{{company.text_color}}">
+			<div class="column column-20 name">{{ company.name }}</div>
+			<div class="column column-10 cash">{{ company.cash }}</div>
+			<div class="column column-10 share_count">
+				{{ company.share_count }}
+			</div>
+			<div class="column column-10 ipo">{{ company.ipo_shares }}</div>
+			<div class="column column-10 bank">{{ company.bank_shares }}</div>
 		</div>
-		<div class="column column-10 ipo">{{ company.ipo_shares }}</div>
-		<div class="column column-10 bank">{{ company.bank_shares }}</div>
 	</div>
 </div>
 
