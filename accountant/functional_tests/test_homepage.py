@@ -12,7 +12,7 @@ class HomePageTest(FunctionalTestCase):
         page = game.Homepage(self.browser)
         self.assertIsNotNone(page.app_root)
         self.assertTrue(
-            page.app_root.get_attribute('ng-version').startswith('2.4'))
+            page.app_root.get_attribute('ng-version').startswith('4.0'))
 
     def test_create_game(self):
         self.story('Alice is a user who visits the website')

@@ -36,7 +36,7 @@ fi
 
 # Install angular-cli
 if ! command_exists ng ; then
-	npm install -g @angular/cli
+	npm install -g @angular/cli@1.0.0
 fi
 
 # Check if the virtualenv has been created
@@ -49,6 +49,8 @@ fi
 source venv/bin/activate
 pip install -r /vagrant/requirements/dev.txt
 chown -R vagrant:vagrant venv
+# Apply migrations
+cd /vagrant/accountant && python manage.py migrate
 
 # Install angular requirements
 cd /vagrant/ngApp && npm install
