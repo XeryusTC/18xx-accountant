@@ -160,7 +160,7 @@ class CompanyTests(FunctionalTestCase):
         self.story('On the game page she sees that the bank size has reduced')
         self.assertEqual(game_page.bank_cash.text, '700')
 
-    @unittest.expectedFailure
+class ManageCompanyTests(FunctionalTestCase):
     def test_clicking_company_opens_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -180,21 +180,23 @@ class CompanyTests(FunctionalTestCase):
 
         self.story('The company detail sections are both hidden')
         companies = game_page.get_companies()
-        self.assertFalse(any(company['detail'].is_displayed()
-            for company in companies), 'Some detail section is displayed')
+        for company in companies:
+            with self.subTest(company=company['name'].text):
+                self.assertIsNone(company['detail'])
 
         self.story('She clicks the first company and the detail appear')
         companies[0]['elem'].click()
-        self.assertTrue(companies[0]['detail'].is_displayed())
-        self.assertFalse(companies[1]['detail'].is_displayed())
+        companies = game_page.get_companies() # Need to retrieve DOM updates
+        self.assertIsNotNone(companies[0]['detail'])
+        self.assertIsNone(companies[1]['detail'])
 
         self.story("She clicks the second company, the first company's"
             "details disappear and the second company's details appear")
         companies[1]['elem'].click()
-        self.assertFalse(companies[0]['detail'].is_displayed())
-        self.assertTrue(companies[1]['detail'].is_displayed())
+        companies = game_page.get_companies() # Need to retrieve DOM updates
+        self.assertIsNone(companies[0]['detail'])
+        self.assertIsNotNone(companies[1]['detail'])
 
-    @unittest.expectedFailure
     def test_clicking_company_closes_opened_player_detail_section(self):
         self.browser.get(self.live_server_url)
         homepage = game.Homepage(self.browser)
@@ -204,21 +206,27 @@ class CompanyTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         game_page.add_player_link.click()
         add_player = game.AddPlayerPage(self.browser)
-        add_player.add_button.click()
+        add_player.name.send_keys('Alice\n')
 
         self.story('She also adds a company')
         game_page.add_company_link.click()
         add_company = game.AddCompanyPage(self.browser)
-        add_company.add_button.click()
+        add_company.name.send_keys('NYC\n')
 
         self.story("She clicks the player to open the player's detail section")
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         player['row'].click()
-        self.assertTrue(player['detail'].is_displayed())
-        self.assertFalse(company['detail'].is_displayed())
+
+        # Retrieve DOM updates before testing visibility
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertIsNotNone(player['detail'])
+        self.assertIsNone(company['detail'])
 
         self.story('When she clicks the company the player detail closes')
         company['elem'].click()
-        self.assertFalse(player['detail'].is_displayed())
-        self.assertTrue(company['detail'].is_displayed())
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertIsNone(player['detail'])
+        self.assertIsNotNone(company['detail'])

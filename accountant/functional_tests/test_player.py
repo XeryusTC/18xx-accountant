@@ -115,7 +115,6 @@ class CreatePlayerTests(FunctionalTestCase):
 
 class ManagePlayerTests(FunctionalTestCase):
     """Tests for managing player actions during a game"""
-    @unittest.expectedFailure
     def test_clicking_player_opens_player_detail_section(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -139,20 +138,23 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('The player detail sections are both hidden')
         players = game_page.get_players()
-        self.assertFalse(any(player['detail'].is_displayed()
-            for player in players), 'Some detail section is displayed')
+        for player in players:
+            with self.subTest(player=player['name'].text):
+                self.assertIsNone(player['detail'])
 
         self.story('She clicks the first player and the details appear')
         players[0]['row'].click()
-        self.assertTrue(players[0]['detail'].is_displayed())
+        players = game_page.get_players() # Get DOM updates
+        self.assertIsNotNone(players[0]['detail'])
+        self.assertIsNone(players[1]['detail'])
 
         self.story("She clicks the second player, the first player's details"
             "disappear and the second player's appear")
         players[1]['row'].click()
-        self.assertFalse(players[0]['detail'].is_displayed())
-        self.assertTrue(players[1]['detail'].is_displayed())
+        players = game_page.get_players() # Get DOM updates
+        self.assertIsNone(players[0]['detail'])
+        self.assertIsNotNone(players[1]['detail'])
 
-    @unittest.expectedFailure
     def test_clicking_player_closes_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -163,21 +165,27 @@ class ManagePlayerTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         game_page.add_player_link.click()
         add_player = game.AddPlayerPage(self.browser)
-        add_player.add_button.click()
+        add_player.name.send_keys('Alice\n')
 
         self.story('She also adds a company')
         game_page.add_company_link.click()
         add_company = game.AddCompanyPage(self.browser)
-        add_company.add_button.click()
+        add_company.name.send_keys('PRR\n')
 
         self.story('She clicks the company to open its detail section')
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         company['elem'].click()
-        self.assertFalse(player['detail'].is_displayed())
-        self.assertTrue(company['detail'].is_displayed())
+
+        # Need to retrieve DOM updates first
+        company = game_page.get_companies()[0]
+        player = game_page.get_players()[0]
+        self.assertIsNone(player['detail'])
+        self.assertIsNotNone(company['detail'])
 
         self.story('When she clicks the player the company detail closes')
         player['row'].click()
-        self.assertTrue(player['detail'].is_displayed())
-        self.assertFalse(company['detail'].is_displayed())
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertIsNotNone(player['detail'])
+        self.assertIsNone(company['detail'])
