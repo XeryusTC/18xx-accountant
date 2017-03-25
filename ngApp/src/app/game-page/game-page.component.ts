@@ -21,6 +21,8 @@ export class GamePageComponent implements OnInit {
 	game: Game;
 	players: Player[] = [];
 	companies: Company[] = [];
+	selectedPlayer: Player;
+	selectedCompany: Company;
 
 	constructor(
 		private titleService: Title,
@@ -46,6 +48,16 @@ export class GamePageComponent implements OnInit {
 					this.companies.push(company);
 				});
 		}
+	}
+
+	selectPlayer(player: Player): void {
+		this.selectedPlayer = player;
+		this.selectedCompany = null;
+	}
+
+	selectCompany(company: Company): void {
+		this.selectedCompany = company;
+		this.selectedPlayer = null;
 	}
 
 	ngOnInit() {

@@ -7,9 +7,12 @@
 					<h2>Players</h2>
 				</div>
 			</div>
-			<div *ngFor="let player of players" class="row player">
-				<div class="column column-20 name">{{ player.name }}</div>
-				<div class="column column-10 cash">{{ player.cash }}</div>
+			<div *ngFor="let player of players" class="player">
+				<div class="row" (click)="selectPlayer(player)">
+					<div class="column column-20 name">{{ player.name }}</div>
+					<div class="column column-10 cash">{{ player.cash }}</div>
+				</div>
+				<div class="row detail" *ngIf="selectedPlayer===player"></div>
 			</div>
 		</div>
 		<div class="column column-25">
@@ -22,10 +25,9 @@
 			<h2>Companies</h2>
 		</div>
 	</div>
-	<div *ngFor="let company of companies"
-		class="company">
+	<div *ngFor="let company of companies" class="company">
 		<div class="row bg-{{company.background_color}}
-				fg-{{company.text_color}}">
+				fg-{{company.text_color}}" (click)="selectCompany(company)">
 			<div class="column column-20 name">{{ company.name }}</div>
 			<div class="column column-10 cash">{{ company.cash }}</div>
 			<div class="column column-10 share_count">
@@ -34,6 +36,7 @@
 			<div class="column column-10 ipo">{{ company.ipo_shares }}</div>
 			<div class="column column-10 bank">{{ company.bank_shares }}</div>
 		</div>
+		<div class="row detail" *ngIf="selectedCompany===company"></div>
 	</div>
 </div>
 
