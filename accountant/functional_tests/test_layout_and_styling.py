@@ -4,7 +4,6 @@ from .base import FunctionalTestCase
 from .pages import game
 
 class StylesheetTests(FunctionalTestCase):
-    @unittest.expectedFailure
     def test_color_css_loaded(self):
         self.story('Create a game')
         self.browser.get(self.live_server_url)

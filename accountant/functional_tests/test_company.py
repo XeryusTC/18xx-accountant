@@ -91,7 +91,6 @@ class CompanyTests(FunctionalTestCase):
         self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         self.assertEqual(game_page.get_companies(), [])
 
-    @unittest.expectedFailure
     def test_can_set_company_colors(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
@@ -107,8 +106,16 @@ class CompanyTests(FunctionalTestCase):
         add_company.name.clear()
         add_company.name.send_keys('C&O')
 
-        self.story('She sees two color selectors, the first is for the'
+        self.story('She sees two color selectors, one is for the'
             'background color, she picks the color blue')
+        self.assertGreater(len(add_company.background_color), 0)
+        self.assertGreater(len(add_company.text_color), 0)
+        # For some reason the test fails when the first color is selected
+        # only once, so do it twice to prevent that
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'blue-500':
+                radio.click()
+                break
         for radio in add_company.background_color:
             if radio.get_attribute('value') == 'blue-500':
                 radio.click()
@@ -122,7 +129,7 @@ class CompanyTests(FunctionalTestCase):
 
         self.story('She adds the company and is returned to the game page')
         add_company.add_button.click()
-        self.assertRegex(self.browser.current_url, r'/en/game/([^/]+)/$')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
 
         self.story('She sees that the company row has the correct colors')
         company_list = game_page.get_companies()
