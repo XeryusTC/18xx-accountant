@@ -17,12 +17,14 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
         fields = ('url', 'uuid', 'players', 'companies', 'cash')
+        read_only_fields = ('players', 'companies')
 
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
         fields = ('url', 'uuid', 'name', 'game', 'cash', 'shares')
+        read_only_fields = ('shares',)
 
     def create(self, validated_data):
         player = models.Player.objects.create(**validated_data)
@@ -39,6 +41,7 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = ('url', 'uuid', 'name', 'text_color', 'background_color',
             'game', 'cash', 'share_count', 'ipo_shares', 'bank_shares',
             'player_owners')
+        read_only_fields = ('player_owners',)
 
     def create(self, validated_data):
         company = models.Company.objects.create(**validated_data)
