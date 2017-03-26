@@ -20,3 +20,7 @@ class StylesheetTests(FunctionalTestCase):
 
         self.assertTrue(any('css/main.css' in s.get_attribute('href')
             for s in page.stylesheets))
+
+        # Test constant to see if css actually gets loaded
+        self.assertEqual('rgb(55, 71, 79)',
+            page.bank_cash.value_of_css_property('border-color'))
