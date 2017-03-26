@@ -672,3 +672,12 @@ class OperateTests(APITestCase):
     def test_gives_error_if_request_is_invalid(self, mock_buy_share):
         response = self.client.post(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ColorsTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('colors')
+
+    def test_returns_list_of_company_colors(self):
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data, models.Company.COLOR_CODES)

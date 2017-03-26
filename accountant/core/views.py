@@ -137,3 +137,8 @@ class OperateView(APIView):
             return Response(serializer.validated_data,
                 status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ColorsView(APIView):
+    def get(self, request, format=None):
+        return Response(models.Company.COLOR_CODES)
