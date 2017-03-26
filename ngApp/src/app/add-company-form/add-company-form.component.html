@@ -1,50 +1,49 @@
 <form (ngSubmit)="onSubmit()" #companyForm="ngForm">
 	<div *ngIf="errors" class="errorlist row">
-		<div *ngFor="let error of errors" class="dt-12">
+		<div *ngFor="let error of errors" class="tp-12">
 			{{ error }}
 		</div>
 	</div>
 	<div class="row">
-		<div class="dt-2">
+		<div class="tp-2">
 			<label for="name">Name</label>
 		</div>
-		<div class="dt-10">
+		<div class="tp-10">
 			<input type="text" name="name" id="name" [(ngModel)]="model.name">
 		</div>
 	</div>
 	<div class="row">
-		<div class="dt-2">
+		<div class="tp-2">
 			<label for="cash">Cash</label>
 		</div>
-		<div class="dt-10">
+		<div class="tp-10">
 			<input name="cash" id="cash" type="number"
 				[(ngModel)]="model.cash">
 		</div>
 	</div>
 	<div class="row">
-		<div class="dt-2">
+		<div class="tp-2">
 			<label for="share_count">Number of shares</label>
 		</div>
-		<div class="dt-10">
+		<div class="tp-10">
 			<input name="share_count" id="share_count" type="number"
 				[(ngModel)]="model.share_count">
 		</div>
 	</div>
 	<div class="row">
-		<div class="dt-6">
+		<div class="tp-6">
 			<strong>Text color</strong>
 		</div>
-		<div class="dt-6">
+		<div class="tp-6">
 			<strong>Background color</strong>
 		</div>
 	</div>
 
 	<div class="row nexted">
-		<div class="dt-6">
-			{{ model.text_color }}
+		<div class="tp-6">
 			<div class="row" *ngFor="let row of colorRows(); let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
-					<label class="dt-1 bg-{{ color }} centered color-select">
+					<label class="tp-1 bg-{{ color }} centered color-select">
 						<input type="radio" name="text-color-select"
 							(click)="model.text_color = color"
 							[checked]="color === model.text_color"
@@ -53,11 +52,10 @@
 				</ng-container>
 			</div>
 		</div>
-		<div class="dt-6">
-			{{ model.background_color }}
+		<div class="tp-6">
 			<div class="row" *ngFor="let row of colorRows(); let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
-					<label class="dt-1 bg-{{ color }} color-select">
+					<label class="tp-1 bg-{{ color }} color-select">
 						<input type="radio" name="background-color-select"
 							(click)="model.background_color = color"
 							[checked]="color == model.background_color"
@@ -69,7 +67,7 @@
 	</div>
 
 	<div class="row">
-		<div class="dt-4">
+		<div class="tp-4">
 			<button type="submit">Add company</button>
 		</div>
 	</div>

@@ -1,42 +1,44 @@
 <div *ngIf="game">
 	<menu [game_id]="game.uuid"></menu>
 	<div class="row nested">
-		<div class="dt-9" id="players">
+		<div class="tp-9 section" id="players">
 			<div class="row">
-				<div class="dt-12">
+				<div class="tp-12">
 					<h4>Players</h4>
 				</div>
 			</div>
 			<div *ngFor="let player of players" class="player">
 				<div class="row" (click)="selectPlayer(player)">
-					<div class="dt-2 name">{{ player.name }}</div>
-					<div class="dt-1 cash">{{ player.cash }}</div>
+					<div class="tp-2 name">{{ player.name }}</div>
+					<div class="tp-1 cash">{{ player.cash }}</div>
 				</div>
 				<div class="row detail" *ngIf="selectedPlayer===player"></div>
 			</div>
 		</div>
-		<div class="dt-3">
+		<div class="tp-3">
 			<bank-detail [game]="game"></bank-detail>
 		</div>
 	</div>
 
+	<div class="section">
 	<div class="row">
-		<div class="dt-12">
+		<div class="tp-12">
 			<h4>Companies</h4>
 		</div>
 	</div>
 	<div *ngFor="let company of companies" class="company">
 		<div class="row bg-{{company.background_color}}
 		fg-{{company.text_color}}" (click)="selectCompany(company)">
-			<div class="dt-2 name">{{ company.name }}</div>
-			<div class="dt-1 cash">{{ company.cash }}</div>
-			<div class="dt-1 share_count">
+			<div class="tp-2 name">{{ company.name }}</div>
+			<div class="tp-1 cash">{{ company.cash }}</div>
+			<div class="tp-1 share_count">
 				{{ company.share_count }}
 			</div>
-			<div class="dt-1 ipo">{{ company.ipo_shares }}</div>
-			<div class="dt-1 bank">{{ company.bank_shares }}</div>
+			<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
+			<div class="tp-1 bank">{{ company.bank_shares }}</div>
 		</div>
 		<div class="row detail" *ngIf="selectedCompany===company"></div>
+	</div>
 	</div>
 </div>
 
