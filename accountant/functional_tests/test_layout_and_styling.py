@@ -10,7 +10,7 @@ class StylesheetTests(FunctionalTestCase):
         page = game.Homepage(self.browser)
         page.start_button.click()
 
-        self.assertTrue(any('color.css' in s.get_attribute('href')
+        self.assertTrue(any('css/color.css' in s.get_attribute('href')
             for s in page.stylesheets))
 
     def test_main_stylesheet_loaded(self):
