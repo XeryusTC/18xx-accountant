@@ -140,6 +140,44 @@ class CompanyTests(FunctionalTestCase):
         self.assertIn('fg-yellow-300',
             company_list[0]['elem'].get_attribute('class'))
 
+    def test_company_colors_preview(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.start_button.click()
+
+        self.story('She goes to the add company screen')
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+
+        self.story('The preview is empty and has default colors')
+        add_company = game.AddCompanyPage(self.browser)
+        self.assertEqual(add_company.preview.text, '')
+        self.assertIn('fg-black', add_company.preview.get_attribute('class'))
+        self.assertIn('bg-white', add_company.preview.get_attribute('class'))
+
+        self.story('She enters a name and selects some colors')
+        add_company.name.clear()
+        add_company.name.send_keys('PRR')
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'green-700':
+                radio.click()
+                break
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'green-700':
+                radio.click()
+                break
+        for radio in add_company.text_color:
+            if radio.get_attribute('value') == 'red-500':
+                radio.click()
+                break
+
+        self.story('The preview has updated to the selected options')
+        self.assertEqual(add_company.preview.text, 'PRR')
+        self.assertIn('bg-green-700',
+            add_company.preview.get_attribute('class'))
+        self.assertIn('fg-red-500', add_company.preview.get_attribute('class'))
+
     def test_creating_company_with_cash_decreases_bank_cash(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)

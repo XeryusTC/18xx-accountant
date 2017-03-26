@@ -74,3 +74,4 @@ class AddCompanyPage(PageObject):
     back = PageElement(id_='back')
     text_color = MultiPageElement(name='text-color-select')
     background_color = MultiPageElement(name='background-color-select')
+    preview = PageElement(id_='preview')
