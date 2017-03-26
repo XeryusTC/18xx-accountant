@@ -1,7 +1,8 @@
 <div *ngIf="game">
 	<menu [game_id]="game.uuid"></menu>
 	<div class="row nested">
-		<div class="tp-9" id="players">
+		<div class="tp-9" id="players"
+			*ngIf="game.players.length==players.length">
 			<div class="section">
 				<div class="row">
 					<div class="tp-12">
@@ -25,12 +26,16 @@
 				</div>
 			</div>
 		</div>
+		<div class="tp-9" *ngIf="game.players.length!=players.length">
+			<h4>Loading players...</h4>
+		</div>
+
 		<div class="tp-3">
 			<bank-detail [game]="game"></bank-detail>
 		</div>
 	</div>
 
-	<div class="section">
+	<div class="section" *ngIf="game.companies.length==companies.length">
 		<div class="row">
 			<div class="tp-12">
 				<h4>Companies</h4>
@@ -57,6 +62,9 @@
 			</div>
 			<div class="row detail" *ngIf="selectedCompany===company"></div>
 		</div>
+	</div>
+	<div class="section" *ngIf="game.companies.length!=companies.length">
+		<h4>Loading companies...</h4>
 	</div>
 </div>
 
