@@ -189,3 +189,54 @@ class ManagePlayerTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         self.assertIsNotNone(player['detail'])
         self.assertIsNone(company['detail'])
+
+    def test_player_can_transfer_money_to_bank(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a player')
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('1000\n')
+
+        self.story('Confirm cash amounts')
+        player = game_page.get_players()[0]
+        self.assertEqual(player['cash'].text, '1000')
+        self.assertEqual(game_page.bank_cash.text, '11000')
+        self.story("She opens the player's detail view")
+        player['row'].click()
+        player = game_page.get_players()[0]
+
+        self.story('There is a form that allows her to send money')
+        transfer_form = game.TransferForm(self.browser)
+        transfer_form.amount(player['detail']).clear()
+        transfer_form.amount(player['detail']).send_keys('100')
+        for radio in transfer_form.target(player['detail']):
+            if radio.get_attribute('value') == 'bank':
+                radio.click()
+                break
+        transfer_form.transfer_button(player['detail']).click()
+
+        self.story("The page reloads and the player's cash amount has lowered")
+        player = game_page.get_players()[0]
+        self.assertEqual(player['cash'].text, '900')
+        self.assertEqual(game_page.bank_cash.text, '11100')
+
+        self.story('Alice goes to transfer money again')
+        player['row'].click()
+        player = game_page.get_players()[0] # Get DOM updates
+        transfer_form.amount(player['detail']).clear()
+        transfer_form.amount(player['detail']).send_keys('10')
+        self.story("This time she doesn't select a target, the bank should be"
+            ' default')
+        transfer_form.transfer_button(player['detail']).click()
+
+        self.story('After the page reloads she has found that the amount has'
+            'changed again')
+        player = game_page.get_players()[0]
+        self.assertEqual(player['cash'].text, '890')
+        self.assertEqual(game_page.bank_cash.text, '11110')

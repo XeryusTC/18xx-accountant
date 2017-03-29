@@ -75,3 +75,8 @@ class AddCompanyPage(PageObject):
     text_color = MultiPageElement(name='text-color-select')
     background_color = MultiPageElement(name='background-color-select')
     preview = PageElement(id_='preview')
+
+class TransferForm(PageObject):
+    amount = PageElement(name='amount', context=True)
+    target = MultiPageElement(name='target', context=True)
+    transfer_button = PageElement(name='transfer', context=True)
