@@ -21,7 +21,11 @@ import { AddPlayerComponent } from './add-player/add-player.component';
 import { AddPlayerFormComponent } from 
 	'./add-player-form/add-player-form.component';
 import { AddCompanyComponent } from './add-company/add-company.component';
-import { AddCompanyFormComponent } from './add-company-form/add-company-form.component';
+import { AddCompanyFormComponent } from
+	'./add-company-form/add-company-form.component';
+import { TransferFormComponent } from
+	'./transfer-form/transfer-form.component';
+import { TransferMoneyService } from './transfer-money.service';
 import { ValuesPipe } from './values.pipe';
 
 @NgModule({
@@ -36,7 +40,8 @@ import { ValuesPipe } from './values.pipe';
 		AddPlayerFormComponent,
 		AddCompanyComponent,
 		AddCompanyFormComponent,
-		ValuesPipe
+		ValuesPipe,
+		TransferFormComponent
 	],
 	imports: [
 		BrowserModule,
@@ -49,6 +54,7 @@ import { ValuesPipe } from './values.pipe';
 		GameService,
 		PlayerService,
 		CompanyService,
+		TransferMoneyService,
 		Title
 	],
 	bootstrap: [AppComponent]

@@ -1,0 +1,29 @@
+<form (ngSubmit)="onSubmit($event)">
+	<div class="row">
+		<div class="tp-3">
+			<label for="amount">Amount</label>
+		</div>
+		<div class="tp-9">
+			<input type="number" name="amount" id="amount"
+									  [(ngModel)]="amount">
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="tp-3">
+			<label>Transfer to</label>
+		</div>
+		<div class="tp-9">
+			<label for="target-bank">
+				<input type="radio" name="target" id="target-bank" value="bank"
+					[(ngModel)]="target"> Bank
+			</label>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="tp-6">
+			<input type="submit" name="transfer" value="Transfer">
+		</div>
+	</div>
+</form>
