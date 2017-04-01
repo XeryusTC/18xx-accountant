@@ -25,7 +25,7 @@ env:
         - REVERSE=--reverse
 install:
     - pip install -r requirements/ci.txt
-    - npm install -g @angular/cli@1.0.0-rc.1
+    - npm install -g @angular/cli
     - cd ngApp; npm install; cd ..
 before_script:
     - "export PATH=$PATH:/usr/lib/chromium-browser"
@@ -39,5 +39,5 @@ script:
     - cd ../ngApp; ng test --single-run --browser Chromium --code-coverage
 after_success:
     - cd ..
+    - bash <(curl -s https://codecov.io/bash) -F javascript -s ngApp -X coveragepy
     - bash <(curl -s https://codecov.io/bash) -F python -s accountant
-    - bash <(curl -s https://codedov.io/bash) -F angular -s ngApp -X coveragepy
