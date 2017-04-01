@@ -36,8 +36,8 @@ before_script:
 script:
     - ./build-ng-app.sh
     - cd accountant; coverage run manage.py test $REVERSE -v2
-    - cd ../ngApp; ng test --single-run --browser Chromium --coverage
+    - cd ../ngApp; ng test --single-run --browser Chromium --code-coverage
 after_success:
     - cd ..
-    - bash <(curl -s https://codecov.io/bash) -cF python -s accountant
-    - bash <(curl -s https://codedov.io/bash) -cF angular -s ngApp
+    - bash <(curl -s https://codecov.io/bash) -F python -s accountant
+    - bash <(curl -s https://codedov.io/bash) -F angular -s angular -X coveragepy
