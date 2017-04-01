@@ -35,7 +35,9 @@ before_script:
     - psql -c "CREATE DATABASE accountant_ci" -U postgres
 script:
     - ./build-ng-app.sh
-    - cd accountant
-    - coverage run manage.py test $REVERSE -v2
+    - cd accountant; coverage run manage.py test $REVERSE -v2
+    - cd ../ngApp; ng test --single-run --browser Chromium --coverage
 after_success:
+    - codecov
+    - cd ../accountant
     - codecov
