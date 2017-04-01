@@ -40,4 +40,4 @@ script:
 after_success:
     - cd ..
     - bash <(curl -s https://codecov.io/bash) -F python -s accountant
-    - bash <(curl -s https://codedov.io/bash) -F angular -s angular -X coveragepy
+    - bash <(curl -s https://codedov.io/bash) -F angular -s ngApp -X coveragepy
