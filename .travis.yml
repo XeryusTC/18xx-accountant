@@ -39,5 +39,4 @@ script:
     - cd ../ngApp; ng test --single-run --browser Chromium --code-coverage
 after_success:
     - cd ..
-    - bash <(curl -s https://codecov.io/bash) -F javascript -s ngApp -X coveragepy
-    - bash <(curl -s https://codecov.io/bash) -F python -s accountant
+    - bash <(curl -s https://codecov.io/bash) -f accountant/coverage.xml ngApp/coverage/lcov.info
