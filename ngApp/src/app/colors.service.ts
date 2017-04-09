@@ -12,7 +12,20 @@ export class ColorsService {
 	getColors(): Promise<any[]> {
 		return this.http.get(this.colorsUrl)
 			.toPromise()
-			.then(response => response.json())
+			.then(response => {
+				let data = response.json();
+				let rows = [];
+				let row = [];
+				for (let i=0; i < data.length; i++) {
+					if ((i - 2) % 10 == 0) {
+						rows.push(row);
+						row = [];
+					}
+					row.push(data[i][0]);
+				}
+				rows.push(row); // One final push for the last row
+				return rows;
+			})
 			.catch(this.handleError);
 	}
 
