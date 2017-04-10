@@ -50,7 +50,7 @@
 
 	<div class="row nested" *ngIf="colors">
 		<div class="tp-6">
-			<div class="row" *ngFor="let row of colorRows(); let i=index">
+			<div class="row" *ngFor="let row of colors; let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
 					<label class="tp-1 bg-{{ color }} centered color-select">
 						<input type="radio" name="text-color-select"
@@ -62,7 +62,7 @@
 			</div>
 		</div>
 		<div class="tp-6">
-			<div class="row" *ngFor="let row of colorRows(); let i=index">
+			<div class="row" *ngFor="let row of colors; let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
 					<label class="tp-1 bg-{{ color }} color-select centered">
 						<input type="radio" name="background-color-select"

@@ -51,18 +51,4 @@ export class AddCompanyFormComponent implements OnInit {
 	getColors(): void {
 		this.colorsService.getColors().then(colors => this.colors = colors);
 	}
-
-	colorRows(): string[] {
-		let rows = [];
-		let row = [];
-		let specials = [];
-		for (let i=0; i<= this.colors.length; i++) {
-			if ((i - 2) % 10 == 0) {
-				rows.push(row);
-				row = [];
-			}
-			row.push(this.colors[i]);
-		}
-		return rows;
-	}
 }
