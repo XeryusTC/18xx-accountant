@@ -12,6 +12,8 @@ DUPLICATE_SOURCE_OR_DEST_ERROR = \
 DIFFERENT_GAME_ERROR = _('Sender and receiver must be part of the same game.')
 BUYER_REQUIRED_ERROR = _('You need to specify who buys the share')
 SOURCE_REQUIRED_ERROR = _('You need to specify where the share comes from')
+DUPLICATE_COMPANY_ERROR = \
+    _('There is already a company with this name in your game')
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +44,13 @@ class CompanySerializer(serializers.ModelSerializer):
             'game', 'cash', 'share_count', 'ipo_shares', 'bank_shares',
             'player_owners')
         read_only_fields = ('player_owners',)
+        validators = (
+            serializers.UniqueTogetherValidator(
+                queryset=models.Company.objects.all(),
+                fields=('game', 'name'),
+                message=DUPLICATE_COMPANY_ERROR,
+            ),
+        )
 
     def create(self, validated_data):
         company = models.Company.objects.create(**validated_data)
