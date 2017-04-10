@@ -1,15 +1,17 @@
 // Convenience export
-export { ActivatedRoute } from '@angular/router';
+export { ActivatedRoute, Router } from '@angular/router';
 
 import { Component, Directive, Injectable, Input } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+/* istanbul ignore next */
 @Component({
 	selector: 'router-outlet',
 	template: ''
 })
 export class RouterOutletStubComponent { }
 
+/* istanbul ignore next */
 @Directive({
 	selector: '[routerLink]',
 	host: {
@@ -25,6 +27,7 @@ export class RouterLinkStubDirective {
 	}
 }
 
+/* istanbul ignore next */
 @Injectable()
 export class ActivatedRouteStub {
 	// ActivatedRoute.params is Observable
@@ -45,6 +48,7 @@ export class ActivatedRouteStub {
 	}
 }
 
+/* istanbul ignore next */
 export class RouterStub {
 	navigate(parts: string[]) { return parts.join(''); }
 	navigateByUrl(url: string) { return url; }
