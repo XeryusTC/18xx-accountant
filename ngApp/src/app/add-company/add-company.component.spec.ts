@@ -16,7 +16,8 @@ describe('AddCompanyComponent', () => {
 			declarations: [AddCompanyComponent],
 			schemas: [NO_ERRORS_SCHEMA],
 			providers: [
-				{provide: ActivatedRoute, useValue: activatedRoute}
+				{provide: ActivatedRoute, useValue: activatedRoute},
+				Title
 			]
 		})
 		.compileComponents();
