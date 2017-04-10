@@ -133,7 +133,7 @@ class ManagePlayerTests(FunctionalTestCase):
         add_player.name.send_keys('Bob\n')
 
         self.story('Check that the two players are in the list')
-        self.assertSequenceEqual(['Alice', 'Bob'],
+        self.assertCountEqual(['Alice', 'Bob'],
             list(player.text for player in game_page.player_name_list))
 
         self.story('The player detail sections are both hidden')
