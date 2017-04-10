@@ -48,16 +48,8 @@ export class AddCompanyFormComponent implements OnInit {
 			});
 	}
 
-	/* Retrieve the list of supported company colors from the server and store
-	 * the value as accepted by the backend, discard the pretty name
-	 */
 	getColors(): void {
-		this.colorsService.getColors().then(colors => {
-			this.colors = [];
-			for (var color of colors) {
-				this.colors.push(color[0]);
-			}
-		});
+		this.colorsService.getColors().then(colors => this.colors = colors);
 	}
 
 	colorRows(): string[] {
