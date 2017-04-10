@@ -44,3 +44,8 @@ export class ActivatedRouteStub {
 		return { params: this.testParams };
 	}
 }
+
+export class RouterStub {
+	navigate(parts: string[]) { return parts.join(''); }
+	navigateByUrl(url: string) { return url; }
+}
