@@ -100,6 +100,15 @@ describe('AddCompanyFormComponent', () => {
 	}));
 
 	it('Display non field errors on the page', fakeAsync(() => {
-		expect(false).toBeTruthy();
+		let errors = {"non_field_errors": ["test error", "test_error_2"]};
+		let spy = spyOn(companyService, 'create')
+			.and.returnValue(Promise.reject({json: () => errors}));
+
+		component.onSubmit();
+		tick();
+
+		expect(component.errors.length).toBe(2);
+		expect(component.errors).toContain('test error');
+		expect(component.errors).toContain('test_error_2');
 	}));
 });

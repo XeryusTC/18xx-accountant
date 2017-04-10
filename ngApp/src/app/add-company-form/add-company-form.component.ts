@@ -40,10 +40,10 @@ export class AddCompanyFormComponent implements OnInit {
 			})
 			.catch(error => {
 				this.errors = [];
-				console.log(error.json());
-				if (error.json()['non_field_errors'][0] ==
-					'The fields game, name must make a unique set.') {
-					this.errors.push(DUPLICATE_COMPANY_ERROR);
+				let errors = error.json();
+				if ('non_field_errors' in errors) {
+					this.errors = this.errors
+						.concat(errors['non_field_errors']);
 				}
 			});
 	}
