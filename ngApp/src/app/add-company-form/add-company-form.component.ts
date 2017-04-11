@@ -41,6 +41,7 @@ export class AddCompanyFormComponent implements OnInit {
 			.catch(error => {
 				this.errors = [];
 				let errors = error.json();
+				/* istanbul ignore else */
 				if ('non_field_errors' in errors) {
 					this.errors = this.errors
 						.concat(errors['non_field_errors']);
