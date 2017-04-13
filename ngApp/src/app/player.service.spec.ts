@@ -37,6 +37,17 @@ describe('PlayerService', () => {
 		})));
 	});
 
+	it('getPlayer() should return an error when server is down', done => {
+		service.getPlayer('test-uuid')
+			.then(player => fail('The request should not be successful.'))
+			.catch(error => done());
+		conn.mockRespond(new Response(new ResponseOptions({
+			status: 404,
+			statusText: 'URL not found',
+			body: 'The page could not be found'
+		})));
+	});
+
 	it('create() queries the correct url', () => {
 		service.create(testPlayer);
 		expect(conn).toBeDefined('no http service connection at all?');
@@ -50,6 +61,17 @@ describe('PlayerService', () => {
 		});
 		conn.mockRespond(new Response(new ResponseOptions({
 			body: testPlayer
+		})));
+	});
+
+	it('create() should return an error when server is down', done => {
+		service.create(testPlayer)
+			.then(player => fail('The request should not be successful.'))
+			.catch(error => done());
+		conn.mockRespond(new Response(new ResponseOptions({
+			status: 404,
+			statusText: 'URL not found',
+			body: 'The page could not be found'
 		})));
 	});
 });
