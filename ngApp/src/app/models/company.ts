@@ -10,4 +10,10 @@ export class Company {
 		public text_color: string = "black",
 		public background_color: string = "white"
 	) { }
+
+	static fromJson(obj) {
+		return new Company(obj.uuid, obj.game, obj.name, obj.cash,
+						   obj.share_count, obj.text_color,
+						   obj.background_color);
+	}
 }

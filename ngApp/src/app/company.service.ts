@@ -15,7 +15,7 @@ export class CompanyService {
 	getCompany(uuid: string): Promise<Company> {
 		return this.http.get(this.companyUrl + uuid + '/')
 			.toPromise()
-			.then(response => response.json() as Company)
+			.then(response => Company.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
@@ -23,7 +23,7 @@ export class CompanyService {
 		return this.http
 			.post(this.companyUrl, JSON.stringify(company),
 				  {headers: this.headers})
-			.toPromise().then(response => response.json())
+			.toPromise().then(response => Company.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
