@@ -35,6 +35,7 @@ export class AddPlayerFormComponent implements OnInit {
 			.catch(error => {
 				this.errors = [];
 				console.log(error.json());
+				/* istanbul ignore else */
 				if ('non_field_errors' in error.json()) {
 					this.errors = this.errors
 						.concat(error.json()['non_field_errors'])
