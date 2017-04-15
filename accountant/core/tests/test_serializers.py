@@ -16,6 +16,18 @@ class CompanySerializerTests(TestCase):
         self.assertIn(serializers.DUPLICATE_COMPANY_ERROR,
             s.errors['non_field_errors'])
 
+
+class PlayerSerializerTests(TestCase):
+    def test_returns_user_friendly_message_when_player_not_unique(self):
+        game = factories.GameFactory()
+        player = factories.PlayerFactory(game=game, name='test')
+        s = serializers.PlayerSerializer(data={'game': game.pk,
+            'name': 'test'})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn(serializers.DUPLICATE_PLAYER_ERROR,
+            s.errors['non_field_errors'])
+
 class TransferMoneySerializerTests(TestCase):
     def setUp(self):
         self.game = factories.GameFactory()

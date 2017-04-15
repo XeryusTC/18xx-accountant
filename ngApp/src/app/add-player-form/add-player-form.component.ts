@@ -35,9 +35,9 @@ export class AddPlayerFormComponent implements OnInit {
 			.catch(error => {
 				this.errors = [];
 				console.log(error.json());
-				if (error.json()['non_field_errors'][0] ==
-					'The fields game, name must make a unique set.') {
-					this.errors.push(DUPLICATE_PLAYER_ERROR);
+				if ('non_field_errors' in error.json()) {
+					this.errors = this.errors
+						.concat(error.json()['non_field_errors'])
 				}
 			});
 	}

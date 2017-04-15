@@ -74,4 +74,17 @@ describe('AddPlayerFormComponent', () => {
 		expect(routerSpy.calls.first().args[0])
 			.toEqual(['game/', 'test-game']);
 	}));
+
+	it('Display non field errors on the page', fakeAsync(() => {
+		let errors = {"non_field_errors": ["test error", "2nd error"]};
+		let spy = spyOn(playerService, 'create')
+			.and.returnValue(Promise.reject({json: () => errors}));
+
+		component.onSubmit();
+		tick();
+
+		expect(component.errors.length).toBe(2);
+		expect(component.errors).toContain("test error");
+		expect(component.errors).toContain("2nd error");
+	}));
 });
