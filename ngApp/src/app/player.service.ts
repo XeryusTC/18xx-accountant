@@ -15,7 +15,7 @@ export class PlayerService {
 	getPlayer(uuid: string): Promise<Player> {
 		return this.http.get(this.playerUrl + uuid + '/')
 			.toPromise()
-			.then(response => response.json() as Player)
+			.then(response => Player.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
@@ -23,7 +23,7 @@ export class PlayerService {
 		return this.http
 			.post(this.playerUrl, JSON.stringify(player),
 				  {headers: this.headers})
-			.toPromise().then(response => response.json())
+			.toPromise().then(response => Player.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 

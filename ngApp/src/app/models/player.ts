@@ -7,4 +7,8 @@ export class Player {
 		public name: string,
 		public cash: number
 	) { }
+
+	static fromJson(obj) {
+		return new Player(obj.uuid, obj.game, obj.name, obj.cash);
+	}
 }

@@ -33,7 +33,7 @@ describe('PlayerService', () => {
 			done();
 		});
 		conn.mockRespond(new Response(new ResponseOptions({
-			body: testPlayer
+			body: JSON.stringify(testPlayer)
 		})));
 	});
 
@@ -60,7 +60,7 @@ describe('PlayerService', () => {
 			done();
 		});
 		conn.mockRespond(new Response(new ResponseOptions({
-			body: testPlayer
+			body: JSON.stringify(testPlayer)
 		})));
 	});
 
