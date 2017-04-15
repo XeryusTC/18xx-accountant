@@ -19,6 +19,18 @@ export class CompanyService {
 			.catch(this.handleError);
 	}
 
+	getCompanyList(game_uuid: string): Promise<Company[]> {
+		return this.http.get(this.companyUrl + '?game=' + game_uuid)
+			.toPromise()
+			.then(response => {
+				let res = [];
+				for (let company of response.json()) {
+					res.push(Company.fromJson(company));
+				}
+				return res;
+			});
+	}
+
 	create(company: Company): Promise<Company> {
 		return this.http
 			.post(this.companyUrl, JSON.stringify(company),

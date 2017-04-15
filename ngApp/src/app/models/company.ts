@@ -9,7 +9,10 @@ export class Company {
 		public share_count: number,
 		public text_color: string = "black",
 		public background_color: string = "white"
-	) { }
+	) {
+		this.bank_shares = 0;
+		this.ipo_shares = share_count;
+	}
 
 	static fromJson(obj) {
 		let company = new Company(obj.uuid, obj.game, obj.name, obj.cash,

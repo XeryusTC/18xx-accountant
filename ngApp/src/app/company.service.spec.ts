@@ -12,6 +12,11 @@ describe('CompanyService', () => {
 	let backend: MockBackend;
 	let conn;
 	let testCompany: Company;
+	let testCompanyList = [
+		new Company('test-uuid-0', 'test-game', 'CP', 100, 10),
+		new Company('test-uuid-1', 'test-game', 'PRR', 200, 10),
+		new Company('test-uuid-2', 'test-game', 'Erie', 300, 10)
+	];
 
 	beforeEach(() => {
 		backend = new MockBackend();
@@ -43,6 +48,34 @@ describe('CompanyService', () => {
 	it('getCompany() should return an error when server is dowwn', done => {
 		service.getCompany('test-uuid')
 			.then(company => fail('The request should not be successful'))
+			.catch(error => done());
+		conn.mockRespond(new Response(new ResponseOptions({
+			status: 404,
+			statusText: 'URL not found',
+			body: 'The page could not be found'
+		})));
+	});
+
+	it('getCompanyList() queries the correct url', () => {
+		service.getCompanyList('game-uuid');
+		expect(conn).toBeDefined('no http service connection at all?');
+		expect(conn.request.url).toMatch('/api/company/\\?game=game-uuid$',
+										 'url valid');
+	});
+
+	it('getCompanyList() returns an array of companies on success', done => {
+		service.getCompanyList('game-uuid').then(response => {
+			expect(response).toEqual(testCompanyList);
+			done();
+		});
+		conn.mockRespond(new Response(new ResponseOptions({
+			body: JSON.stringify(testCompanyList)
+		})));
+	});
+
+	it('getCompanyList() should return an error when server is down', done => {
+		service.getCompanyList('game-uuid')
+			.then(companies => fail('The request should not be successful.'))
 			.catch(error => done());
 		conn.mockRespond(new Response(new ResponseOptions({
 			status: 404,
