@@ -41,6 +41,6 @@ export class GameService {
 
 	private handleError(error: any): Promise<any> {
 		console.error('A HTTP error occured', error);
-		return Promise.reject(error.message || error);
+		return Promise.reject(error);
 	}
 }
