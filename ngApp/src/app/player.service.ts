@@ -19,6 +19,18 @@ export class PlayerService {
 			.catch(this.handleError);
 	}
 
+	getPlayerList(gameUuid: string): Promise<Player[]> {
+		return this.http.get(this.playerUrl + '?game=' + gameUuid)
+			.toPromise()
+			.then(response => {
+				let res = [];
+				for (let player of response.json()) {
+					res.push(Player.fromJson(player));
+				}
+				return res;
+			})
+	}
+
 	create (player: Player): Promise<Player> {
 		return this.http
 			.post(this.playerUrl, JSON.stringify(player),

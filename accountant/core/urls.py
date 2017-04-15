@@ -6,7 +6,7 @@ from . import routers
 
 router = routers.HybridRouter()
 router.register(r'game', views.GameViewSet)
-router.register(r'player', views.PlayerViewSet)
+router.register(r'player', views.PlayerViewSet, base_name='player')
 router.register(r'company', views.CompanyViewSet)
 router.register(r'playershare', views.PlayerShareViewSet)
 router.register(r'companyshare', views.CompanyShareViewSet)

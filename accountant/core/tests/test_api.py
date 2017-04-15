@@ -113,6 +113,28 @@ class PlayerTests(APITestCase):
         self.assertEqual(models.Player.objects.first().cash, 500)
         self.assertEqual(game.cash, 11500)
 
+    def test_retrieve_players_within_a_single_game(self):
+        """Filter the players based on the game in the query url"""
+        players = factories.PlayerFactory.create_batch(game=game, size=3)
+        factories.PlayerFactory.create_batch(size=2)
+        url = reverse('player-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([p.name for p in players],
+            [p['name'] for p in response.data])
+
+    def test_retrieve_all_players_when_no_query_params_set(self):
+        factories.PlayerFactory.create_batch(size=5)
+        url = reverse('player-list')
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([p.name for p in models.Player.objects.all()],
+            [p['name'] for p in response.data])
+
 
 class CompanyTests(APITestCase):
     def test_create_company(self):

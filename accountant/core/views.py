@@ -19,8 +19,15 @@ class GameViewSet(viewsets.ModelViewSet):
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
-    queryset = models.Player.objects.all()
     serializer_class = serializers.PlayerSerializer
+
+    def get_queryset(self):
+        game_uuid = self.request.query_params.get('game', None)
+        if game_uuid is not None:
+            queryset = models.Player.objects.filter(game=game_uuid)
+        else:
+            queryset = models.Player.objects.all()
+        return queryset
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
