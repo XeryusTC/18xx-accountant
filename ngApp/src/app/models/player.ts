@@ -9,6 +9,8 @@ export class Player {
 	) { }
 
 	static fromJson(obj) {
-		return new Player(obj.uuid, obj.game, obj.name, obj.cash);
+		let player = new Player(obj.uuid, obj.game, obj.name, obj.cash);
+		player.shares = obj.shares;
+		return player;
 	}
 }
