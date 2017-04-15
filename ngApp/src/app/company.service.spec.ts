@@ -11,14 +11,16 @@ describe('CompanyService', () => {
 	let httpService: Http;
 	let backend: MockBackend;
 	let conn;
-	let testCompany: Company = new Company('test-uuid', 'test-game', 'NYC',
-										   500, 10);
+	let testCompany: Company;
 
 	beforeEach(() => {
 		backend = new MockBackend();
 		httpService = new Http(backend, new BaseRequestOptions);
 		backend.connections.subscribe(connection => conn = connection);
 		service = new CompanyService(httpService);
+		testCompany = new Company('test-uuid', 'test-game', 'NYC', 500, 10);
+		testCompany.bank_shares = 0;
+		testCompany.ipo_shares = 0;
 	});
 
 	it('getCompany() queries the correct url', () => {
