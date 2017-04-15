@@ -15,21 +15,27 @@ export class GameService {
 	getGames(): Promise<Game[]> {
 		return this.http.get(this.gameUrl)
 			.toPromise()
-			.then(response => response.json() as Game[])
+			.then(response => {
+				let res = [];
+				for (let game of response.json()) {
+					res.push(Game.fromJson(game));
+				}
+				return res;
+			})
 			.catch(this.handleError);
 	}
 
 	getGame(uuid: string): Promise<Game> {
 		return this.http.get(this.gameUrl + uuid + '/')
 			.toPromise()
-			.then(response => response.json() as Game)
+			.then(response => Game.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
 	create(game: Game): Promise<Game> {
 		return this.http
 			.post(this.gameUrl, JSON.stringify(game), {headers: this.headers})
-			.toPromise().then(response => response.json())
+			.toPromise().then(response => Game.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
