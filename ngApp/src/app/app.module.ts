@@ -11,6 +11,7 @@ import { StartGameFormComponent } from
 import { GameService } from './game.service';
 import { PlayerService } from './player.service';
 import { CompanyService } from './company.service';
+import { GameStateService } from './game-state.service';
 
 import { GameRoutingModule } from './game-routing.module';
 import { GamePageComponent } from './game-page/game-page.component';
@@ -42,6 +43,7 @@ import { AddCompanyFormComponent } from './add-company-form/add-company-form.com
 		GameRoutingModule
 	],
 	providers: [
+		GameStateService,
 		GameService,
 		PlayerService,
 		CompanyService,
