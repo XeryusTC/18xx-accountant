@@ -1,15 +1,16 @@
 <nav>
-	<a routerLink="/game/{{game_id}}" routerLinkActive="button-disabled"
+	<a routerLink="/game/{{ gameState.game.uuid }}"
+		routerLinkActive="button-disabled"
 		[routerLinkActiveOptions]="{ exact: true }"
 		class="button" id="back">
 		Return to game
 	</a>
-	<a routerLink="/game/{{game_id}}/add-player"
+	<a routerLink="/game/{{ gameState.game.uuid }}/add-player"
 		routerLinkActive="button-disabled"
 		class="button" id="add_player">
 		Add player
 	</a>
-	<a routerLink="/game/{{game_id}}/add-company"
+	<a routerLink="/game/{{ gameState.game.uuid }}/add-company"
 		routerLinkActive="button-disabled"
 		class="button" id="add_company">Add Company</a>
 </nav>
