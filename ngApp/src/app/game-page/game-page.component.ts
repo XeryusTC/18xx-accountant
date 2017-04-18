@@ -27,12 +27,12 @@ export class GamePageComponent implements OnInit {
 
 	selectPlayer(player: Player): void {
 		this.selectedPlayer = player;
-		this.selectedCompany = null;
+		this.selectedCompany = undefined;
 	}
 
 	selectCompany(company: Company): void {
 		this.selectedCompany = company;
-		this.selectedPlayer = null;
+		this.selectedPlayer = undefined;
 	}
 
 	ngOnInit() {
