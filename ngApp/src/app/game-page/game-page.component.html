@@ -1,8 +1,7 @@
-<div *ngIf="game">
-	<menu [game_id]="game.uuid"></menu>
+<div *ngIf="gameState.game">
+	<menu [game_id]="gameState.game.uuid"></menu>
 	<div class="row nested">
-		<div class="tp-9" id="players"
-			*ngIf="game.players.length==players.length">
+		<div class="tp-9" id="players" *ngIf="gameState.players">
 			<div class="section">
 				<div class="row">
 					<div class="tp-12">
@@ -14,7 +13,8 @@
 					<div class="tp-1">Cash</div>
 				</div>
 				<hr />
-				<div *ngFor="let player of players" class="player">
+				<div *ngFor="let player of gameState.players | values"
+					class="player">
 					<div class="row" (click)="selectPlayer(player)">
 						<div class="tp-2 name">{{ player.name }}</div>
 						<div class="tp-1 cash text-right">
@@ -26,16 +26,16 @@
 				</div>
 			</div>
 		</div>
-		<div class="tp-9" *ngIf="game.players.length!=players.length">
+		<div class="tp-9" *ngIf="!gameState.players">
 			<h4>Loading players...</h4>
 		</div>
 
 		<div class="tp-3">
-			<bank-detail [game]="game"></bank-detail>
+			<bank-detail [game]="gameState.game"></bank-detail>
 		</div>
 	</div>
 
-	<div class="section" *ngIf="game.companies.length==companies.length">
+	<div class="section" *ngIf="gameState.companies">
 		<div class="row">
 			<div class="tp-12">
 				<h4>Companies</h4>
@@ -49,7 +49,8 @@
 			<div class="tp-1">In Bank</div>
 		</div>
 		<hr />
-		<div *ngFor="let company of companies" class="company">
+		<div *ngFor="let company of gameState.companies | values"
+			class="company">
 			<div class="row bg-{{company.background_color}}
 			fg-{{company.text_color}}" (click)="selectCompany(company)">
 				<div class="tp-2 name">{{ company.name }}</div>
@@ -63,11 +64,11 @@
 			<div class="row detail" *ngIf="selectedCompany===company"></div>
 		</div>
 	</div>
-	<div class="section" *ngIf="game.companies.length!=companies.length">
+	<div class="section" *ngIf="!gameState.companies">
 		<h4>Loading companies...</h4>
 	</div>
 </div>
 
-<div *ngIf="!game">
+<div *ngIf="!gameState.game">
 	Loading game...
 </div>

@@ -7,9 +7,7 @@ import 'rxjs/add/operator/switchMap';
 import { Game }          from '../models/game';
 import { Player }        from '../models/player';
 import { Company }       from '../models/company';
-import { GameService }   from '../game.service';
-import { PlayerService } from '../player.service';
-import { CompanyService } from '../company.service';
+import { GameStateService } from '../game-state.service';
 
 @Component({
 	selector: 'app-game-page',
@@ -17,38 +15,15 @@ import { CompanyService } from '../company.service';
 	styleUrls: ['./game-page.component.css']
 })
 export class GamePageComponent implements OnInit {
-	uuid: string;
-	game: Game;
-	players: Player[] = [];
-	companies: Company[] = [];
+	uuid_sub;
 	selectedPlayer: Player;
 	selectedCompany: Company;
 
 	constructor(
 		private titleService: Title,
 		private route: ActivatedRoute,
-		private gameService: GameService,
-		private playerService: PlayerService,
-		private companyService: CompanyService
+		private gameState: GameStateService
 	) { }
-
-	getPlayers() {
-		for (var player_uuid of this.game.players) {
-			this.playerService.getPlayer(player_uuid)
-			.then(player => {
-				this.players.push(player);
-			});
-		}
-	}
-
-	getCompanies(): void {
-		for (var company_uuid of this.game.companies) {
-			this.companyService.getCompany(company_uuid)
-				.then(company => {
-					this.companies.push(company);
-				});
-		}
-	}
 
 	selectPlayer(player: Player): void {
 		this.selectedPlayer = player;
@@ -61,14 +36,12 @@ export class GamePageComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.titleService.setTitle('18xx Accountant')
-		this.route.params
-		.switchMap((params: Params) =>
-				   this.gameService.getGame(params['uuid']))
-				   .subscribe((game) => {
-					   this.game = game;
-					   this.getPlayers();
-					   this.getCompanies();
-				   });
+		this.titleService.setTitle('18xx Accountant');
+		this.uuid_sub = this.route.params.subscribe((params: Params) =>
+			this.gameState.loadGame(params['uuid']));
+	}
+
+	ngOnDestroy() {
+		this.uuid_sub.unsubscribe();
 	}
 }
