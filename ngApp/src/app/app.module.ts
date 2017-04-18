@@ -22,6 +22,7 @@ import { AddPlayerFormComponent } from
 	'./add-player-form/add-player-form.component';
 import { AddCompanyComponent } from './add-company/add-company.component';
 import { AddCompanyFormComponent } from './add-company-form/add-company-form.component';
+import { ValuesPipe } from './values.pipe';
 
 @NgModule({
 	declarations: [
@@ -34,7 +35,8 @@ import { AddCompanyFormComponent } from './add-company-form/add-company-form.com
 		AddPlayerComponent,
 		AddPlayerFormComponent,
 		AddCompanyComponent,
-		AddCompanyFormComponent
+		AddCompanyFormComponent,
+		ValuesPipe
 	],
 	imports: [
 		BrowserModule,
