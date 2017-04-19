@@ -1,8 +1,24 @@
 import { ValuesPipe } from './values.pipe';
 
 describe('ValuesPipe', () => {
-  it('create an instance', () => {
-    const pipe = new ValuesPipe();
-    expect(pipe).toBeTruthy();
-  });
+	let pipe;
+	let testDict;
+
+	beforeEach(() => {
+		pipe = new ValuesPipe();
+	});
+
+	it('When dictionary is empty result is empty', () => {
+		testDict = {};
+		expect(pipe.transform(testDict)).toEqual([]);
+	});
+
+	it('Converts dictionary to values only', () => {
+		testDict = {
+			key1: 1,
+			key2: 2,
+			key3: 3
+		};
+		expect(pipe.transform(testDict)).toEqual([1, 2, 3]);
+	});
 });
