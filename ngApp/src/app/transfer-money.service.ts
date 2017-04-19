@@ -13,11 +13,10 @@ export class TransferMoneyService {
 	constructor(private http: Http) { }
 
 	transferMoney(amount: number, src: Player | Company, dst): Promise<any> {
-		//var transfer = {amount: amount, from_player: "", to_player: "",
-		//	from_company: "", to_company: ""};
 		var transfer = {amount: amount};
 
 		if (src != null) {
+			/* istanbul ignore else */
 			if (src.hasOwnProperty('share_count')) {
 				transfer['from_company'] = src.uuid;
 			} else if (src != null) {
@@ -25,7 +24,8 @@ export class TransferMoneyService {
 			}
 		}
 		if (dst != null) {
-			if (dst.hasOwwnProperty('share_count')) {
+			/* istanbul ignore else */
+			if (dst.hasOwnProperty('share_count')) {
 				transfer['to_company'] = dst.uuid;
 			} else if (dst != null) {
 				transfer['to_player'] = dst.uuid;
