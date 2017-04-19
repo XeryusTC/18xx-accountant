@@ -1,10 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router }                   from '@angular/router';
 
 import { COLORS }         from '../colors';
 import { Company }        from '../models/company';
 import { CompanyService } from '../company.service';
 import { ColorsService }  from '../colors.service';
+import { GameStateService } from '../game-state.service';
 
 const DUPLICATE_COMPANY_ERROR =
 	'There is already a company with this name in your game';
@@ -18,17 +19,17 @@ const DUPLICATE_COMPANY_ERROR =
 export class AddCompanyFormComponent implements OnInit {
 	model = new Company('', '', '', 0, 10);
 	colors: string[];
-	@Input() game_id: string;
 	errors: string[];
 
 	constructor(
 		private router: Router,
 		private companyService: CompanyService,
-		private colorsService: ColorsService
+		private colorsService: ColorsService,
+		private gameState: GameStateService
 	) { }
 
 	ngOnInit() {
-		this.model.game = this.game_id;
+		this.model.game = this.gameState.game.uuid;
 		this.getColors();
 	}
 

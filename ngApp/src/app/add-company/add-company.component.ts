@@ -8,10 +8,6 @@ import { ActivatedRoute, Params } from '@angular/router';
 	styleUrls: ['./add-company.component.css']
 })
 export class AddCompanyComponent implements OnInit {
-	game_id: string;
-
-	private game_sub;
-
 	constructor(
 		private titleService: Title,
 		private route: ActivatedRoute
@@ -19,11 +15,5 @@ export class AddCompanyComponent implements OnInit {
 
 	ngOnInit() {
 		this.titleService.setTitle('Add company');
-		this.game_sub = this.route.params.subscribe((params: Params) =>
-			this.game_id = params['uuid']);
-	}
-
-	ngOnDestroy() {
-		this.game_sub.unsubscribe();
 	}
 }

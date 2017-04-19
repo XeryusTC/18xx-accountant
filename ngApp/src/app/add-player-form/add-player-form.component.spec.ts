@@ -6,9 +6,11 @@ import { MockBackend }                      from '@angular/http/testing';
 
 import { Router, RouterStub } from '../testing/router-stubs';
 
+import { Game }                   from '../models/game';
 import { Player }                 from '../models/player';
 import { AddPlayerFormComponent } from './add-player-form.component';
 import { PlayerService }          from '../player.service';
+import { GameStateService }       from '../game-state.service';
 
 describe('AddPlayerFormComponent', () => {
 	let component: AddPlayerFormComponent;
@@ -16,6 +18,9 @@ describe('AddPlayerFormComponent', () => {
 	let testPlayer: Player = new Player('test-uuid', 'test-game', 'Alice', 0);
 	let playerService: PlayerService;
 	let routerService: Router;
+	let gameStateStub = {
+		game: new Game('test-game', 12000)
+	}
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
@@ -23,6 +28,7 @@ describe('AddPlayerFormComponent', () => {
 			declarations: [ AddPlayerFormComponent ],
 			providers: [
 				PlayerService,
+				{provide: GameStateService, useValue: gameStateStub},
 				{provide: Router, useClass: RouterStub},
 				{
 					provide: Http, useFactory: (backend, options) => {

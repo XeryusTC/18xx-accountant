@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router }                   from '@angular/router';
 
 import { Player }        from '../models/player';
 import { PlayerService } from '../player.service';
+import { GameStateService } from '../game-state.service';
 
 const DUPLICATE_PLAYER_ERROR =
 	'There is already a player with this name in your game';
@@ -14,16 +15,16 @@ const DUPLICATE_PLAYER_ERROR =
 })
 export class AddPlayerFormComponent implements OnInit {
 	model = new Player('', '', '', 0);
-	@Input() game_id: string;
 	errors: string[];
 
 	constructor(
 		private router: Router,
-		private playerService: PlayerService
+		private playerService: PlayerService,
+		private gameState: GameStateService
 	) { }
 
 	ngOnInit() {
-		this.model.game = this.game_id;
+		this.model.game = this.gameState.game.uuid;
 	}
 
 	onSubmit() {

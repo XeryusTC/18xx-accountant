@@ -6,10 +6,12 @@ import { MockBackend }                      from '@angular/http/testing';
 
 import { Router, RouterStub } from '../testing/router-stubs';
 
+import { Game }                    from '../models/game';
 import { Company }                 from '../models/company';
 import { AddCompanyFormComponent } from './add-company-form.component';
 import { CompanyService }          from '../company.service';
 import { ColorsService }           from '../colors.service';
+import { GameStateService }        from '../game-state.service';
 
 describe('AddCompanyFormComponent', () => {
 	let component: AddCompanyFormComponent;
@@ -18,6 +20,9 @@ describe('AddCompanyFormComponent', () => {
 	let colorsService: ColorsService;
 	let routerService: Router;
 	let companyService: CompanyService;
+	let gameStateStub = {
+		game: new Game('test-game', 12000)
+	}
 
 	let testColors = [['black', 'white'], ['red-50', 'red-100', 'red-200',
 		'red-300', 'red-400', 'red-500', 'red-600', 'red-700', 'red-800',
@@ -40,7 +45,8 @@ describe('AddCompanyFormComponent', () => {
 				BaseRequestOptions,
 				CompanyService,
 				ColorsService,
-				{provide: Router, useClass: RouterStub}
+				{provide: Router, useClass: RouterStub},
+				{provide: GameStateService, useValue: gameStateStub}
 			]
 		})
 		.compileComponents();

@@ -40,13 +40,6 @@ describe('AddCompanyComponent', () => {
 		expect(spy.calls.any()).toBe(true);
 	});
 
-	it('should get the game uuid from the current rout', () => {
-		expect(component.game_id).toBe(undefined);
-		activatedRoute.testParams = {uuid: 'test uuid'};
-		fixture.detectChanges();
-		expect(component.game_id).toBe('test uuid');
-	});
-
 	it('should include the menu', () => {
 		let menu = fixture.debugElement.query(By.css('menu')).nativeElement;
 		expect(menu).toBeTruthy();
