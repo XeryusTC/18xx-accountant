@@ -7,15 +7,12 @@ import { TransferMoneyService } from '../transfer-money.service';
 	templateUrl: './transfer-form.component.html',
 	styleUrls: ['./transfer-form.component.css']
 })
-export class TransferFormComponent implements OnInit {
-	private amount: number = 0;
+export class TransferFormComponent {
+	amount: number = 0;
 	@Input() source;
-	private target: string;
+	target: string = 'bank';
 
 	constructor(private transferMoneyService: TransferMoneyService) { }
-
-	ngOnInit() {
-	}
 
 	onSubmit(event: Event) {
 		event.preventDefault();
