@@ -61,6 +61,7 @@ class TransferMoneyView(APIView):
     def post(self, request, format=None):
         serializer = serializers.TransferMoneySerializer(data=request.data)
         if serializer.is_valid():
+            # Check if the transfer is valid (within same game)
             if serializer.source_instance != None \
                     and serializer.dest_instance != None \
                     and serializer.source_instance.game != \
@@ -68,10 +69,41 @@ class TransferMoneyView(APIView):
                 return Response(
                     {'non_field_errors': serializers.DIFFERENT_GAME_ERROR},
                     status=status.HTTP_400_BAD_REQUEST)
+            # Do the transfering
             utils.transfer_money(serializer.source_instance,
                 serializer.dest_instance, serializer.validated_data['amount'])
-            return Response(serializer.validated_data,
-                status=status.HTTP_200_OK)
+
+            # Construct the response, starting with the game
+            context = {'request': self.request}
+            res = {}
+            if serializer.source_instance == None:
+                res['game'] = serializers.GameSerializer(
+                    serializer.dest_instance.game, context=context).data
+            if serializer.dest_instance == None:
+                res['game'] = serializers.GameSerializer(
+                    serializer.source_instance.game, context=context).data
+            # Next do players
+            players = []
+            if isinstance(serializer.source_instance, models.Player):
+                players.append(serializers.PlayerSerializer(
+                    serializer.source_instance, context=context).data)
+            if isinstance(serializer.dest_instance, models.Player):
+                players.append(serializers.PlayerSerializer(
+                    serializer.dest_instance, context=context).data)
+            if players:
+                res['players'] = players
+            # Finally do companies
+            companies = []
+            if isinstance(serializer.source_instance, models.Company):
+                companies.append(serializers.CompanySerializer(
+                    serializer.source_instance, context=context).data)
+            if isinstance(serializer.dest_instance, models.Company):
+                companies.append(serializers.CompanySerializer(
+                    serializer.dest_instance, context=context).data)
+            if companies:
+                res['companies'] = companies
+
+            return Response(res, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
