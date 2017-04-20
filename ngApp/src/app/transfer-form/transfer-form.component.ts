@@ -26,6 +26,8 @@ export class TransferFormComponent {
 			realTarget = null;
 		} else if (this.gameState.companies.hasOwnProperty(this.target)) {
 			realTarget = this.gameState.companies[this.target];
+		} else if (this.gameState.players.hasOwnProperty(this.target)) {
+			realTarget = this.gameState.players[this.target];
 		}
 
 		this.transferMoneyService.transferMoney(this.amount, this.source,

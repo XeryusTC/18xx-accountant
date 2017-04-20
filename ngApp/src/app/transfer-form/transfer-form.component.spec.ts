@@ -17,6 +17,7 @@ describe('TransferFormComponent', () => {
 	let transferMoneyStub;
 	let gameStateStub;
 	let company = new Company('some-uuid', 'game-uuid', 'B&O', 10, 57);
+	let player = new Player('another-uuid', 'game-uuid', 'Alice', 83);
 
 	beforeEach(async(() => {
 		transferMoneyStub = jasmine.createSpyObj('TransferMoneyService',
@@ -29,6 +30,7 @@ describe('TransferFormComponent', () => {
 						  ['updateGame', 'updatePlayer', 'updateCompany',
 						   'companies']);
 		gameStateStub.companies = {[company.uuid]: company};
+		gameStateStub.players   = {[player.uuid]:  player};
 
 		TestBed.configureTestingModule({
 			imports: [FormsModule],
@@ -88,6 +90,19 @@ describe('TransferFormComponent', () => {
 		let args = transferMoneyStub.transferMoney.calls.first().args;
 		expect(args[1]).toBe('this is not it');
 		expect(args[2]).toBe(company);
+	});
+
+	it('onsubmit() recognises when transfering to player', () => {
+		component.source = 'source-uuid';
+		component.target = player.uuid;
+
+		fixture.detectChanges();
+		fixture.debugElement.query(By.css('form'))
+			.triggerEventHandler('submit', new Event('submit'));
+
+		let args = transferMoneyStub.transferMoney.calls.first().args;
+		expect(args[1]).toBe('source-uuid');
+		expect(args[2]).toBe(player);
 	});
 
 	it('game instance should be updated when it is affected', fakeAsync(() => {
