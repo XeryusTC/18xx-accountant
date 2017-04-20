@@ -254,10 +254,18 @@ class ManagePlayerTests(FunctionalTestCase):
         add_player.name.send_keys('Alice')
         add_player.cash.send_keys('1000\n')
 
-        self.story('She adds a company')
+        self.story('She adds a company (with some colors)')
         game_page.add_company_link.click()
         add_company = game.AddCompanyPage(self.browser)
         add_company.name.send_keys('CPR')
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'red-700':
+                radio.click()
+                break
+        for radio in add_company.text_color:
+            if radio.get_attribute('value') == 'white':
+                radio.click()
+                break
         add_company.cash.send_keys('500\n')
 
         self.story('Confirm cash amounts')
@@ -274,9 +282,13 @@ class ManagePlayerTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         transfer_form.amount(player['detail']).clear()
         transfer_form.amount(player['detail']).send_keys('19')
-        for radio in transfer_form.target(player['detail']):
-            if radio.get_attribute('id') == 'target-CPR':
-                radio.click()
+        for label in transfer_form.labels(player['detail']):
+            if label.get_attribute('for') == 'target-CPR':
+                self.story('She sees that the label is in company colors')
+                self.assertIn('fg-white', label.get_attribute('class'))
+                self.assertIn('bg-red-700', label.get_attribute('class'))
+                self.story('She then selects the company')
+                transfer_form.target(label)[0].click()
                 break
         else:
             self.fail('No company called CPR found in transfer form')

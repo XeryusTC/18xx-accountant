@@ -26,6 +26,11 @@ hr {
 	margin: .25rem 0;
 }
 
+label.transfer {
+	display: inline-block;
+	margin: 0 0.1rem;
+}
+
 /*****************
  * Form elements *
  *****************/

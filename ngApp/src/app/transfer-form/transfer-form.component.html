@@ -14,15 +14,17 @@
 			<label>Transfer to</label>
 		</div>
 		<div class="tp-9">
-			<label for="target-bank">
+			<label for="target-bank" class="transfer">
 				<input type="radio" name="target" id="target-bank" value="bank"
 					[(ngModel)]="target"> Bank
 			</label>
 			<label *ngFor='let company of gameState.companies | values'
-					for="target-{{ company.name }}">
+					for="target-{{ company.name }}"
+					class="transfer fg-{{ company.text_color }}
+						bg-{{ company.background_color }}">
 				<input type="radio" name="target" value="{{ company.uuid }}"
 					 id="target-{{ company.name }}" [(ngModel)]="target">
-				{{company.name}}
+				{{ company.name }}
 			</label>
 		</div>
 	</div>

@@ -79,4 +79,5 @@ class AddCompanyPage(PageObject):
 class TransferForm(PageObject):
     amount = PageElement(name='amount', context=True)
     target = MultiPageElement(name='target', context=True)
+    labels = MultiPageElement(css='label.transfer', context=True)
     transfer_button = PageElement(name='transfer', context=True)
