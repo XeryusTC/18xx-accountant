@@ -24,6 +24,8 @@ export class TransferFormComponent {
 		/* istanbul ignore else */
 		if (this.target == 'bank') {
 			realTarget = null;
+		} else if (this.gameState.companies.hasOwnProperty(this.target)) {
+			realTarget = this.gameState.companies[this.target];
 		}
 
 		this.transferMoneyService.transferMoney(this.amount, this.source,

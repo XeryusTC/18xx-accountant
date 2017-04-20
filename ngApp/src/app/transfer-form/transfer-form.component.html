@@ -18,6 +18,12 @@
 				<input type="radio" name="target" id="target-bank" value="bank"
 					[(ngModel)]="target"> Bank
 			</label>
+			<label *ngFor='let company of gameState.companies | values'
+					for="target-{{ company.name }}">
+				<input type="radio" name="target" value="{{ company.uuid }}"
+					 id="target-{{ company.name }}" [(ngModel)]="target">
+				{{company.name}}
+			</label>
 		</div>
 	</div>
 
