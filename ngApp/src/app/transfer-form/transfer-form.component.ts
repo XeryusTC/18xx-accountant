@@ -39,6 +39,9 @@ export class TransferFormComponent {
 						this.gameState.updatePlayer(player);
 					}
 				}
+				if ('companies' in result)
+					for (let company of result.companies)
+						this.gameState.updateCompany(company);
 			});
 	}
 }

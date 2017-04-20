@@ -111,4 +111,15 @@ describe('TransferFormComponent', () => {
 			expect(gameStateStub.updatePlayer.calls.first().args[0])
 				.toBe(newPlayer)
 	   }));
+
+	it('company instance should be updated when affected', fakeAsync(() => {
+		let newCompany = new Company('uuid', 'game-uuid', 'NYC', 10, 23);
+		transferMoneyStub.transferMoney
+			.and.callFake(() => Promise.resolve({companies: [newCompany]}));
+		fixture.debugElement.query(By.css('form'))
+			.triggerEventHandler('submit', new Event('submit'));
+		tick();
+		expect(gameStateStub.updateCompany.calls.first().args[0])
+			.toBe(newCompany)
+	}));
 });

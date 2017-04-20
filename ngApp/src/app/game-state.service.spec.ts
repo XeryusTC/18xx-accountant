@@ -117,4 +117,21 @@ describe('GameStateService', () => {
 		service.updatePlayer(newPlayer);
 		expect(service.players).not.toBe(players);
 	}));
+
+	it('updateCompany() updates instance of company', fakeAsync(() => {
+		let company = new Company('company-uuid-0', 'game-uuid', 'NNH', 10, 3);
+		service.loadGame('game-uuid');
+		tick();
+		service.updateCompany(company);
+		expect(service.companies['company-uuid-0']).toEqual(company);
+	}));
+
+	it('updateCompany() replaces list of companies', fakeAsync(() => {
+		let company = new Company('company-uuid-1', 'game-uuid', 'B&M', 10, 7);
+		service.loadGame('game-uuid');
+		tick();
+		let companies = service.companies;
+		service.updateCompany(company);
+		expect(service.companies).not.toBe(companies);
+	}));
 });
