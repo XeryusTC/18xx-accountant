@@ -50,7 +50,7 @@
 			<div class="tp-1">In Bank</div>
 		</div>
 		<hr />
-		<div *ngFor="let company of gameState.companies | values"
+		<div *ngFor="let company of gameState.companies | values:'name'"
 			class="company">
 			<div class="row bg-{{company.background_color}}
 			fg-{{company.text_color}}" (click)="selectCompany(company)">

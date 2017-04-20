@@ -18,7 +18,7 @@
 				<input type="radio" name="target" id="target-bank" value="bank"
 					[(ngModel)]="target"> Bank
 			</label>
-			<label *ngFor='let company of gameState.companies | values'
+			<label *ngFor='let company of gameState.companies | values:"name"'
 					for="target-{{ company.name }}"
 					class="transfer fg-{{ company.text_color }}
 						bg-{{ company.background_color }}">

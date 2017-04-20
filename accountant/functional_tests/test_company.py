@@ -198,6 +198,48 @@ class CompanyTests(FunctionalTestCase):
         self.story('On the game page she sees that the bank size has reduced')
         self.assertEqual(game_page.bank_cash.text, '700')
 
+    def test_companies_are_sorted_alphabetically(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She goes to add two companies')
+        game_page = game.GamePage(self.browser)
+        add_company = game.AddCompanyPage(self.browser)
+        game_page.add_company_link.click()
+        add_company.name.send_keys('B&O\n')
+        game_page.add_company_link.click()
+        add_company.name.send_keys('Erie\n')
+
+        self.story('The companies should be listed as B&O, Erie')
+        self.assertEqual(['B&O', 'Erie'],
+            [company['name'].text for company in game_page.get_companies()])
+
+        self.story('She adds a third company')
+        game_page.add_company_link.click()
+        add_company.name.send_keys('C&O\n')
+
+        self.story('The companies should be listed as B&O, C&O, Erie')
+        self.assertEqual(['B&O', 'C&O', 'Erie'],
+            [company['name'].text for company in game_page.get_companies()])
+
+        self.story('She adds a fourth company')
+        game_page.add_company_link.click()
+        add_company.name.send_keys('PRR\n')
+
+        self.story('The companies should be listed as B&O, C&O, Erie, PRR')
+        self.assertEqual(['B&O', 'C&O', 'Erie', 'PRR'],
+            [company['name'].text for company in game_page.get_companies()])
+
+        self.story('She adds a fifth company')
+        game_page.add_company_link.click()
+        add_company.name.send_keys('CPR\n')
+
+        self.story('The companies are listed as B&O, C&O, CPR, Erie, PRR')
+        self.assertEqual(['B&O', 'C&O', 'CPR', 'Erie', 'PRR'],
+            [company['name'].text for company in game_page.get_companies()])
+
 class ManageCompanyTests(FunctionalTestCase):
     def test_clicking_company_opens_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
