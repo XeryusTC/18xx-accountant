@@ -299,3 +299,50 @@ class ManagePlayerTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         self.assertEqual(player['cash'].text, '981')
         self.assertEqual(company['cash'].text, '519')
+
+    def test_player_can_transfer_money_to_other_player(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a player')
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('530\n')
+
+        self.story('She adds another player')
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Bob')
+        add_player.cash.send_keys('290\n')
+
+        self.story('She moves some money from Alice to Bob')
+        alice, bob = game_page.get_players()
+        if alice['name'].text == 'Bob': # Swap names if incorrect
+            alice, bob = bob, alice
+        alice['row'].click()
+
+        transfer_form = game.TransferForm(self.browser)
+        alice, bob = game_page.get_players()
+        if alice['name'].text == 'Bob': # Swap names if incorrect
+            alice, bob = bob, alice
+        transfer_form.amount(alice['detail']).clear()
+        transfer_form.amount(alice['detail']).send_keys(67)
+        for radio in transfer_form.target(alice['detail']):
+            if radio.get_attribute('id') == 'target-Bob':
+               radio.click()
+               break
+        else:
+            self.fail('Could not find Bob in the transfer form')
+        transfer_form.transfer_button(alice['detail']).click()
+
+        self.story('Money has been transfered between the players')
+        players = game_page.get_players()
+        for player in players:
+            with self.subTest(player=player['name'].text):
+                if player['name'].text == 'Alice':
+                    self.assertEqual(player['cash'].text, '463')
+                elif player['name'].text == 'Bob':
+                    self.assertEqual(player['cash'].text, '357')
