@@ -13,7 +13,7 @@
 					<div class="tp-1">Cash</div>
 				</div>
 				<hr />
-				<div *ngFor="let player of gameState.players | values"
+				<div *ngFor="let player of gameState.players | values:'name'"
 					class="player">
 					<div class="row" (click)="selectPlayer(player)">
 						<div class="tp-2 name">{{ player.name }}</div>

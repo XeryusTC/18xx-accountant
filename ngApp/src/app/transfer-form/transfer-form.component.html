@@ -26,7 +26,7 @@
 					 id="target-{{ company.name }}" [(ngModel)]="target">
 				{{ company.name }}
 			</label>
-			<label *ngFor='let player of gameState.players | values'
+			<label *ngFor='let player of gameState.players | values:"name"'
 				for="target-{{ player.name }}" class="transfer">
 				<input type="radio" name="target" value="{{ player.uuid }}"
 					id="target-{{ player.name }}" [(ngModel)]="target">

@@ -112,6 +112,52 @@ class CreatePlayerTests(FunctionalTestCase):
         self.story('On the game page she sees that the bank size has reduced')
         self.assertEqual(game_page.bank_cash.text, '600')
 
+    def test_players_are_sorted_alphabetically(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        page = game.Homepage(self.browser)
+        page.start_button.click()
+
+        self.story('She goes to add two players')
+        game_page = game.GamePage(self.browser)
+        add_player = game.AddPlayerPage(self.browser)
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Alice\n')
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Charlie\n')
+
+        self.story('The players should be listed as Alice, Charlie')
+        players = game_page.get_players()
+        self.assertEqual(['Alice', 'Charlie'],
+            [player['name'].text for player in players])
+
+        self.story('She adds a third player')
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Bob\n')
+
+        self.story('The players should be listed as Alice, Bob, Charlie')
+        players = game_page.get_players()
+        self.assertEqual(['Alice', 'Bob', 'Charlie'],
+            [player['name'].text for player in players])
+
+        self.story('She adds a fourth player')
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Bert\n')
+
+        self.story('The players should be listed as Alice, Bert, Bob, Charlie')
+        players = game_page.get_players()
+        self.assertEqual(['Alice', 'Bert', 'Bob', 'Charlie'],
+            [player['name'].text for player in players])
+
+        self.story('She adds a fifthplayer')
+        game_page.add_player_link.click()
+        add_player.name.send_keys('Dave\n')
+
+        self.story('Players are listed as Alice, Bert, Bob, Charlie, Dave')
+        players = game_page.get_players()
+        self.assertEqual(['Alice', 'Bert', 'Bob', 'Charlie', 'Dave'],
+            [player['name'].text for player in players])
+
 
 class ManagePlayerTests(FunctionalTestCase):
     """Tests for managing player actions during a game"""

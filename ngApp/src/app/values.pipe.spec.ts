@@ -25,4 +25,22 @@ describe('ValuesPipe', () => {
 	it('returns empty array when input undefined', () => {
 		expect(pipe.transform(undefined)).toEqual([]);
 	});
+
+	it('returns array sorted when given key to sort by', () => {
+		testDict = {
+			first:  {name: 'Alice', other: 'longish-value'},
+			second: {name: 'Charlie', other: 'other-value'},
+			third:  {name: 'Bob', other: 'different-value'},
+		};
+		expect(pipe.transform(testDict, 'name')).toEqual([
+			{name: 'Alice', other: 'longish-value'},
+			{name: 'Bob', other: 'different-value'},
+			{name: 'Charlie', other: 'other-value'}
+		]);
+		expect(pipe.transform(testDict, 'other')).toEqual([
+			{name: 'Bob', other: 'different-value'},
+			{name: 'Alice', other: 'longish-value'},
+			{name: 'Charlie', other: 'other-value'}
+		]);
+	});
 });

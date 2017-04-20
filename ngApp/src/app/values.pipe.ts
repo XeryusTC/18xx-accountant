@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 	name: 'values'
 })
 export class ValuesPipe implements PipeTransform {
-	transform(value: any, args?: any): any {
+	transform(value: any, sortBy: any, args?: any): any {
 		if (value === undefined)
 			return [];
 		// create instance vars to store keys and final output
@@ -16,6 +16,12 @@ export class ValuesPipe implements PipeTransform {
 		keyArr.forEach((key: any) => {
 			dataArr.push(value[key]);
 		});
+
+		if (sortBy) {
+			dataArr.sort((a: Object, b: Object): number => {
+				return a[sortBy] > b[sortBy] ? 1 : -1;
+			});
+		}
 
 		// return the resulting array
 		return dataArr;
