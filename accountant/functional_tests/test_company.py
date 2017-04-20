@@ -310,3 +310,136 @@ class ManageCompanyTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         self.assertIsNone(player['detail'])
         self.assertIsNotNone(company['detail'])
+
+    def test_company_can_transfer_money_to_bank(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a company')
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('B&O')
+        add_company.cash.send_keys('400\n')
+
+        self.story('Confirm cash amounts')
+        company = game_page.get_companies()[0]
+        self.assertEqual(company['cash'].text, '400')
+        self.assertEqual(game_page.bank_cash.text, '11600')
+        self.story("She opens the company's detail view")
+        company['elem'].click()
+        company = game_page.get_companies()[0] # get DOM updates
+
+        self.story('There is a form that allows her to send money')
+        transfer_form = game.TransferForm(self.browser)
+        transfer_form.amount(company['detail']).clear()
+        transfer_form.amount(company['detail']).send_keys('100')
+        for radio in transfer_form.target(company['detail']):
+            if radio.get_attribute('value') == 'bank':
+                radio.click()
+                break
+        transfer_form.transfer_button(company['detail']).click()
+
+        self.story("The page updates and the company's cash amount is lower")
+        company = game_page.get_companies()[0] # get DOM updates
+        self.assertEqual(company['cash'].text, '300')
+        self.assertEqual(game_page.bank_cash.text, '11700')
+
+        self.story('Alice goes to transfer money again')
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+        transfer_form.amount(company['detail']).clear()
+        transfer_form.amount(company['detail']).send_keys('50')
+        self.story("This time she doesn't select a target, the bank is the"
+            "default target")
+        transfer_form.transfer_button(company['detail']).click()
+
+        self.story('After the page updates the sees the amounts have changed')
+        company = game_page.get_companies()[0] # get DOM updates
+        self.assertEqual(company['cash'].text, '250')
+        self.assertEqual(game_page.bank_cash.text, '11750')
+
+    def test_company_can_transfer_money_to_player(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a company')
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('B&O')
+        add_company.cash.send_keys('400\n')
+
+        self.story('She adds a player')
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('100\n')
+
+        self.story('Confirm cash amounts')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(player['cash'].text, '100')
+        self.assertEqual(company['cash'].text, '400')
+        self.assertEqual(game_page.bank_cash.text, '11500')
+
+        self.story("She opens the company's detail view")
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+
+        self.story('The form allows her to transfer funds to Alice')
+        transfer_form = game.TransferForm(self.browser)
+        transfer_form.amount(company['detail']).send_keys('15')
+        for radio in transfer_form.target(company['detail']):
+            if radio.get_attribute('id') == 'target-Alice':
+                radio.click()
+                break
+        else:
+            self.fail('Could not find Alice in the transfer form')
+        transfer_form.transfer_button(company['detail']).click()
+
+        self.story('Check final cash amounts')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(player['cash'].text, '115')
+        self.assertEqual(company['cash'].text, '385')
+        self.assertEqual(game_page.bank_cash.text, '11500')
+
+    def test_comapny_can_transfer_money_to_other_company(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds two companies')
+        game_page = game.GamePage(self.browser)
+        add_company = game.AddCompanyPage(self.browser)
+        game_page.add_company_link.click()
+        add_company.name.send_keys('CPR')
+        add_company.cash.send_keys('100\n')
+        game_page.add_company_link.click()
+        add_company.name.send_keys('NYC')
+        add_company.cash.send_keys('100\n')
+
+        self.story('She transfers some money from the CPR to the NYC')
+        cpr, nyc = game_page.get_companies()
+        cpr['elem'].click()
+        cpr, nyc = game_page.get_companies()
+        transfer_form = game.TransferForm(self.browser)
+        transfer_form.amount(cpr['detail']).send_keys(42)
+        for radio in transfer_form.target(cpr['detail']):
+            if radio.get_attribute('id') == 'target-NYC':
+                radio.click()
+                break
+        else:
+            self.fail('Could not find the NYC in the transfer form')
+        transfer_form.transfer_button(cpr['detail']).click()
+
+        self.story('Money has been transfered between the players')
+        cpr, nyc = game_page.get_companies()
+        self.assertEqual(cpr['cash'].text, '58')
+        self.assertEqual(nyc['cash'].text, '142')

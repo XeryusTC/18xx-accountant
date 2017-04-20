@@ -62,7 +62,9 @@
 				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
 				<div class="tp-1 bank">{{ company.bank_shares }}</div>
 			</div>
-			<div class="row detail" *ngIf="selectedCompany===company"></div>
+			<div class="row detail" *ngIf="selectedCompany===company">
+				<transfer-form [source]="company"></transfer-form>
+			</div>
 		</div>
 	</div>
 	<div class="section" *ngIf="!gameState.companies">
