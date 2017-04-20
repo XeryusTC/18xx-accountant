@@ -240,3 +240,50 @@ class ManagePlayerTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         self.assertEqual(player['cash'].text, '890')
         self.assertEqual(game_page.bank_cash.text, '11110')
+
+    def test_player_can_transfer_money_to_company(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a player')
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('1000\n')
+
+        self.story('She adds a company')
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('CPR')
+        add_company.cash.send_keys('500\n')
+
+        self.story('Confirm cash amounts')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(player['cash'].text, '1000')
+        self.assertEqual(company['cash'].text, '500')
+
+        self.story("She opens the player's detail view")
+        player['row'].click()
+        player = game_page.get_players()[0]
+
+        self.story('The form allows her to transfer funds to the CPR')
+        transfer_form = game.TransferForm(self.browser)
+        transfer_form.amount(player['detail']).clear()
+        transfer_form.amount(player['detail']).send_keys('19')
+        for radio in transfer_form.target(player['detail']):
+            if radio.get_attribute('id') == 'target-CPR':
+                radio.click()
+                break
+        else:
+            self.fail('No company called CPR found in transfer form')
+        transfer_form.transfer_button(player['detail']).click()
+
+        self.story('The Page reloads and money has changed hands')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(player['cash'].text, '981')
+        self.assertEqual(company['cash'].text, '519')
