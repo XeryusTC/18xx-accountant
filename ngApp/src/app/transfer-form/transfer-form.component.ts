@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+import { GameStateService }     from '../game-state.service';
 import { TransferMoneyService } from '../transfer-money.service';
 
 @Component({
@@ -12,11 +13,15 @@ export class TransferFormComponent {
 	@Input() source;
 	target: string = 'bank';
 
-	constructor(private transferMoneyService: TransferMoneyService) { }
+	constructor(
+		private transferMoneyService: TransferMoneyService,
+		private gameState: GameStateService
+	) { }
 
 	onSubmit(event: Event) {
 		event.preventDefault();
 		var realTarget;
+		/* istanbul ignore else */
 		if (this.target == 'bank') {
 			realTarget = null;
 		}
@@ -24,7 +29,14 @@ export class TransferFormComponent {
 		this.transferMoneyService.transferMoney(this.amount, this.source,
 												realTarget)
 			.then(result => {
-				console.log('Transfer restult', result);
+				if ('game' in result) {
+					this.gameState.updateGame(result.game);
+				}
+				if ('players' in result) {
+					for (let player of result.players) {
+						this.gameState.updatePlayer(player);
+					}
+				}
 			});
 	}
 }

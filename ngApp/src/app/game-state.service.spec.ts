@@ -6,7 +6,7 @@ import { Company }          from './models/company';
 
 import { CompanyService }   from './company.service';
 import { GameService }      from './game.service';
-import { GameStateService } from './game-state.service';
+import { GameStateService, DIFFERENT_GAME_ERROR } from './game-state.service';
 import { PlayerService }    from './player.service';
 
 describe('GameStateService', () => {
@@ -83,5 +83,38 @@ describe('GameStateService', () => {
 		expect(service.companies['company-uuid-0']).toEqual(testCompanies[0]);
 		expect(service.companies['company-uuid-1']).toEqual(testCompanies[1]);
 		expect(service.companies['company-uuid-2']).toEqual(testCompanies[2]);
+	}));
+
+	it('updateGame() updates instance of game', fakeAsync(() => {
+		let newGame = new Game('game-uuid', 11111);
+		service.loadGame('game-uuid');
+		tick();
+		service.updateGame(newGame);
+		expect(service.game).toEqual(newGame);
+	}));
+
+	it('cannot update game if UUIDs differ', fakeAsync(() => {
+		let newGame = new Game('other-uuid', 3000);
+		service.loadGame('game-uuid');
+		tick();
+		expect(() => service.updateGame(newGame))
+			.toThrow(DIFFERENT_GAME_ERROR);
+	}));
+
+	it('updatePlayer() updates instance of player', fakeAsync(() => {
+		let newPlayer = new Player('player-uuid-0', 'game-uuid', 'Dave', 5);
+		service.loadGame('game-uuid');
+		tick();
+		service.updatePlayer(newPlayer);
+		expect(service.players['player-uuid-0']).toEqual(newPlayer);
+	}));
+
+	it('updatePlayer() replaces list of players', fakeAsync(() => {
+		let newPlayer = new Player('player-uuid-1', 'game-uuid', 'Eve', 17);
+		service.loadGame('game-uuid');
+		tick();
+		let players = service.players;
+		service.updatePlayer(newPlayer);
+		expect(service.players).not.toBe(players);
 	}));
 });
