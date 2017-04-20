@@ -21,4 +21,8 @@ describe('ValuesPipe', () => {
 		};
 		expect(pipe.transform(testDict)).toEqual([1, 2, 3]);
 	});
+
+	it('returns empty array when input undefined', () => {
+		expect(pipe.transform(undefined)).toEqual([]);
+	});
 });

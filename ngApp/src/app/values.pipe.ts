@@ -6,6 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ValuesPipe implements PipeTransform {
 	transform(value: any, args?: any): any {
+		if (value === undefined)
+			return [];
 		// create instance vars to store keys and final output
 		let keyArr: any[] = Object.keys(value),
 			dataArr = [];
