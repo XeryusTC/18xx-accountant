@@ -19,6 +19,11 @@ describe('TransferFormComponent', () => {
 	let company = new Company('some-uuid', 'game-uuid', 'B&O', 10, 57);
 	let player = new Player('another-uuid', 'game-uuid', 'Alice', 83);
 
+	function submitForm() {
+		fixture.debugElement.query(By.css('form'))
+			.triggerEventHandler('submit', new Event('submit'));
+	}
+
 	beforeEach(async(() => {
 		transferMoneyStub = jasmine.createSpyObj('TransferMoneyService',
 												 ['transferMoney']);
@@ -63,17 +68,14 @@ describe('TransferFormComponent', () => {
 
 	it('onSubmit() uses the correct amount of money', () => {
 		component.amount = 1337;
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
+		submitForm();
 		let args = transferMoneyStub.transferMoney.calls.first().args;
 		expect(args[0]).toBe(1337);
 	});
 
 	it('onSubmit() converts "bank" target to bank representation', () => {
 		component.source = 'this is not it';
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
-
+		submitForm();
 		let args = transferMoneyStub.transferMoney.calls.first().args;
 		expect(args[1]).toBe('this is not it');
 		expect(args[2]).toBeNull();
@@ -82,11 +84,7 @@ describe('TransferFormComponent', () => {
 	it('onSubmit() recognises when transfering to company', () => {
 		component.source = 'this is not it';
 		component.target = company.uuid;
-
-		fixture.detectChanges();
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
-
+		submitForm();
 		let args = transferMoneyStub.transferMoney.calls.first().args;
 		expect(args[1]).toBe('this is not it');
 		expect(args[2]).toBe(company);
@@ -95,11 +93,7 @@ describe('TransferFormComponent', () => {
 	it('onsubmit() recognises when transfering to player', () => {
 		component.source = 'source-uuid';
 		component.target = player.uuid;
-
-		fixture.detectChanges();
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
-
+		submitForm();
 		let args = transferMoneyStub.transferMoney.calls.first().args;
 		expect(args[1]).toBe('source-uuid');
 		expect(args[2]).toBe(player);
@@ -109,8 +103,7 @@ describe('TransferFormComponent', () => {
 		let newGame = new Game('game-uuid', 1);
 		transferMoneyStub.transferMoney
 			.and.callFake(() => Promise.resolve({game: newGame}));
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
+		submitForm();
 		tick();
 		expect(gameStateStub.updateGame.calls.first().args[0]).toBe(newGame);
 	}));
@@ -120,8 +113,7 @@ describe('TransferFormComponent', () => {
 			let newPlayer = new Player('uuid', 'game-uuid', 'Alice', 7);
 			transferMoneyStub.transferMoney
 				.and.callFake(() => Promise.resolve({players: [newPlayer]}));
-			fixture.debugElement.query(By.css('form'))
-				.triggerEventHandler('submit', new Event('submit'));
+			submitForm();
 			tick();
 			expect(gameStateStub.updatePlayer.calls.first().args[0])
 				.toBe(newPlayer)
@@ -131,8 +123,7 @@ describe('TransferFormComponent', () => {
 		let newCompany = new Company('uuid', 'game-uuid', 'NYC', 10, 23);
 		transferMoneyStub.transferMoney
 			.and.callFake(() => Promise.resolve({companies: [newCompany]}));
-		fixture.debugElement.query(By.css('form'))
-			.triggerEventHandler('submit', new Event('submit'));
+		submitForm();
 		tick();
 		expect(gameStateStub.updateCompany.calls.first().args[0])
 			.toBe(newCompany)
