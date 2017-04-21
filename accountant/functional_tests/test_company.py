@@ -409,20 +409,30 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '385')
         self.assertEqual(game_page.bank_cash.text, '11500')
 
-    def test_comapny_can_transfer_money_to_other_company(self):
+    def test_company_can_transfer_money_to_other_company(self):
         self.story('Alice is a user who starts a new game')
         self.browser.get(self.live_server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
-        self.story('She adds two companies')
+        self.story('She adds a company')
         game_page = game.GamePage(self.browser)
         add_company = game.AddCompanyPage(self.browser)
         game_page.add_company_link.click()
         add_company.name.send_keys('CPR')
         add_company.cash.send_keys('100\n')
+
+        self.story('She adds a second company with colors')
         game_page.add_company_link.click()
         add_company.name.send_keys('NYC')
+        for radio in add_company.background_color:
+            if radio.get_attribute('value') == 'black':
+                radio.click()
+                break
+        for radio in add_company.text_color:
+            if radio.get_attribute('value') == 'amber-200':
+                radio.click()
+                break
         add_company.cash.send_keys('100\n')
 
         self.story('She transfers some money from the CPR to the NYC')
@@ -431,9 +441,12 @@ class ManageCompanyTests(FunctionalTestCase):
         cpr, nyc = game_page.get_companies()
         transfer_form = game.TransferForm(self.browser)
         transfer_form.amount(cpr['detail']).send_keys(42)
-        for radio in transfer_form.target(cpr['detail']):
-            if radio.get_attribute('id') == 'target-NYC':
-                radio.click()
+        for label in transfer_form.labels(cpr['detail']):
+            if label.get_attribute('for') == 'target-NYC':
+                self.story('She sees that the label is in company colors')
+                self.assertIn('bg-black', label.get_attribute('class'))
+                self.assertIn('fg-amber-200', label.get_attribute('class'))
+                label.click()
                 break
         else: # pragma: no cover
             self.fail('Could not find the NYC in the transfer form')
