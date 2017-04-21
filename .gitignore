@@ -19,3 +19,6 @@ htmlcov
 
 # Angular generated files being served by Django
 ng/
+
+# pyenv
+.python-version

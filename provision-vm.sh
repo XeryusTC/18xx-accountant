@@ -16,7 +16,7 @@ apt-get update
 apt-get install -y python3 python3-pip python3-virtualenv virtualenv git \
 	gettext postgresql-9.4 postgresql-server-dev-9.4 libfontconfig \
 	nodejs xvfb chromium chromedriver libyaml-dev libssl-dev libffi-dev \
-	python3-dev
+	python3-dev libreadline-dev libbz2-dev
 
 # Set up xvfb
 if [ ! -e /etc/systemd/system/xvfb.service ]; then
@@ -39,19 +39,6 @@ fi
 if ! command_exists ng ; then
 	npm install -g @angular/cli@1.0.0
 fi
-
-# Check if the virtualenv has been created
-if [ ! -d "venv" ]; then
-	virtualenv venv --python=python3
-	echo "source venv/bin/activate" >> .bashrc
-fi
-
-# Install Python requirements
-source venv/bin/activate
-pip install -r /vagrant/requirements/dev.txt
-chown -R vagrant:vagrant venv
-# Apply migrations
-cd /vagrant/accountant && python manage.py migrate
 
 # Install angular requirements
 cd /vagrant/ngApp && npm install
