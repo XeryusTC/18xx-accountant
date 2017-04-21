@@ -388,3 +388,25 @@ class ManagePlayerTests(FunctionalTestCase):
                     self.assertEqual(player['cash'].text, '463')
                 elif player['name'].text == 'Bob':
                     self.assertEqual(player['cash'].text, '357')
+
+    def test_player_cannot_transfer_money_to_self(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a player')
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('470\n')
+
+        self.story("There is no option for Alice on Alice's transfer section")
+        alice = game_page.get_players()[0]
+        alice['row'].click()
+
+        transfer_form = game.TransferForm(self.browser)
+        alice = game_page.get_players()[0]
+        self.assertEqual(['Bank'],
+            [label.text for label in transfer_form.labels(alice['detail'])])

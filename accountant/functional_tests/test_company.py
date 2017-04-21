@@ -443,3 +443,25 @@ class ManageCompanyTests(FunctionalTestCase):
         cpr, nyc = game_page.get_companies()
         self.assertEqual(cpr['cash'].text, '58')
         self.assertEqual(nyc['cash'].text, '142')
+
+    def test_company_cannot_transfer_money_to_self(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.live_server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a company')
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('B&O')
+        add_company.cash.send_keys('23\n')
+
+        self.story("There is no option for B&O on the B&O's transfer section")
+        bno = game_page.get_companies()[0]
+        bno['elem'].click()
+
+        transfer_form = game.TransferForm(self.browser)
+        bno = game_page.get_companies()[0] # Get DOM updates
+        self.assertEqual(['Bank'],
+            [label.text for label in transfer_form.labels(bno['detail'])])
