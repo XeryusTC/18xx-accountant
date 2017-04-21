@@ -336,7 +336,7 @@ class ManagePlayerTests(FunctionalTestCase):
                 self.story('She then selects the company')
                 transfer_form.target(label)[0].click()
                 break
-        else:
+        else: # pragma: no cover
             self.fail('No company called CPR found in transfer form')
         transfer_form.transfer_button(player['detail']).click()
 
@@ -366,21 +366,17 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('She moves some money from Alice to Bob')
         alice, bob = game_page.get_players()
-        if alice['name'].text == 'Bob': # Swap names if incorrect
-            alice, bob = bob, alice
         alice['row'].click()
 
         transfer_form = game.TransferForm(self.browser)
         alice, bob = game_page.get_players()
-        if alice['name'].text == 'Bob': # Swap names if incorrect
-            alice, bob = bob, alice
         transfer_form.amount(alice['detail']).clear()
         transfer_form.amount(alice['detail']).send_keys(67)
         for radio in transfer_form.target(alice['detail']):
             if radio.get_attribute('id') == 'target-Bob':
                radio.click()
                break
-        else:
+        else: # pragma: no cover
             self.fail('Could not find Bob in the transfer form')
         transfer_form.transfer_button(alice['detail']).click()
 

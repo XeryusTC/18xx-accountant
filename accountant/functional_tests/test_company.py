@@ -398,7 +398,7 @@ class ManageCompanyTests(FunctionalTestCase):
             if radio.get_attribute('id') == 'target-Alice':
                 radio.click()
                 break
-        else:
+        else: # pragma: no cover
             self.fail('Could not find Alice in the transfer form')
         transfer_form.transfer_button(company['detail']).click()
 
@@ -435,7 +435,7 @@ class ManageCompanyTests(FunctionalTestCase):
             if radio.get_attribute('id') == 'target-NYC':
                 radio.click()
                 break
-        else:
+        else: # pragma: no cover
             self.fail('Could not find the NYC in the transfer form')
         transfer_form.transfer_button(cpr['detail']).click()
 
