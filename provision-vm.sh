@@ -15,7 +15,8 @@ fi
 apt-get update
 apt-get install -y python3 python3-pip python3-virtualenv virtualenv git \
 	gettext postgresql-9.4 postgresql-server-dev-9.4 libfontconfig \
-	nodejs xvfb chromium chromedriver
+	nodejs xvfb chromium chromedriver libyaml-dev libssl-dev libffi-dev \
+	python3-dev
 
 # Set up xvfb
 if [ ! -e /etc/systemd/system/xvfb.service ]; then
