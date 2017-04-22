@@ -131,20 +131,28 @@
   become_user: www-data
   environment:
       DJANGO_SETTINGS_MODULE: accountant.settings.production
-      ACCOUNTANT_DB_NAME: "{{ ansible.local.variables.database.name }}"
-      ACCOUNTANT_DB_USER: "{{ ansible.local.variables.database.user }}"
-      ACCOUNTANT_DB_PASSWORD: "{{ ansible.local.variables.database.password }}"
+      ACCOUNTANT_DB_NAME: "{{ ansible_local.variables.database.name }}"
+      ACCOUNTANT_DB_USER: "{{ ansible_local.variables.database.user }}"
+      ACCOUNTANT_DB_PASSWORD: "{{ ansible_local.variables.database.password }}"
+      ACCOUNTANT_DOMAIN: "{{ ansible_local.variables.django.domain }}"
+      ACCOUNTANT_SECRET_KEY: "{{ ansible_local.variables.django.secret_key }}"
   tasks:
       # Clone the git repository
       - name: Clone the git repository
         git:
             repo: https://github.com/XeryusTC/18xx-accountant.git
             dest: /var/www/sites/{{ sitename }}/source
-            #version: "{{ hostvars['127.0.0.1'].git_commit_hash.stdout }}"
+            version: "{{ hostvars['127.0.0.1'].git_commit_hash.stdout }}"
       - name: Update the virtualenv
         pip:
             chdir: /var/wwww/sites/{{ sitename }}
             requirements: /var/www/sites/{{ sitename }}/source/requirements/production.txt
+            virtualenv: /var/www/sites/{{ sitename }}/virtualenv
+            virtualenv_python: python3
+      - name: Install gunicorn
+        pip:
+            chdir: /var/wwww/sites/{{ sitename }}
+            name: gunicorn
             virtualenv: /var/www/sites/{{ sitename }}/virtualenv
             virtualenv_python: python3
       - name: Create directories for Angular files
@@ -166,8 +174,41 @@
             dest: /var/www/sites/{{ sitename }}/source/accountant/static/ng/
             mode: 0644
       - name: Collect the static files
-        check_mode: yes
         django_manage:
             app_path: /var/www/sites/{{ sitename }}/source/accountant
             virtualenv: /var/www/sites/{{ sitename }}/virtualenv
             command: collectstatic
+      - name: Apply database migrations
+        django_manage:
+            app_path: /var/www/sites/{{ sitename }}/source/accountant
+            virtualenv: /var/www/sites/{{ sitename }}/virtualenv
+            command: migrate
+
+- name: Install services
+  hosts: all
+  become: true
+  tasks:
+      - name: Install gunicorn service definition
+        template:
+            src: gunicorn.service.j2
+            dest: /etc/systemd/system/gunicorn-{{ sitename }}.service
+      - name: Add nginx configuration as available site
+        template:
+            src: nginx.conf.j2
+            dest: /etc/nginx/sites-available/{{ sitename }}
+      - name: Symlink nginx configuration so it is enabled
+        file:
+            src: /etc/nginx/sites-available/{{ sitename }}
+            dest: /etc/nginx/sites-enabled/{{ sitename }}
+            state: link
+      - name: Start gunicorn service
+        systemd:
+            name: gunicorn-{{ sitename }}.service
+            daemon_reload: yes
+            enabled: yes
+            state: restarted
+      - name: Restart nginx
+        systemd:
+            name: nginx.service
+            enabled: yes
+            state: restarted

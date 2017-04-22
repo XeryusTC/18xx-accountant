@@ -1,0 +1,27 @@
+server {
+	listen 80;
+	server_name {{ ansible_local.variables.django.domain }} www.{{ ansible_local.variables.django.domain }};
+	return 301 https://$host$request_uri;
+}
+
+server {
+	listen 443 ssl spdy;
+	server_name {{ ansible_local.variables.django.domain }} www.{{ ansible_local.variables.django.domain }};
+
+	include snippets/ssl.conf;
+
+	# Ignore the missing favicon
+	location = /favicon.ico { access_log off; log_not_found off; }
+
+	location /static {
+		alias /var/www/sites/{{ sitename }}/static;
+	}
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real_IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_pass http://unix:/tmp/{{ sitename }}.socket;
+	}
+}

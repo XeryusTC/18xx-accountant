@@ -1,0 +1,19 @@
+[Unit]
+Description=Gunicorn server for {{ sitename }}
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn/{{ sitename}}.pid
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/sites/{{ sitename }}/source/accountant
+ExecStart=/var/www/sites/{{ sitename }}/virtualenv/bin/gunicorn \
+	--access-logfile /var/log/gunicorn/{{ sitename }}-access.log \
+	--error-logfile /var/log/gunicorn/{{ sitename }}-error.log \
+	--bind unix:/tmp/{{ sitename }}.socket accountant.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+EnvironmentFile=-/etc/www/gunicorn-{{ sitename }}
+
+[Install]
+WantedBy=multi-user.target
