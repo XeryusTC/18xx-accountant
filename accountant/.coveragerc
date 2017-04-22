@@ -2,3 +2,8 @@
 omit =
 	*site-packages*
 	manage.py
+
+[report]
+exclude_lines =
+	pragma: no cover
+	if self.against_staging
