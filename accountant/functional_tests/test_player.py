@@ -410,3 +410,32 @@ class ManagePlayerTests(FunctionalTestCase):
         alice = game_page.get_players()[0]
         self.assertEqual(['Bank'],
             [label.text for label in transfer_form.labels(alice['detail'])])
+
+    def test_after_player_transfers_money_detail_section_is_still_open(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a player')
+        game_page = game.GamePage(self.browser)
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice')
+        add_player.cash.send_keys('17\n')
+
+        self.story('She transfers some money to the bank')
+        player = game_page.get_players()[0]
+        player['row'].click()
+
+        transfer_form = game.TransferForm(self.browser)
+        player = game_page.get_players()[0]
+        transfer_form.amount(player['detail']).send_keys('3\n')
+
+        self.story('Money has been transfered')
+        player = game_page.get_players()[0]
+        self.assertEqual(game_page.bank_cash.text, '11986')
+        self.assertEqual(player['cash'].text, '14')
+
+        self.story('The detail section is still visible')
+        self.assertIsNotNone(player['detail'])

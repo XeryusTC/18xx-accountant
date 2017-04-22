@@ -51,26 +51,26 @@ describe('GamePageComponent', () => {
 		expect(gameStateSpy.loadGame.calls.first().args[0]).toBe('test uuid');
 	});
 
-	it('selectPlayer() should set a player', () => {
+	it('selectPlayer() should set to player UUID', () => {
 		expect(component.selectedPlayer).toBeUndefined();
 		component.selectPlayer(testPlayer);
-		expect(component.selectedPlayer).toBe(testPlayer);
+		expect(component.selectedPlayer).toBe(testPlayer.uuid);
 	});
 
 	it('selectPlayer() should unset the selectedCompany', () => {
-		component.selectedCompany = testCompany;
+		component.selectedCompany = testCompany.uuid;
 		component.selectPlayer(testPlayer);
 		expect(component.selectedCompany).toBeUndefined();
 	});
 
-	it('selectCompany() should set a company', () => {
+	it('selectCompany() should set to company UUID', () => {
 		expect(component.selectedCompany).toBeUndefined();
 		component.selectCompany(testCompany);
-		expect(component.selectedCompany).toBe(testCompany);
+		expect(component.selectedCompany).toBe(testCompany.uuid);
 	});
 
 	it('selectCompany() should unset the selectedPlayer', () => {
-		component.selectedPlayer = testPlayer;
+		component.selectedPlayer = testPlayer.uuid;
 		component.selectCompany(testCompany);
 		expect(component.selectedPlayer).toBeUndefined();
 	});

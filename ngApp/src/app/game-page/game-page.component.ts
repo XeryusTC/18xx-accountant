@@ -16,8 +16,8 @@ import { GameStateService } from '../game-state.service';
 })
 export class GamePageComponent implements OnInit {
 	uuid_sub;
-	selectedPlayer: Player;
-	selectedCompany: Company;
+	selectedPlayer: string;
+	selectedCompany: string;
 
 	constructor(
 		private titleService: Title,
@@ -26,12 +26,12 @@ export class GamePageComponent implements OnInit {
 	) { }
 
 	selectPlayer(player: Player): void {
-		this.selectedPlayer = player;
+		this.selectedPlayer = player.uuid;
 		this.selectedCompany = undefined;
 	}
 
 	selectCompany(company: Company): void {
-		this.selectedCompany = company;
+		this.selectedCompany = company.uuid;
 		this.selectedPlayer = undefined;
 	}
 

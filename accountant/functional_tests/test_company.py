@@ -478,3 +478,32 @@ class ManageCompanyTests(FunctionalTestCase):
         bno = game_page.get_companies()[0] # Get DOM updates
         self.assertEqual(['Bank'],
             [label.text for label in transfer_form.labels(bno['detail'])])
+
+    def test_after_company_transfers_money_detail_section_remains_open(self):
+        self.story('Alice is a user who starts a new game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story('She adds a company')
+        game_page = game.GamePage(self.browser)
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('B&O')
+        add_company.cash.send_keys('23\n')
+
+        self.story('She transfers some money to the bank')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+
+        transfer_form = game.TransferForm(self.browser)
+        company = game_page.get_companies()[0]
+        transfer_form.amount(company['detail']).send_keys('3\n')
+
+        self.story('Money has been transfered')
+        company = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '11980')
+        self.assertEqual(company['cash'].text, '20')
+
+        self.story('The detail section is still visible')
+        self.assertIsNotNone(company['detail'])

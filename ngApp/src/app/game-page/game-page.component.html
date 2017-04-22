@@ -21,7 +21,8 @@
 							{{ player.cash }}
 						</div>
 					</div>
-					<div class="row detail" *ngIf="selectedPlayer===player">
+					<div class="row detail"
+						*ngIf="selectedPlayer===player.uuid">
 						<transfer-form [source]="player"></transfer-form>
 					</div>
 				</div>
@@ -62,7 +63,7 @@
 				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
 				<div class="tp-1 bank">{{ company.bank_shares }}</div>
 			</div>
-			<div class="row detail" *ngIf="selectedCompany===company">
+			<div class="row detail" *ngIf="selectedCompany===company.uuid">
 				<transfer-form [source]="company"></transfer-form>
 			</div>
 		</div>
