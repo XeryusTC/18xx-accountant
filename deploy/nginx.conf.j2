@@ -26,6 +26,6 @@ server {
 	}
 
 	location / {
-		alias /var/www/sites/{{ sitename }}/static/ng/;
+		try_files $uri/ /static/ng/index.html;
 	}
 }
