@@ -141,3 +141,5 @@ STATIC_ROOT = BASE_DIR.ancestor(2).child("static")
 STATICFILES_DIRS = (
     BASE_DIR.child("static"),
 )
+
+TEST_RUNNER='accountant.testrunner.StagingTestRunner'

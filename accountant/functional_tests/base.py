@@ -10,12 +10,25 @@ DEFAULT_WAIT = 3
 SCREEN_DUMP_LOCATION = Path('screendumps')
 
 class FunctionalTestCase(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.against_staging = False
+        cls._get_options()
+
+        if not cls.against_staging:
+            super(FunctionalTestCase, cls).setUpClass()
+            cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if not cls.against_staging:
+            super(FunctionalTestCase, cls).tearDownClass()
+
     def setUp(self):
         self.webdriver = webdriver.Chrome
         self.browser = self.webdriver()
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
-        self.verbosity = self._get_verbosity()
         if self.verbosity >= 2:
             print() # Start stories on a fresh line
 
@@ -54,11 +67,16 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 cls=self.__class__.__name__, method=self._testMethodName,
                 windowid=windowid, timestamp=timestamp))
 
-    def _get_verbosity(self): # pragma: no cover
+    @classmethod
+    def _get_options(cls): # pragma: no cover
         """Get value of verbosity level argument given to manage.py"""
         # Code taken from http://stackoverflow.com/questions/27456881/
         for s in reversed(inspect.stack()):
             options = s[0].f_locals.get('options')
             if isinstance(options, dict):
-                return int(options['verbosity'])
-        return 1
+                cls.verbosity = int(options['verbosity'])
+                if options['staging']:
+                    cls.server_url = 'http://' + options['staging'][0]
+                    cls.inventory = options['staging'][1]
+                    cls.ansible_dir = options['ansible_directory']
+                    cls.against_staging = True
