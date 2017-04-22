@@ -1,0 +1,8 @@
+[staging]
+your_web_host
+
+[staging:vars]
+ansible_user=your_user_name
+sitename=web_url_without_www_prefix (example: 18xx.nl)
+db_name=18xx-accountant
+db_user=18xx-accountant
