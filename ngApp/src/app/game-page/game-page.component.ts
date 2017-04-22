@@ -22,7 +22,7 @@ export class GamePageComponent implements OnInit {
 	constructor(
 		private titleService: Title,
 		private route: ActivatedRoute,
-		private gameState: GameStateService
+		public gameState: GameStateService
 	) { }
 
 	selectPlayer(player: Player): void {

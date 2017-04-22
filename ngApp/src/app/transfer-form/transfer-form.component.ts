@@ -15,7 +15,7 @@ export class TransferFormComponent {
 
 	constructor(
 		private transferMoneyService: TransferMoneyService,
-		private gameState: GameStateService
+		public gameState: GameStateService
 	) { }
 
 	onSubmit(event: Event) {

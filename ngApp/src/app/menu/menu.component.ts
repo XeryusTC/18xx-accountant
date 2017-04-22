@@ -8,7 +8,7 @@ import { GameStateService } from '../game-state.service';
 	styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-	constructor(private gameState: GameStateService) { }
+	constructor(public gameState: GameStateService) { }
 
 	ngOnInit() {
 	}

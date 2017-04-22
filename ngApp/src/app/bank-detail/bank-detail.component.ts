@@ -9,7 +9,7 @@ import { GameStateService } from '../game-state.service';
 	styleUrls: ['./bank-detail.component.css']
 })
 export class BankDetailComponent implements OnInit {
-	constructor(private gameState: GameStateService) { }
+	constructor(public gameState: GameStateService) { }
 
 	ngOnInit() {
 	}
