@@ -129,6 +129,11 @@
   hosts: all
   become: true
   become_user: www-data
+  environment:
+      DJANGO_SETTINGS_MODULE: accountant.settings.production
+      ACCOUNTANT_DB_NAME: "{{ ansible.local.variables.database.name }}"
+      ACCOUNTANT_DB_USER: "{{ ansible.local.variables.database.user }}"
+      ACCOUNTANT_DB_PASSWORD: "{{ ansible.local.variables.database.password }}"
   tasks:
       # Clone the git repository
       - name: Clone the git repository
