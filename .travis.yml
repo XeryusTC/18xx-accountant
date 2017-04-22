@@ -5,6 +5,14 @@ language: python
 python:
     - "3.4"
     - "3.5"
+    - "3.6"
+cache:
+    directories:
+        - ngApp/node_modules
+        - $HOME/.nvm/versions/node/v7.4.0/lib/node_modules
+        - $HOME/.cache/pip
+before_cache:
+    - rm -f $HOME/.cache/pip/log/debug.log
 services:
     postgresql
 addons:
