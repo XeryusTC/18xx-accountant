@@ -22,3 +22,7 @@ ng/
 
 # pyenv
 .python-version
+
+# Ansible
+deploy/credentials/*
+*.retry

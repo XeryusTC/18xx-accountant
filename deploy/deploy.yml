@@ -1,4 +1,17 @@
 ---
+- hosts: 127.0.0.1
+  connection: local
+  name: Prepare updating the server
+  tasks:
+      - name: Get the git commit hash
+        command: git log -n 1 --format=%H
+        register: git_commit_hash
+      - name: Compile the Angular application
+        command: ./build-ng-app.sh -prod
+        args:
+            chdir: /vagrant
+            creates: /vagrant/ngApp/dist/main.*.bundle.js
+
 - hosts: all
   name: Install dependencies
   become: true
@@ -11,34 +24,39 @@
         with_items:
             - python3
             - python3-pip
+            - python-pip
             - git
             - postgresql-9.4
             - postgresql-server-dev-9.4
             - gettext
       - name: Install dependencies from pip
         pip:
-            name: virtualenv
-            executable: pip3
+            name: "{{ item }}"
+            executable: pip2
+        with_items:
+            - psycopg2
+            - virtualenv
 
 - hosts: all
   name: Set up variables on remote machine
   tasks:
       - name: Create variables directory
+        check_mode: no
         file:
-            path: "{{ sitename }}"
+            path: "~/{{ sitename }}.facts.d"
             state: directory
       - name: Create variables file
+        check_mode: no
         template:
-            src: "deploy/variables.ini.j2"
-            dest: "{{ sitename }}/variables.fact"
+            src: "variables.ini.j2"
+            dest: "~/{{ sitename }}.facts.d/variables.fact"
+            force: no
 
 - hosts: all
   name: provisioning
   become: true
-  fact_path: "~/{{ sitename }}"
+  fact_path: "/home/{{ ansible_user }}/{{ sitename }}.facts.d"
   tasks:
-      - name: Display facts
-        shell: echo {{ database.name }}
       - name: Create log file directories
         file:
             path: /var/log/gunicorn
@@ -47,14 +65,104 @@
             mode: 0744
             state: directory
       - name: Create directories too store application
-        check_mode: yes
         file:
             path: /var/www/sites/{{ sitename }}/{{ item }}
-            owner: www-data
+            owner: "{{ ansible_user }}"
             group: www-data
-            mode: 0774
+            mode: 0775
             state: directory
         with_items:
             - source
             - static
             - virtualenv
+
+      # Create postgres user and database
+      - name: Test if postgresql user exists
+        become_user: postgres
+        shell: psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='{{ ansible_local.variables.database.user }}'"
+        register: user_exists
+      - name: Create postgresql user
+        become_user: postgres
+        postgresql_user:
+            name: "{{ ansible_local.variables.database.user }}"
+            password: "{{ ansible_local.variables.database.password }}"
+            fail_on_user: no
+            state: present
+        when: user_exists.stdout != '1'
+
+      - name: Test if postgresql database exists
+        become_user: postgres
+        shell: psql -lqt | cut -d \| -f 1 | grep -w {{ ansible_local.variables.database.name }} | wc -l
+        register: database_exists
+      - name: Create postgresql database
+        become_user: postgres
+        postgresql_db:
+            name: "{{ ansible_local.variables.database.name }}"
+            owner: "{{ ansible_local.variables.database.user }}"
+            state: present
+        when: database_exists.stdout != '1'
+
+      - name: Grant postgresql user privileges on database
+        become_user: postgres
+        postgresql_privs:
+            db: postgres
+            privs: ALL
+            roles: "{{ ansible_local.variables.database.user }}"
+            type: database
+            obj: "{{ ansible_local.variables.database.name }}"
+            state: present
+
+      # Store EnvironmentFile that holds settings for Django
+      - name: Create directory for configuration
+        file:
+            path: /etc/www
+            owner:
+            group: www-data
+            mode: 0640
+            state: directory
+      - name: Create the EnvironmentFile
+        template:
+            src: "environmentfile.j2"
+            dest: "/etc/www/gunicorn-{{ sitename }}"
+
+- name: Deploy the application
+  hosts: all
+  become: true
+  become_user: www-data
+  tasks:
+      # Clone the git repository
+      - name: Clone the git repository
+        git:
+            repo: https://github.com/XeryusTC/18xx-accountant.git
+            dest: /var/www/sites/{{ sitename }}/source
+            #version: "{{ hostvars['127.0.0.1'].git_commit_hash.stdout }}"
+      - name: Update the virtualenv
+        pip:
+            chdir: /var/wwww/sites/{{ sitename }}
+            requirements: /var/www/sites/{{ sitename }}/source/requirements/production.txt
+            virtualenv: /var/www/sites/{{ sitename }}/virtualenv
+            virtualenv_python: python3
+      - name: Create directories for Angular files
+        file:
+            path: /var/www/sites/{{ sitename}}/source/accountant/{{ item }}
+            mode: 0755
+            state: directory
+        with_items:
+            - templates/ng/
+            - static/ng/
+      - name: Copy the Angular index to the server
+        copy:
+            src: /vagrant/ngApp/dist/index.html
+            dest: /var/www/sites/{{ sitename }}/source/accountant/templates/ng/index.html
+            mode: 0644
+      - name: Copy the Angular scripts to the server
+        copy:
+            src: /vagrant/ngApp/dist/
+            dest: /var/www/sites/{{ sitename }}/source/accountant/static/ng/
+            mode: 0644
+      - name: Collect the static files
+        check_mode: yes
+        django_manage:
+            app_path: /var/www/sites/{{ sitename }}/source/accountant
+            virtualenv: /var/www/sites/{{ sitename }}/virtualenv
+            command: collectstatic

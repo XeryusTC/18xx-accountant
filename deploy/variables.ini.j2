@@ -1,8 +1,8 @@
 [database]
-name = "{{ db_name }}"
-user = "{{ db_user }}"
-password = "{{ lookup('password', 'credentials/postgrespassword') }}"
+name = {{ db_name }}
+user = {{ db_user }}
+password = {{ lookup('password', 'credentials/postgrespassword') }}
 
 [django]
-domain = "{{ sitename }}"
-secret_key = "{{ lookup('password', 'credentials/secret_key length=32') }}"
+domain = {{ sitename }}
+secret_key = {{ lookup('password', 'credentials/secret_key length=32') }}
