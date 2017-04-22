@@ -6,7 +6,7 @@ from .pages import game
 class StylesheetTests(FunctionalTestCase):
     def test_color_css_loaded(self):
         self.story('Create a game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -15,7 +15,7 @@ class StylesheetTests(FunctionalTestCase):
 
     def test_main_stylesheet_loaded(self):
         self.story('Load the start page')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
 
         self.assertTrue(any('css/main.css' in s.get_attribute('href')

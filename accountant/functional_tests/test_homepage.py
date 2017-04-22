@@ -6,7 +6,7 @@ from .pages import game
 class HomePageTest(FunctionalTestCase):
     def test_loads_angular_app(self):
         self.story('Alice is a user who visits the website')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         self.story('There is an angular root element in the DOM')
         page = game.Homepage(self.browser)
@@ -16,7 +16,7 @@ class HomePageTest(FunctionalTestCase):
 
     def test_create_game(self):
         self.story('Alice is a user who visits the website')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.story('She sees that the title of the browser contains "18xx '
             'Accountant"')
         self.assertEqual(self.browser.title, '18xx Accountant')
@@ -33,7 +33,7 @@ class HomePageTest(FunctionalTestCase):
 
     def test_create_game_with_bank_size(self):
         self.story('Alice is a user who visits the website')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         self.story('She wants to start a new game with a bank of 9000')
         page = game.Homepage(self.browser)

@@ -6,7 +6,7 @@ from .pages import game
 class CompanyTests(FunctionalTestCase):
     def test_can_create_company(self):
         self.story('Alice is a user who starts a game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -46,7 +46,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_cannot_create_duplicate_company(self):
         self.story('Alice is a user who starts a game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -74,7 +74,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_can_return_to_game_page_from_add_company_page(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -93,7 +93,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_can_set_company_colors(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -142,7 +142,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_company_colors_preview(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -180,7 +180,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_creating_company_with_cash_decreases_bank_cash(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.bank_cash.clear()
         page.bank_cash.send_keys('1000\n')
@@ -200,7 +200,7 @@ class CompanyTests(FunctionalTestCase):
 
     def test_companies_are_sorted_alphabetically(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -243,7 +243,7 @@ class CompanyTests(FunctionalTestCase):
 class ManageCompanyTests(FunctionalTestCase):
     def test_clicking_company_opens_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -278,7 +278,7 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertIsNotNone(companies[1]['detail'])
 
     def test_clicking_company_closes_opened_player_detail_section(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -313,7 +313,7 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -363,7 +363,7 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_can_transfer_money_to_player(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -411,7 +411,7 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_can_transfer_money_to_other_company(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -459,7 +459,7 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_cannot_transfer_money_to_self(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 

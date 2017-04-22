@@ -7,7 +7,7 @@ class CreatePlayerTests(FunctionalTestCase):
     """Tests for creating players at the start of a game"""
     def test_can_create_player(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
         self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
@@ -42,7 +42,7 @@ class CreatePlayerTests(FunctionalTestCase):
 
     def test_cannot_create_duplicate_player(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -74,7 +74,7 @@ class CreatePlayerTests(FunctionalTestCase):
 
     def test_can_return_to_game_page_from_add_player_page(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -94,7 +94,7 @@ class CreatePlayerTests(FunctionalTestCase):
 
     def test_creating_player_with_cash_decreases_bank_cash(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.bank_cash.clear()
         page.bank_cash.send_keys('1000\n')
@@ -114,7 +114,7 @@ class CreatePlayerTests(FunctionalTestCase):
 
     def test_players_are_sorted_alphabetically(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page = game.Homepage(self.browser)
         page.start_button.click()
 
@@ -163,7 +163,7 @@ class ManagePlayerTests(FunctionalTestCase):
     """Tests for managing player actions during a game"""
     def test_clicking_player_opens_player_detail_section(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -203,7 +203,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_clicking_player_closes_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -238,7 +238,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -289,7 +289,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_can_transfer_money_to_company(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -348,7 +348,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_can_transfer_money_to_other_player(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
@@ -391,7 +391,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_cannot_transfer_money_to_self(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         homepage = game.Homepage(self.browser)
         homepage.start_button.click()
 
