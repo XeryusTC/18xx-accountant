@@ -29,6 +29,10 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         self.browser = self.webdriver()
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
+        if self.against_staging:
+            from .remote import run_playbook
+            run_playbook(self.ansible_dir.child('flushdb.yml'), self.inventory)
+
         if self.verbosity >= 2:
             print() # Start stories on a fresh line
 
@@ -77,6 +81,6 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 cls.verbosity = int(options['verbosity'])
                 if options['staging']:
                     cls.server_url = 'http://' + options['staging'][0]
-                    cls.inventory = options['staging'][1]
-                    cls.ansible_dir = options['ansible_directory']
+                    cls.inventory = Path(options['staging'][1])
+                    cls.ansible_dir = Path(options['ansible_directory'])
                     cls.against_staging = True
