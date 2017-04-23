@@ -27,5 +27,7 @@ describe('Company model', () => {
 		expect(company.background_color).toEqual(json.background_color);
 		expect(company.bank_shares).toEqual(json.bank_shares);
 		expect(company.ipo_shares).toEqual(json.ipo_shares);
+		// Value should be 0 (this is not stored on the server)
+		expect(company.value).toEqual(0);
 	});
 });

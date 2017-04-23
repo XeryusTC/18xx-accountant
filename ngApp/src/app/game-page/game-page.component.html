@@ -49,6 +49,7 @@
 			<div class="tp-1"># Shares</div>
 			<div class="tp-1">In IPO</div>
 			<div class="tp-1">In Bank</div>
+			<div class="tp-1">Value</div>
 		</div>
 		<hr />
 		<div *ngFor="let company of gameState.companies | values:'name'"
@@ -62,6 +63,9 @@
 				</div>
 				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
 				<div class="tp-1 bank">{{ company.bank_shares }}</div>
+				<div class="tp-1 value">
+					<input type="number" [(ngModel)]="company.value">
+				</div>
 			</div>
 			<div class="row detail" *ngIf="selectedCompany===company.uuid">
 				<transfer-form [source]="company"></transfer-form>

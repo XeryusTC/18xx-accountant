@@ -1,6 +1,7 @@
 export class Company {
 	bank_shares: number;
 	ipo_shares: number;
+	value: number;
 	constructor(
 		public uuid: string,
 		public game: string,
@@ -12,6 +13,7 @@ export class Company {
 	) {
 		this.bank_shares = 0;
 		this.ipo_shares = share_count;
+		this.value = 0;
 	}
 
 	static fromJson(obj) {
