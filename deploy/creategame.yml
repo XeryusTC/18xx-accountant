@@ -1,0 +1,17 @@
+---
+- name: Create game on remote server
+  hosts: all
+  fact_path: "/home/{{ ansible_user }}/{{ sitename }}.facts.d"
+  tasks:
+      - name: Tell Django to create the game
+        environment:
+            DJANGO_SETTINGS_MODULE: accountant.settings.production
+            ACCOUNTANT_DB_NAME: "{{ ansible_local.variables.database.name }}"
+            ACCOUNTANT_DB_USER: "{{ ansible_local.variables.database.user }}"
+            ACCOUNTANT_DB_PASSWORD: "{{ ansible_local.variables.database.password }}"
+            ACCOUNTANT_DOMAIN: "{{ ansible_local.variables.django.domain }}"
+            ACCOUNTANT_SECRET_KEY: "{{ ansible_local.variables.django.secret_key }}"
+        django_manage:
+            command: creategame --cash {{ cash }}
+            app_path: /var/www/sites/{{ sitename }}/source/accountant
+            virtualenv: /var/www/sites/{{ sitename }}/virtualenv

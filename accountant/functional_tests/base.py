@@ -30,8 +30,8 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         self.browser.implicitly_wait(DEFAULT_WAIT)
 
         if self.against_staging:
-            from .remote import run_playbook
-            run_playbook(self.ansible_dir.child('flushdb.yml'), self.inventory)
+            from . import remote
+            remote.flushdb(self.ansible_dir, self.inventory)
 
         if self.verbosity >= 2:
             print() # Start stories on a fresh line
