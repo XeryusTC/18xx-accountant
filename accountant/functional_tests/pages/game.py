@@ -24,6 +24,8 @@ class GamePage(PageObject):
     _bank_shares = PageElement(css=".bank", context=True)
     _detail = PageElement(css=".detail", context=True)
     _summary = PageElement(css=".row", context=True)
+    _shares = MultiPageElement(css=".share", context=True)
+    _value = PageElement(css=".value input", context=True)
 
     def get_players(self):
         res = []
@@ -32,6 +34,7 @@ class GamePage(PageObject):
                 'row': row,
                 'name': self._name(row),
                 'cash': self._cash(row),
+                'shares': self._shares(row),
                 'detail': self._detail(row),
             }
             res.append(info)
@@ -47,6 +50,7 @@ class GamePage(PageObject):
                 'share_count': self._share_count(row),
                 'ipo_shares': self._ipo_shares(row),
                 'bank_shares': self._bank_shares(row),
+                'value': self._value(row),
                 'detail': self._detail(row),
             }
             res.append(info)
@@ -81,3 +85,9 @@ class TransferForm(PageObject):
     target = MultiPageElement(name='target', context=True)
     labels = MultiPageElement(css='label.transfer', context=True)
     transfer_button = PageElement(name='transfer', context=True)
+
+class ShareForm(PageObject):
+    shares = PageElement(name='shares', context=True)
+    company = MultiPageElement(css='label.company', context=True)
+    source = MultiPageElement(css='label.source', context=True)
+    transfer_button = PageElement(name='transfer-share', context=True)
