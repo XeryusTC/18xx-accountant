@@ -243,20 +243,11 @@ class CompanyTests(FunctionalTestCase):
 class ManageCompanyTests(FunctionalTestCase):
     def test_clicking_company_opens_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds two companies')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&O')
+        self.create_company(game_uuid, 'C&O')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.clear()
-        add_company.name.send_keys('B&O\n')
-
-        game_page.add_company_link.click()
-        add_company.name.clear()
-        add_company.name.send_keys('C&O\n')
 
         self.story('The company detail sections are both hidden')
         companies = game_page.get_companies()
@@ -278,20 +269,12 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertIsNotNone(companies[1]['detail'])
 
     def test_clicking_company_closes_opened_player_detail_section(self):
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        self.story('Alice is a user who starts a game')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.create_company(game_uuid, 'NYC')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice\n')
-
-        self.story('She also adds a company')
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('NYC\n')
 
         self.story("She clicks the player to open the player's detail section")
         player = game_page.get_players()[0]
@@ -313,16 +296,10 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a company')
+        game_uuid = self.create_game(cash=11600)
+        self.create_company(game_uuid, 'B&O', cash=400)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('B&O')
-        add_company.cash.send_keys('400\n')
 
         self.story('Confirm cash amounts')
         company = game_page.get_companies()[0]
@@ -363,22 +340,11 @@ class ManageCompanyTests(FunctionalTestCase):
 
     def test_company_can_transfer_money_to_player(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a company')
+        game_uuid = self.create_game(cash=11500)
+        self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_company(game_uuid, 'B&O', cash=400)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('B&O')
-        add_company.cash.send_keys('400\n')
-
-        self.story('She adds a player')
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('100\n')
 
         self.story('Confirm cash amounts')
         player = game_page.get_players()[0]
@@ -410,30 +376,15 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '11500')
 
     def test_company_can_transfer_money_to_other_company(self):
-        self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
+        self.story('Alice is a user who starts a new game with companies')
+        game_uuid = self.create_game(cash=11800)
+        self.create_company(game_uuid, 'CPR', cash=100)
+        self.create_company(game_uuid, 'NYC', cash=100, text='amber-200',
+            background='black')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
 
         self.story('She adds a company')
         game_page = game.GamePage(self.browser)
-        add_company = game.AddCompanyPage(self.browser)
-        game_page.add_company_link.click()
-        add_company.name.send_keys('CPR')
-        add_company.cash.send_keys('100\n')
-
-        self.story('She adds a second company with colors')
-        game_page.add_company_link.click()
-        add_company.name.send_keys('NYC')
-        for radio in add_company.background_color:
-            if radio.get_attribute('value') == 'black':
-                radio.click()
-                break
-        for radio in add_company.text_color:
-            if radio.get_attribute('value') == 'amber-200':
-                radio.click()
-                break
-        add_company.cash.send_keys('100\n')
 
         self.story('She transfers some money from the CPR to the NYC')
         cpr, nyc = game_page.get_companies()
@@ -456,19 +407,14 @@ class ManageCompanyTests(FunctionalTestCase):
         cpr, nyc = game_page.get_companies()
         self.assertEqual(cpr['cash'].text, '58')
         self.assertEqual(nyc['cash'].text, '142')
+        self.assertEqual(game_page.bank_cash.text, '11800')
 
     def test_company_cannot_transfer_money_to_self(self):
-        self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a company')
+        self.story('Alice is a user who starts a new game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&O', cash=23)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('B&O')
-        add_company.cash.send_keys('23\n')
 
         self.story("There is no option for B&O on the B&O's transfer section")
         bno = game_page.get_companies()[0]
@@ -480,17 +426,11 @@ class ManageCompanyTests(FunctionalTestCase):
             [label.text for label in transfer_form.labels(bno['detail'])])
 
     def test_after_company_transfers_money_detail_section_remains_open(self):
-        self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a company')
+        self.story('Alice is a user who starts a new game with a company')
+        game_uuid = self.create_game(cash=11977)
+        self.create_company(game_uuid, 'B&O', cash=23)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('B&O')
-        add_company.cash.send_keys('23\n')
 
         self.story('She transfers some money to the bank')
         company = game_page.get_companies()[0]

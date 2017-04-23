@@ -6,6 +6,13 @@ import signal
 from pytractor import webdriver
 from unipath import Path
 
+try:
+    from . import remote
+except ImportError:
+    pass # Ignore error, we're most likely testing locally/running CI
+from core import factories
+from core import models
+
 DEFAULT_WAIT = 3
 SCREEN_DUMP_LOCATION = Path('screendumps')
 
@@ -49,6 +56,40 @@ class FunctionalTestCase(StaticLiveServerTestCase):
     def story(self, text):
         if self.verbosity >= 2:
             print('-', text)
+
+    def create_game(self, **kwargs):
+        if self.against_staging:
+            return remote.creategame(self.ansible_dir, self.inventory,
+                **kwargs)[1]
+        else:
+            game = factories.GameFactory.create(**kwargs)
+            return str(game.pk)
+
+    def create_player(self, game_uuid, name, **kwargs):
+        if self.against_staging:
+            return remote.createplayer(self.ansible_dir, self.inventory,
+                game_uuid, name, **kwargs)[1]
+        else:
+            game = models.Game.objects.get(pk=game_uuid)
+            company = factories.PlayerFactory.create(game=game, name=name,
+                **kwargs)
+            return str(company.pk)
+
+    def create_company(self, game_uuid, name, **kwargs):
+        if 'text' in kwargs:
+            kwargs['text_color'] = kwargs['text']
+            del kwargs['text']
+        if 'background' in kwargs:
+            kwargs['background_color'] = kwargs['background']
+            del kwargs['background']
+        if self.against_staging:
+            return remote.createcompany(self.ansible_dir, self.inventory,
+                game=game_uuid, name=name, **kwargs)[1]
+        else:
+            game = models.Game.objects.get(pk=game_uuid)
+            company = factories.CompanyFactory.create(game=game, name=name,
+                **kwargs)
+            return str(company.pk)
 
     def _test_has_failed(self): # pragma: no cover
         for method, error in self._outcome.errors:

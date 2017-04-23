@@ -162,21 +162,12 @@ class CreatePlayerTests(FunctionalTestCase):
 class ManagePlayerTests(FunctionalTestCase):
     """Tests for managing player actions during a game"""
     def test_clicking_player_opens_player_detail_section(self):
-        self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds two players')
+        self.story('Alice is a user who starts a new game with two players')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.create_player(game_uuid, 'Bob')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.clear()
-        add_player.name.send_keys('Alice\n')
-
-        game_page.add_player_link.click()
-        add_player.name.clear()
-        add_player.name.send_keys('Bob\n')
 
         self.story('Check that the two players are in the list')
         self.assertCountEqual(['Alice', 'Bob'],
@@ -203,20 +194,11 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_clicking_player_closes_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.create_company(game_uuid, 'PRR')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice\n')
-
-        self.story('She also adds a company')
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('PRR\n')
 
         self.story('She clicks the company to open its detail section')
         player = game_page.get_players()[0]
@@ -238,21 +220,16 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        game_uuid = self.create_game(cash=11000)
+        self.create_player(game_uuid, 'Alice', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('1000\n')
 
         self.story('Confirm cash amounts')
         player = game_page.get_players()[0]
         self.assertEqual(player['cash'].text, '1000')
         self.assertEqual(game_page.bank_cash.text, '11000')
+
         self.story("She opens the player's detail view")
         player['row'].click()
         player = game_page.get_players()[0]
@@ -289,30 +266,12 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_can_transfer_money_to_company(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        game_uuid = self.create_game(cash=10500)
+        self.create_player(game_uuid, 'Alice', cash=1000)
+        self.create_company(game_uuid, 'CPR', cash=500, text='white',
+            background='red-700')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('1000\n')
-
-        self.story('She adds a company (with some colors)')
-        game_page.add_company_link.click()
-        add_company = game.AddCompanyPage(self.browser)
-        add_company.name.send_keys('CPR')
-        for radio in add_company.background_color:
-            if radio.get_attribute('value') == 'red-700':
-                radio.click()
-                break
-        for radio in add_company.text_color:
-            if radio.get_attribute('value') == 'white':
-                radio.click()
-                break
-        add_company.cash.send_keys('500\n')
 
         self.story('Confirm cash amounts')
         player = game_page.get_players()[0]
@@ -347,22 +306,12 @@ class ManagePlayerTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '519')
 
     def test_player_can_transfer_money_to_other_player(self):
-        self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        self.story('Alice is a user who starts a new game with two players')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice', cash=530)
+        self.create_player(game_uuid, 'Bob', cash=290)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('530\n')
-
-        self.story('She adds another player')
-        game_page.add_player_link.click()
-        add_player.name.send_keys('Bob')
-        add_player.cash.send_keys('290\n')
 
         self.story('She moves some money from Alice to Bob')
         alice, bob = game_page.get_players()
@@ -391,16 +340,10 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_player_cannot_transfer_money_to_self(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('470\n')
 
         self.story("There is no option for Alice on Alice's transfer section")
         alice = game_page.get_players()[0]
@@ -413,16 +356,10 @@ class ManagePlayerTests(FunctionalTestCase):
 
     def test_after_player_transfers_money_detail_section_is_still_open(self):
         self.story('Alice is a user who starts a new game')
-        self.browser.get(self.server_url)
-        homepage = game.Homepage(self.browser)
-        homepage.start_button.click()
-
-        self.story('She adds a player')
+        game_uuid = self.create_game(cash=11983)
+        self.create_player(game_uuid, 'Alice', cash=17)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
-        game_page.add_player_link.click()
-        add_player = game.AddPlayerPage(self.browser)
-        add_player.name.send_keys('Alice')
-        add_player.cash.send_keys('17\n')
 
         self.story('She transfers some money to the bank')
         player = game_page.get_players()[0]
