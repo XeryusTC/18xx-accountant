@@ -143,3 +143,23 @@ class CreatecompanyTests(TestCase):
     def test_withoubank_param_determines_company_has_0_bank_shares(self):
         call_command('createcompany', str(self.game.pk), 'NNH')
         self.assertEqual(models.Company.objects.first().bank_shares, 0)
+
+    def test_text_color_param_sets_company_text_color(self):
+        call_command('createcompany', str(self.game.pk), 'PRR',
+            text_color='red-700')
+        self.assertEqual(models.Company.objects.first().text_color, 'red-700')
+
+    def test_text_color_param_is_black_by_default(self):
+        call_command('createcompany', str(self.game.pk), 'C&O')
+        self.assertEqual(models.Company.objects.first().text_color, 'black')
+
+    def test_background_color_param_sets_company_background_color(self):
+        call_command('createcompany', str(self.game.pk), 'Erie',
+            background_color='yellow-600')
+        self.assertEqual(models.Company.objects.first().background_color,
+            'yellow-600')
+
+    def test_background_color_param_is_white_by_default(self):
+        call_command('createcompany', str(self.game.pk), 'B&O')
+        self.assertEqual(models.Company.objects.first().background_color,
+            'white')
