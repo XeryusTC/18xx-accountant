@@ -168,6 +168,11 @@
             src: /vagrant/ngApp/dist/index.html
             dest: /var/www/sites/{{ sitename }}/source/accountant/templates/ng/index.html
             mode: 0644
+      - name: Copy the Angular index to static/
+        copy:
+            src: /vagrant/ngApp/dist/index.html
+            dest: /var/www/sites/{{ sitename }}/source/accountant/static/index.html
+            mode: 0644
       - name: Copy the Angular scripts to the server
         copy:
             src: /vagrant/ngApp/dist/
