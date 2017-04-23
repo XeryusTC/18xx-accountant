@@ -1,0 +1,43 @@
+<form>
+	<div class="row">
+		<div class="tp-3">
+			<label for="shares">Shares</label>
+		</div>
+		<div class="tp-9">
+			<input name="shares" id="shares" type="number"
+				[(ngModel)]="shares">
+		</div>
+	</div>
+	<div class="row">
+		<div class="tp-3">
+			Company
+		</div>
+		<div class="tp-9">
+			<label *ngFor='let company of gameState.companies | values:"name"'
+				for="company-{{ company.name }}" class="company
+				fg-{{ company.text_color }} bg-{{ company.background_color }}">
+				<input type="radio" name="company" value="{{ company.uuid }}"
+					id="company-{{ company.name }}">
+				{{ company.name }}
+			</label>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="tp-3">
+			Source
+		</div>
+		<div class="tp-9">
+			<label for="source-ipo" class="source">
+				<input type="radio" name="source" id="target-ipo" value="ipo"
+					[(ngModel)]="source"> IPO
+			</label>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="tp-3">
+			<input type="submit" name="transfer-share" value="OK">
+		</div>
+	</div>
+</form>

@@ -27,6 +27,7 @@ import { StartGameFormComponent }  from
 	'./start-game-form/start-game-form.component';
 import { TransferFormComponent }   from
 	'./transfer-form/transfer-form.component';
+import { ShareFormComponent } from './share-form/share-form.component';
 
 @NgModule({
 	declarations: [
@@ -41,7 +42,8 @@ import { TransferFormComponent }   from
 		AddCompanyComponent,
 		AddCompanyFormComponent,
 		ValuesPipe,
-		TransferFormComponent
+		TransferFormComponent,
+		ShareFormComponent
 	],
 	imports: [
 		BrowserModule,

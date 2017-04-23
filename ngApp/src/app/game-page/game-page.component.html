@@ -23,7 +23,12 @@
 					</div>
 					<div class="row detail"
 						*ngIf="selectedPlayer===player.uuid">
-						<transfer-form [source]="player"></transfer-form>
+						<div class="tp-12">
+							<transfer-form [source]="player"></transfer-form>
+						</div>
+						<div class="tp-12">
+							<share-form [buyer]="player"></share-form>
+						</div>
 					</div>
 				</div>
 			</div>
