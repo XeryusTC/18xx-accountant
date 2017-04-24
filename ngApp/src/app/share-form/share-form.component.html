@@ -1,11 +1,11 @@
-<form>
+<form (ngSubmit)="onSubmit($event)">
 	<div class="row">
 		<div class="tp-3">
 			<label for="shares">Shares</label>
 		</div>
 		<div class="tp-9">
 			<input name="shares" id="shares" type="number"
-				[(ngModel)]="shares">
+				[(ngModel)]="share_amount">
 		</div>
 	</div>
 	<div class="row">
@@ -17,7 +17,8 @@
 				for="company-{{ company.name }}" class="company
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
 				<input type="radio" name="company" value="{{ company.uuid }}"
-					id="company-{{ company.name }}">
+					id="company-{{ company.name }}"
+					[(ngModel)]="company_share">
 				{{ company.name }}
 			</label>
 		</div>
