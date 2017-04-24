@@ -8,8 +8,10 @@ router = routers.HybridRouter()
 router.register(r'game', views.GameViewSet)
 router.register(r'player', views.PlayerViewSet, base_name='player')
 router.register(r'company', views.CompanyViewSet, base_name='company')
-router.register(r'playershare', views.PlayerShareViewSet)
-router.register(r'companyshare', views.CompanyShareViewSet)
+router.register(r'playershare', views.PlayerShareViewSet,
+    base_name='playershare')
+router.register(r'companyshare', views.CompanyShareViewSet,
+    base_name='companyshare')
 
 router.add_api_view('transfer_money', url(r'^transfer_money/$',
     views.TransferMoneyView.as_view(), name='transfer_money'))

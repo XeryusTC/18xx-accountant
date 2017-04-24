@@ -43,13 +43,29 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
 
 class PlayerShareViewSet(viewsets.ModelViewSet):
-    queryset = models.PlayerShare.objects.all()
     serializer_class = serializers.PlayerShareSerializer
+
+    def get_queryset(self):
+        player_uuid = self.request.query_params.get('owner', None)
+        game_uuid = self.request.query_params.get('game', None)
+        if player_uuid is not None:
+            return models.PlayerShare.objects.filter(owner=player_uuid)
+        if game_uuid is not None:
+            return models.PlayerShare.objects.filter(owner__game=game_uuid)
+        return models.PlayerShare.objects.all()
 
 
 class CompanyShareViewSet(viewsets.ModelViewSet):
-    queryset = models.CompanyShare.objects.all()
     serializer_class = serializers.CompanyShareSerializer
+
+    def get_queryset(self):
+        company_uuid = self.request.query_params.get('owner', None)
+        game_uuid = self.request.query_params.get('game', None)
+        if company_uuid is not None:
+            return models.CompanyShare.objects.filter(owner=company_uuid)
+        if game_uuid is not None:
+            return models.CompanyShare.objects.filter(owner__game=game_uuid)
+        return models.CompanyShare.objects.all()
 
 
 class TransferMoneyView(APIView):

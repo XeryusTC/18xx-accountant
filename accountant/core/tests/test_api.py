@@ -229,6 +229,46 @@ class PlayerShareTests(APITestCase):
         self.assertEqual(models.PlayerShare.objects.count(), 1)
         self.assertIn('non_field_errors', response.data.keys())
 
+    def test_retrieve_all_shares_when_no_query_params_set(self):
+        factories.PlayerShareFactory.create_batch(size=5)
+        url = reverse('playershare-list')
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in models.PlayerShare.objects.all()])
+
+    def test_retrieve_shares_of_single_player(self):
+        """Filter shares based on the player in the query parameters"""
+        player = factories.PlayerFactory.create(game=game)
+        shares = factories.PlayerShareFactory.create_batch(owner=player,
+            size=2)
+        factories.PlayerShareFactory.create_batch(size=3)
+        url = reverse('playershare-list') + '?owner=' + str(player.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in shares])
+
+    def test_retrieve_all_player_shares_in_a_game(self):
+        """Filter shares based on the game in the query parameters"""
+        players = factories.PlayerFactory.create_batch(game=game, size=2)
+        shares = factories.PlayerShareFactory.create_batch(size=11,
+            owner=players[0]) + factories.PlayerShareFactory.create_batch(
+                size=13, owner=players[1])
+        factories.PlayerShareFactory.create_batch(size=17)
+        url = reverse('playershare-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in shares])
+
 
 class CompanyShareTests(APITestCase):
     def test_create_self_owning_share(self):
@@ -277,6 +317,43 @@ class CompanyShareTests(APITestCase):
             "Created duplicate share holdings: " + str(response.data))
         self.assertEqual(models.CompanyShare.objects.count(), 1)
         self.assertIn('non_field_errors', response.data.keys())
+
+    def test_retrieve_all_shares_when_no_query_params_set(self):
+        factories.CompanyShareFactory.create_batch(size=7)
+        url = reverse('companyshare-list')
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in models.CompanyShare.objects.all()])
+
+    def test_retrieve_shares_of_single_company(self):
+        company = factories.CompanyFactory.create()
+        shares = factories.CompanyShareFactory.create_batch(owner=company,
+            size=3)
+        factories.CompanyShareFactory.create_batch(size=5)
+        url = reverse('companyshare-list') + '?owner=' + str(company.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in  shares])
+
+    def test_retrieve_all_shares_in_a_game(self):
+        companies = factories.CompanyFactory.create_batch(game=game, size=2)
+        shares = factories.CompanyShareFactory.create_batch(size=2,
+            owner=companies[0]) + factories.CompanyShareFactory.create_batch(
+                size=3, owner=companies[1])
+        factories.CompanyShareFactory.create_batch(size=5)
+        url = reverse('companyshare-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([s['uuid'] for s in response.data],
+            [str(s.uuid) for s in  shares])
 
 
 class TransferMoneyTests(APITestCase):
