@@ -3,6 +3,7 @@ import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { Game }             from './models/game';
 import { Player }           from './models/player';
 import { Company }          from './models/company';
+import { Share }            from './models/share';
 
 import { CompanyService }   from './company.service';
 import { GameService }      from './game.service';
@@ -21,6 +22,11 @@ describe('GameStateService', () => {
 		new Company('company-uuid-0', 'game-uuid', 'B&O', 100, 10),
 		new Company('company-uuid-1', 'game-uuid', 'PMQ', 200, 10),
 		new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10)
+	];
+	let testShares = [
+		new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-0', 2),
+		new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-1', 3),
+		new Share('share-uuid-2', 'player-uuid-1', 'company-uuid-0', 5),
 	];
 
 	// Game service mock
@@ -133,5 +139,24 @@ describe('GameStateService', () => {
 		let companies = service.companies;
 		service.updateCompany(company);
 		expect(service.companies).not.toBe(companies);
+	}));
+
+	it('updateShare() updates instance of share', fakeAsync(() => {
+		let share = new Share('share-uuid-0', 'player-uuid-0',
+							  'company-uuid-0', 7);
+		service.loadGame('game-uuid');
+		tick();
+		service.updateShare(share);
+		expect(service.shares['share-uuid-0']).toEqual(share);
+	}));
+
+	it('updateShare() replaces list of shares', fakeAsync(() => {
+		let share = new Share('share-uuid-0', 'player-uuid-0',
+							  'company-uuid-0', 9);
+		service.loadGame('game-uuid');
+		tick();
+		let shares = service.shares;
+		service.updateShare(share);
+		expect(service.shares).not.toBe(shares);
 	}));
 });

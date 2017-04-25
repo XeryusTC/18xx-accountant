@@ -29,6 +29,26 @@ export class ShareFormComponent implements OnInit {
 		let company_share = this.gameState.companies[this.company_share];
 		this.transferShareService
 			.transferShare(this.buyer, company_share, this.source,
-						   company_share.value, this.share_amount);
+						   company_share.value, this.share_amount)
+				.then(result => {
+					if ('game' in result) {
+						this.gameState.updateGame(result.game);
+					}
+					if ('players' in result) {
+						for (let player of result.players) {
+							this.gameState.updatePlayer(player);
+						}
+					}
+					if ('companies' in result) {
+						for (let company of result.companies) {
+							this.gameState.updateCompany(company);
+						}
+					}
+					if ('shares' in result) {
+						for (let share of result.shares) {
+							this.gameState.updateShare(share);
+						}
+					}
+				});
 	}
 }

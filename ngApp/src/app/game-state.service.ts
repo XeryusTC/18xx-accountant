@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Game }           from './models/game';
 import { Player }         from './models/player';
 import { Company }        from './models/company';
+import { Share }          from './models/share';
 
 import { GameService }    from './game.service';
 import { PlayerService }  from './player.service';
@@ -15,6 +16,7 @@ export class GameStateService {
 	game: Game;
 	players: {[uuid: string]: Player};
 	companies: {[uuid: string]: Company};
+	shares: {[uuid: string]: Share};
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
@@ -58,5 +60,8 @@ export class GameStateService {
 	updateCompany(company: Company): void {
 		this.companies = Object.assign({}, this.companies);
 		this.companies[company.uuid] = company;
+	}
+
+	updateShare(share: Share): void {
 	}
 }

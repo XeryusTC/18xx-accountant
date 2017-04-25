@@ -1,9 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick }
+	from '@angular/core/testing';
 import { By }                               from '@angular/platform-browser';
 import { FormsModule }                      from '@angular/forms';
 
 import { Company }              from '../models/company';
+import { Game }                 from '../models/game';
 import { Player }               from '../models/player';
+import { Share }                from '../models/share';
 import { GameService }          from '../game.service';
 import { GameStateService }     from '../game-state.service';
 import { ShareFormComponent }   from './share-form.component';
@@ -30,7 +33,7 @@ describe('ShareFormComponent', () => {
 	beforeEach(async(() => {
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
-						  'updateCompany', 'companies']);
+						  'updateCompany', 'updateShare', 'companies']);
 		gameStateStub.companies = {
 			[buyCompany.uuid]: buyCompany,
 			[shareCompany.uuid]: shareCompany,
@@ -39,6 +42,8 @@ describe('ShareFormComponent', () => {
 
 		transferShareStub = jasmine
 			.createSpyObj('TransferShareService', ['transferShare']);
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve(null));
 
 		TestBed.configureTestingModule({
 			imports: [ FormsModule ],
@@ -146,4 +151,43 @@ describe('ShareFormComponent', () => {
 		let args = transferShareStub.transferShare.calls.first().args;
 		expect(args[3]).toBe(82);
 	});
+
+	it('game instance should be updated when affected', fakeAsync(() => {
+		let newGame = new Game('game-uuid', 1);
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve({game: newGame}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updateGame.calls.first().args[0]).toBe(newGame);
+	}));
+
+	it('player instance should be updated when affected', fakeAsync(() => {
+		let newPlayer = new Player('uuid', 'game-uuid', 'Alice', 7);
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve({players: [newPlayer]}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updatePlayer.calls.first().args[0])
+			.toBe(newPlayer);
+	}));
+
+	it('company instance should be updated when affected', fakeAsync(() => {
+		let newCompany = new Company('uuid', 'game-uuid', 'NNH', 2, 2);
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve({companies: [newCompany]}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updateCompany.calls.first().args[0])
+			.toBe(newCompany);
+	}));
+
+	it('share instance should be updated when affected', fakeAsync(() => {
+		let newShare = new Share('uuid', 'owner-uuid', 'comapny-uuid', 1);
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve({shares: [newShare]}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updateShare.calls.first().args[0])
+			.toBe(newShare);
+	}));
 });
