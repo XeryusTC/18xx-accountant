@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from . import models, serializers, utils
 
 NO_AVAILABLE_SHARES_ERROR = _("Source doesn't have enough shares to sell")
+DIFFERENT_GAME_ERROR = \
+    _("The transaction is not between individuals in the same game")
 
 class GameViewSet(viewsets.ModelViewSet):
     """
@@ -168,7 +170,10 @@ class TransferShareView(APIView):
             try:
                 utils.buy_share(buyer, share, source,
                     serializer.validated_data['price'], amount)
-            except:
+            except utils.DifferentGameException:
+                return Response({'non_field_errors': [DIFFERENT_GAME_ERROR]},
+                    status=status.HTTP_400_BAD_REQUEST)
+            except utils.InvalidShareTransaction:
                 return Response(
                     {'non_field_errors': [NO_AVAILABLE_SHARES_ERROR]},
                     status=status.HTTP_400_BAD_REQUEST)

@@ -819,6 +819,34 @@ class ShareTransactionTests(APITestCase):
         response = self.client.post(self.url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_handles_invalid_transaction(self, mock_buy_share):
+        mock_buy_share.side_effect = utils.InvalidShareTransaction
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk,
+            'price': 29, 'amount': 1}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.data['non_field_errors'],
+            [views.NO_AVAILABLE_SHARES_ERROR])
+
+    def test_handles_different_game_exception(self, mock_buy_share):
+        company = factories.CompanyFactory()
+        player = factories.PlayerFactory()
+        mock_buy_share.side_effect = utils.DifferentGameException
+        data = {'buyer_type': 'player', 'player_buyer': player.pk,
+            'source_type': 'ipo', 'amount': 1,
+            'price': 30, 'share': self.source_company.pk}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.data['non_field_errors'],
+            [views.DIFFERENT_GAME_ERROR])
+
+    def test_does_not_handle_other_exceptions(self, mock_buy_share):
+        mock_buy_share.side_effect = Exception
+        data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
+            'source_type': 'ipo', 'share': self.source_company.pk,
+            'price': 31, 'amount': 1}
+        with self.assertRaises(Exception):
+            response = self.client.post(self.url, data, format='json')
+
 
 @mock.patch.object(utils, 'operate')
 class OperateTests(APITestCase):
