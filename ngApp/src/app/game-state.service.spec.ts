@@ -197,4 +197,32 @@ describe('GameStateService', () => {
 		expect(service.shares).not.toBe(shares);
 		expect(service.shares.length).toEqual(shares.length);
 	}));
+
+	it('shareInfo() gives info on share holdings of player', fakeAsync(() => {
+		testCompanies[0].text_color = 'color1';
+		testCompanies[0].background_color = 'color2';
+		testCompanies[1].text_color = 'color3';
+		testCompanies[1].background_color = 'color4';
+		testPlayers[0].share_set = ['share-uuid-0', 'share-uuid-1'];
+		service.loadGame('game-uuid');
+		tick();
+		tick();
+		let info = service.shareInfo(testPlayers[0]);
+		expect(info[0]).toEqual({
+			fraction: 0.2,
+			shares: 2,
+			share_count: 10,
+			name: 'B&O',
+			text_color: 'color1',
+			background_color: 'color2'
+		});
+		expect(info[1]).toEqual({
+			fraction: 0.3,
+			shares: 3,
+			share_count: 10,
+			name: 'PMQ',
+			text_color: 'color3',
+			background_color: 'color4'
+		});
+	}));
 });

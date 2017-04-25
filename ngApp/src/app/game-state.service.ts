@@ -18,6 +18,7 @@ export class GameStateService {
 	players: {[uuid: string]: Player};
 	companies: {[uuid: string]: Company};
 	shares: {[uuid: string]: Share};
+	private loaded = 4;
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
@@ -35,6 +36,7 @@ export class GameStateService {
 					for (let player of players) {
 						this.players[player.uuid] = player;
 					}
+					this.loaded -= 1;
 				});
 				// Get the companies
 				this.companyService.getCompanyList(game.uuid)
@@ -43,6 +45,7 @@ export class GameStateService {
 						for (let company of companies) {
 							this.companies[company.uuid] = company;
 						}
+					this.loaded -= 1;
 					});
 				// Get the shares
 				this.shares = {}
@@ -51,12 +54,14 @@ export class GameStateService {
 						for (let share of shares) {
 							this.shares[share.uuid] = share;
 						}
+						this.loaded -= 1;
 					});
 				this.shareService.getCompanyShareList(game.uuid)
 					.then(shares => {
 						for (let share of shares) {
 							this.shares[share.uuid] = share;
 						}
+						this.loaded -= 1;
 					});
 			});
 	}
@@ -82,5 +87,24 @@ export class GameStateService {
 	updateShare(share: Share): void {
 		this.shares = Object.assign({}, this.shares);
 		this.shares[share.uuid] = share;
+	}
+
+	shareInfo(owner: Player | Company): Object[] {
+		let res = [], company;
+		console.log('test');
+		console.log(owner.share_set);
+		for (let share of owner.share_set) {
+			console.log(share);
+			company = this.companies[this.shares[share].company];
+			res.push({
+				fraction: this.shares[share].shares / company.share_count,
+				shares: this.shares[share].shares,
+				share_count: company.share_count,
+				name: company.name,
+				text_color: company.text_color,
+				background_color: company.background_color
+			});
+		}
+		return res;
 	}
 }

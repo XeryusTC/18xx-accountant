@@ -1,4 +1,4 @@
-<div *ngIf="gameState.game">
+<div *ngIf="gameState.loaded == 0">
 	<menu></menu>
 	<div class="row nested">
 		<div class="tp-9" id="players" *ngIf="gameState.players">
@@ -11,6 +11,7 @@
 				<div class="row">
 					<div class="tp-2">Name</div>
 					<div class="tp-1">Cash</div>
+					<div class="tp-9">Shares</div>
 				</div>
 				<hr />
 				<div *ngFor="let player of gameState.players | values:'name'"
@@ -19,6 +20,13 @@
 						<div class="tp-2 name">{{ player.name }}</div>
 						<div class="tp-1 cash text-right">
 							{{ player.cash }}
+						</div>
+						<div class="tp-9">
+							<div *ngFor="let share of gameState.shareInfo(player)"
+								class="share fg-{{ share.text_color }}
+								bg-{{ share.background_color }}">
+								{{ share.name }} {{ share.fraction * 100 }}%
+							</div>
 						</div>
 					</div>
 					<div class="row detail"
@@ -82,6 +90,6 @@
 	</div>
 </div>
 
-<div *ngIf="!gameState.game">
+<div *ngIf="gameState.loaded > 0">
 	Loading game...
 </div>
