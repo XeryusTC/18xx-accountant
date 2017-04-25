@@ -9,6 +9,7 @@ import { PlayerService }        from './player.service';
 import { CompanyService }       from './company.service';
 import { TransferMoneyService } from './transfer-money.service';
 import { TransferShareService } from './transfer-share.service';
+import { ShareService }         from './share.service';
 
 import { ValuesPipe } from './values.pipe';
 
@@ -59,6 +60,7 @@ import { ShareFormComponent } from './share-form/share-form.component';
 		CompanyService,
 		TransferMoneyService,
 		TransferShareService,
+		ShareService,
 		Title
 	],
 	bootstrap: [AppComponent]
