@@ -682,6 +682,14 @@ class ShareTransactionWithMockTests(APITestCase):
         self.player = factories.PlayerFactory(game=game, cash=100)
         self.source_company = factories.CompanyFactory(game=game, cash=0)
         self.buy_company = factories.CompanyFactory(game=game, cash=0)
+        factories.PlayerShareFactory(owner=self.player,
+            company=self.source_company, shares=5)
+        factories.CompanyShareFactory(owner=self.source_company,
+            company=self.source_company)
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.source_company)
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.buy_company)
 
     def test_GET_request_is_empty(self, mock):
         """GET is for debug (and doc) purposes only"""
@@ -715,8 +723,6 @@ class ShareTransactionWithMockTests(APITestCase):
             self.source_company, self.source_company, 3, 1)
 
     def test_player_can_sell_to_ipo(self, mock_buy_share):
-        factories.PlayerShareFactory(owner=self.player,
-            company=self.source_company)
         data = {'buyer_type': 'ipo', 'source_type': 'player',
             'player_source': self.player.pk, 'share': self.source_company.pk,
             'price': 4}
@@ -726,8 +732,6 @@ class ShareTransactionWithMockTests(APITestCase):
             self.source_company, self.player, 4, 1)
 
     def test_player_can_sell_to_bank_pool(self, mock_buy_share):
-        factories.PlayerShareFactory(owner=self.player,
-            company=self.source_company)
         data = {'buyer_type': 'bank', 'source_type': 'player',
             'player_source': self.player.pk, 'share': self.source_company.pk,
             'price': 5}
@@ -783,8 +787,6 @@ class ShareTransactionWithMockTests(APITestCase):
             self.source_company, self.source_company, 10, 1)
 
     def test_company_can_sell_to_ipo(self, mock_buy_share):
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.source_company)
         data = {'buyer_type': 'ipo', 'source_type': 'company',
             'company_source': self.buy_company.pk,
             'share': self.source_company.pk, 'price': 11}
@@ -794,8 +796,6 @@ class ShareTransactionWithMockTests(APITestCase):
             self.source_company, self.buy_company, 11, 1)
 
     def test_company_can_sell_to_bank_pool(self, mock_buy_share):
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.source_company)
         data = {'buyer_type': 'bank', 'source_type': 'company',
             'company_source': self.buy_company.pk,
             'share': self.source_company.pk, 'price': 12}
@@ -829,8 +829,6 @@ class ShareTransactionWithMockTests(APITestCase):
 
     def test_player_cannot_buy_from_company_if_it_has_no_shares(self,
             mock_buy_share):
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.source_company, shares=0)
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
             'source_type': 'company', 'company_source': self.buy_company.pk,
@@ -865,8 +863,6 @@ class ShareTransactionWithMockTests(APITestCase):
 
     def test_company_cannot_buy_from_other_company_if_it_has_no_shares(self,
             mock_buy_share):
-        factories.CompanyShareFactory(owner=self.source_company,
-            company=self.source_company, shares=0)
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'company', 'company_buyer': self.buy_company.pk,
             'source_type': 'company', 'company_source': self.source_company.pk,
@@ -878,8 +874,6 @@ class ShareTransactionWithMockTests(APITestCase):
 
     def test_company_cannot_sell_to_ipo_if_it_has_no_shares(self,
             mock_buy_share):
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.source_company, shares=0)
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'ipo', 'source_type': 'company',
             'company_source': self.buy_company.pk,
@@ -892,8 +886,6 @@ class ShareTransactionWithMockTests(APITestCase):
 
     def test_company_cannot_sell_to_bank_pool_if_it_has_no_shares(self,
             mock_buy_share):
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.source_company, shares=0)
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'bank', 'source_type': 'company',
             'company_source': self.buy_company.pk,
