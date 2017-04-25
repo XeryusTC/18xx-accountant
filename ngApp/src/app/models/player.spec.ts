@@ -8,7 +8,8 @@ describe('Player model', () => {
 			name: 'Alice',
 			game: 'fake-game-uuid',
 			cash: 700,
-			shares: ['share-1-uuid', 'share-2-uuid']
+			shares: ['company-1-uuid', 'company-2-uuid'],
+			share_set: ['share-0-uuid', 'share-1-uuid']
 		};
 		let player = Player.fromJson(json);
 		// Test each property individually instead of looping over them
@@ -18,5 +19,6 @@ describe('Player model', () => {
 		expect(player.game).toEqual(json.game);
 		expect(player.cash).toEqual(json.cash);
 		expect(player.shares).toEqual(json.shares);
+		expect(player.share_set).toEqual(json.share_set);
 	});
 });

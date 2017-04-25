@@ -1,5 +1,6 @@
 export class Player {
 	shares = [];
+	share_set = [];
 
 	constructor(
 		public uuid: string,
@@ -11,6 +12,7 @@ export class Player {
 	static fromJson(obj) {
 		let player = new Player(obj.uuid, obj.game, obj.name, obj.cash);
 		player.shares = obj.shares;
+		player.share_set = obj.share_set;
 		return player;
 	}
 }

@@ -13,7 +13,8 @@ describe('Company model', () => {
 			share_count: 20,
 			ipo_shares: 5,
 			bank_shares: 4,
-			player_owners: []
+			player_owners: [],
+			share_set: ['share-uuid-0', 'share-uuid-1']
 		};
 		let company = Company.fromJson(json);
 		// Test each property individually instead of looping over them
@@ -27,6 +28,7 @@ describe('Company model', () => {
 		expect(company.background_color).toEqual(json.background_color);
 		expect(company.bank_shares).toEqual(json.bank_shares);
 		expect(company.ipo_shares).toEqual(json.ipo_shares);
+		expect(company.share_set).toEqual(json.share_set);
 		// Value should be 0 (this is not stored on the server)
 		expect(company.value).toEqual(0);
 	});

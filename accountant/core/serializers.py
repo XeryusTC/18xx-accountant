@@ -27,8 +27,8 @@ class GameSerializer(serializers.ModelSerializer):
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
-        fields = ('url', 'uuid', 'name', 'game', 'cash', 'shares')
-        read_only_fields = ('shares',)
+        fields = ('url', 'uuid', 'name', 'game', 'cash', 'shares', 'share_set')
+        read_only_fields = ('shares', 'share_set')
         validators = (
             serializers.UniqueTogetherValidator(
                 queryset=models.Player.objects.all(),
@@ -51,8 +51,8 @@ class CompanySerializer(serializers.ModelSerializer):
         model = models.Company
         fields = ('url', 'uuid', 'name', 'text_color', 'background_color',
             'game', 'cash', 'share_count', 'ipo_shares', 'bank_shares',
-            'player_owners')
-        read_only_fields = ('player_owners',)
+            'player_owners', 'share_set')
+        read_only_fields = ('player_owners', 'share_set')
         validators = (
             serializers.UniqueTogetherValidator(
                 queryset=models.Company.objects.all(),
