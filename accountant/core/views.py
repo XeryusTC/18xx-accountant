@@ -177,8 +177,52 @@ class TransferShareView(APIView):
                 return Response(
                     {'non_field_errors': [NO_AVAILABLE_SHARES_ERROR]},
                     status=status.HTTP_400_BAD_REQUEST)
-            return Response(serializer.validated_data,
-                status=status.HTTP_200_OK)
+
+            # Construct the response, starting with the game
+            context = {'request': request}
+            response = {}
+            if (buyer == utils.Share.IPO or buyer == utils.Share.BANK
+                or source == utils.Share.IPO or source == utils.Share.BANK):
+                share.game.refresh_from_db()
+                response['game'] = serializers.GameSerializer(
+                    share.game, context=context).data
+            # Add players next
+            players = []
+            if isinstance(buyer, models.Player):
+                players.append(serializers.PlayerSerializer(buyer,
+                    context=context).data)
+            if isinstance(source, models.Player):
+                players.append(serializers.PlayerSerializer(source,
+                    context=context).data)
+            if players:
+                response['players'] = players
+            # Add companies
+            companies = [serializers.CompanySerializer(share, context=context)
+                    .data]
+            if isinstance(buyer, models.Company):
+                companies.append(serializers.CompanySerializer(buyer,
+                    context=context).data)
+            if isinstance(source, models.Company):
+                companies.append(serializers.CompanySerializer(source,
+                    context=context).data)
+            response['companies'] = companies
+            # Add the share holding records
+            shares = []
+            if isinstance(buyer, models.Player):
+                shares.append(serializers.PlayerShareSerializer(
+                    buyer.share_set.get(company=share), context=context).data)
+            if isinstance(buyer, models.Company):
+                shares.append(serializers.CompanyShareSerializer(
+                    buyer.share_set.get(company=share), context=context).data)
+            if isinstance(source, models.Player):
+                shares.append(serializers.PlayerShareSerializer(
+                    source.share_set.get(company=share), context=context).data)
+            if isinstance(source, models.Company):
+                shares.append(serializers.CompanyShareSerializer(
+                    source.share_set.get(company=share), context=context).data)
+            response['shares'] = shares
+
+            return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

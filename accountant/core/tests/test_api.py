@@ -525,8 +525,157 @@ class TransferMoneyWithTransferMockTests(APITestCase):
             response.data['non_field_errors'])
 
 
-@mock.patch.object(utils, 'buy_share')
 class ShareTransactionTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('transfer_share')
+        self.player = factories.PlayerFactory(game=game, cash=100)
+        # Company to buy shares from
+        self.source_company = factories.CompanyFactory(game=game, cash=100)
+        # Company to buy shares with
+        self.buy_company = factories.CompanyFactory(game=game, cash=100)
+        # Company to buy shares in
+        self.share_company = factories.CompanyFactory(game=game, cash=0,
+            ipo_shares=5, bank_shares=5)
+        self.data = {'share': self.share_company.pk, 'amount': 1}
+
+    def test_buying_from_ipo_includes_game_instance_in_response(self):
+        self.data.update({'source_type': 'ipo', 'price': 10,
+            'buyer_type': 'player', 'player_buyer': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.data['game']['uuid'], str(game.pk))
+        self.assertEqual(response.data['game']['cash'], 12010)
+
+    def test_buying_from_bank_includes_game_instance_in_response(self):
+        self.data.update({'source_type': 'bank', 'price': 20,
+            'buyer_type': 'player', 'player_buyer': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.data['game']['uuid'], str(game.pk))
+        self.assertEqual(response.data['game']['cash'], 12020)
+
+    def test_ipo_buying_share_includes_game_instance_in_response(self):
+        self.data.update({'buyer_type': 'ipo', 'price': 30,
+            'source_type': 'player', 'player_source': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.data['game']['uuid'], str(game.pk))
+        self.assertEqual(response.data['game']['cash'], 11970)
+
+    def test_bank_buying_share_includes_game_instance_in_response(self):
+        self.data.update({'buyer_type': 'bank', 'price': 40,
+            'source_type': 'player', 'player_source': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.data['game']['uuid'], str(game.pk))
+        self.assertEqual(response.data['game']['cash'], 11960)
+
+    def test_company_whos_share_is_being_bought_is_always_in_response(self):
+        self.data.update({'source_type': 'ipo', 'price': 50,
+            'buyer_type': 'player', 'player_buyer': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(str(self.share_company.pk),
+            response.data['companies'][0]['uuid'])
+
+    def test_company_buying_share_is_in_response(self):
+        self.data.update({'source_type': 'ipo', 'price': 60,
+            'buyer_type': 'company', 'company_buyer': self.buy_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.buy_company.refresh_from_db()
+        self.assertIn(str(self.buy_company.pk),
+            [c['uuid'] for c in response.data['companies']])
+        self.assertEqual(self.buy_company.cash, 40)
+        self.assertIn(40, [c['cash'] for c in response.data['companies']])
+
+    def test_player_buying_share_is_in_response(self):
+        self.data.update({'source_type': 'ipo', 'price': 70,
+            'buyer_type': 'player', 'player_buyer': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.player.refresh_from_db()
+        self.assertEqual(str(self.player.pk),
+            response.data['players'][0]['uuid'])
+        self.assertEqual(response.data['players'][0]['cash'], 30)
+        self.assertEqual(self.player.cash, 30)
+
+    def test_company_selling_share_is_in_response(self):
+        factories.CompanyShareFactory(owner=self.source_company,
+            company=self.share_company)
+        self.data.update({'buyer_type': 'bank', 'price': 80,
+            'source_type': 'company',
+            'company_source': self.source_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.source_company.refresh_from_db()
+        self.assertIn(str(self.source_company.pk),
+            [c['uuid'] for c in response.data['companies']])
+        self.assertEqual(self.source_company.cash, 180)
+        self.assertIn(180, [c['cash'] for c in response.data['companies']])
+
+    def test_player_selling_share_is_in_response(self):
+        self.data.update({'buyer_type': 'bank', 'price': 90,
+            'source_type': 'player', 'player_source': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.player.refresh_from_db()
+        self.assertEqual(str(self.player.pk),
+            response.data['players'][0]['uuid'])
+        self.assertEqual(response.data['players'][0]['cash'], 190)
+        self.assertEqual(self.player.cash, 190)
+
+    def test_when_player_buys_share_the_share_instance_is_in_response(self):
+        self.data.update({'price': 100, 'buyer_type': 'player',
+            'player_buyer': self.player.pk, 'source_type': 'ipo'})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(len(response.data['shares']), 1)
+        self.assertEqual(str(self.player.share_set.first().pk),
+            response.data['shares'][0]['uuid'])
+
+    def test_game_not_in_response_when_bank_or_ipo_not_involved(self):
+        factories.CompanyShareFactory(owner=self.share_company,
+            company=self.share_company)
+        self.data.update({'price': 105, 'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'company',
+            'company_source': self.share_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertNotIn('game', response.data)
+
+    def test_players_key_not_in_response_when_no_player_involved(self):
+        factories.CompanyShareFactory(owner=self.share_company,
+            company=self.share_company)
+        self.data.update({'price': 105, 'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'company',
+            'company_source': self.share_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertNotIn('players', response.data)
+
+    def test_when_company_buys_share_the_share_instance_is_in_response(self):
+        self.data.update({'price': 110, 'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'ipo'})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(len(response.data['shares']), 1)
+        self.assertEqual(str(self.buy_company.share_set.first().pk),
+            response.data['shares'][0]['uuid'])
+
+    def test_when_player_sells_share_the_share_instance_is_in_response(self):
+        factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=3)
+        self.data.update({'price': 120, 'buyer_type': 'bank',
+            'source_type': 'player', 'player_source': self.player.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(len(response.data['shares']), 1)
+        self.assertEqual(str(self.player.share_set.first().pk),
+            response.data['shares'][0]['uuid'])
+        self.assertEqual(response.data['shares'][0]['shares'], 2)
+
+    def test_when_companY_sells_share_the_share_instance_is_in_response(self):
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.share_company, shares=4)
+        self.data.update({'price': 130, 'buyer_type': 'bank',
+            'source_type': 'company', 'company_source': self.buy_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(len(response.data['shares']), 1)
+        self.assertEqual(str(self.buy_company.share_set.first().pk),
+            response.data['shares'][0]['uuid'])
+        self.assertEqual(response.data['shares'][0]['shares'], 3)
+
+
+@mock.patch.object(utils, 'buy_share')
+class ShareTransactionWithMockTests(APITestCase):
     def setUp(self):
         game.cash = 1000
         self.url = reverse('transfer_share')
