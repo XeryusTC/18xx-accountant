@@ -23,11 +23,17 @@ describe('GameStateService', () => {
 		new Company('company-uuid-1', 'game-uuid', 'PMQ', 200, 10),
 		new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10)
 	];
-	let testShares = [
+	let testPlayerShares = [
 		new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-0', 2),
 		new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-1', 3),
 		new Share('share-uuid-2', 'player-uuid-1', 'company-uuid-0', 5),
 	];
+	let testCompanyShares= [
+		new Share('share-uuid-3', 'company-uuid-0', 'company-uuid-0', 2),
+		new Share('share-uuid-4', 'company-uuid-1', 'company-uuid-1', 1),
+		new Share('share-uuid-5', 'company-uuid-2', 'company-uuid-2', 3)
+	];
+
 
 	// Game service mock
 	let gameService    = jasmine.createSpyObj('gameService',
@@ -46,9 +52,18 @@ describe('GameStateService', () => {
 	companyService.getCompanyList
 		.and.callFake(() => Promise.resolve(testCompanies));
 
+	// Share service mock
+	let shareService = jasmine
+		.createSpyObj('ShareService', ['getPlayerShareList',
+					  'getCompanyShareList']);
+	shareService.getPlayerShareList
+		.and.callFake(() => Promise.resolve(testPlayerShares));
+	shareService.getCompanyShareList
+		.and.callFake(() => Promise.resolve(testCompanyShares));
+
 	beforeEach(() => {
 		service = new GameStateService(gameService, playerService,
-									   companyService);
+									   companyService, shareService);
 	});
 
 	it('loading a game use game service', () => {
@@ -91,6 +106,25 @@ describe('GameStateService', () => {
 		expect(service.companies['company-uuid-2']).toEqual(testCompanies[2]);
 	}));
 
+	it('loading a game retrieves shares', () => {
+		service.loadGame('game-uuid');
+		expect(shareService.getPlayerShareList.calls.first().args[0])
+			.toBe('game-uuid');
+		expect(shareService.getPlayerShareList.calls.first().args[0])
+			.toBe('game-uuid');
+	});
+
+	it('loading a game stores shares in a single dictionary', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.shares['share-uuid-0']).toEqual(testPlayerShares[0]);
+		expect(service.shares['share-uuid-1']).toEqual(testPlayerShares[1]);
+		expect(service.shares['share-uuid-2']).toEqual(testPlayerShares[2]);
+		expect(service.shares['share-uuid-3']).toEqual(testCompanyShares[0]);
+		expect(service.shares['share-uuid-4']).toEqual(testCompanyShares[1]);
+		expect(service.shares['share-uuid-5']).toEqual(testCompanyShares[2]);
+	}));
+
 	it('updateGame() updates instance of game', fakeAsync(() => {
 		let newGame = new Game('game-uuid', 11111);
 		service.loadGame('game-uuid');
@@ -122,6 +156,7 @@ describe('GameStateService', () => {
 		let players = service.players;
 		service.updatePlayer(newPlayer);
 		expect(service.players).not.toBe(players);
+		expect(service.players.length).toBe(players.length);
 	}));
 
 	it('updateCompany() updates instance of company', fakeAsync(() => {
@@ -139,6 +174,8 @@ describe('GameStateService', () => {
 		let companies = service.companies;
 		service.updateCompany(company);
 		expect(service.companies).not.toBe(companies);
+		expect(service.companies.length).toEqual(companies.length);
+		console.log(service.companies.length, companies.length);
 	}));
 
 	it('updateShare() updates instance of share', fakeAsync(() => {
@@ -158,5 +195,6 @@ describe('GameStateService', () => {
 		let shares = service.shares;
 		service.updateShare(share);
 		expect(service.shares).not.toBe(shares);
+		expect(service.shares.length).toEqual(shares.length);
 	}));
 });

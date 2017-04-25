@@ -8,6 +8,7 @@ import { Share }          from './models/share';
 import { GameService }    from './game.service';
 import { PlayerService }  from './player.service';
 import { CompanyService } from './company.service';
+import { ShareService }   from './share.service';
 
 export const DIFFERENT_GAME_ERROR = 'This game is different from the old one';
 
@@ -20,7 +21,9 @@ export class GameStateService {
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
-			    private companyService: CompanyService) { }
+			    private companyService: CompanyService,
+				private shareService: ShareService
+	) { }
 
 	loadGame(uuid: string): void {
 		this.gameService.getGame(uuid)
@@ -39,6 +42,20 @@ export class GameStateService {
 						this.companies = {};
 						for (let company of companies) {
 							this.companies[company.uuid] = company;
+						}
+					});
+				// Get the shares
+				this.shares = {}
+				this.shareService.getPlayerShareList(game.uuid)
+					.then(shares => {
+						for (let share of shares) {
+							this.shares[share.uuid] = share;
+						}
+					});
+				this.shareService.getCompanyShareList(game.uuid)
+					.then(shares => {
+						for (let share of shares) {
+							this.shares[share.uuid] = share;
 						}
 					});
 			});
@@ -63,5 +80,7 @@ export class GameStateService {
 	}
 
 	updateShare(share: Share): void {
+		this.shares = Object.assign({}, this.shares);
+		this.shares[share.uuid] = share;
 	}
 }
