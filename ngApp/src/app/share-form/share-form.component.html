@@ -14,7 +14,7 @@
 		</div>
 		<div class="tp-9">
 			<label *ngFor='let company of gameState.companies | values:"name"'
-				for="company-{{ company.name }}" class="company
+				for="company-{{ company.name }}" class="company-label
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
 				<input type="radio" name="company" value="{{ company.uuid }}"
 					id="company-{{ company.name }}"

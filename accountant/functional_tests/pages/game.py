@@ -88,6 +88,6 @@ class TransferForm(PageObject):
 
 class ShareForm(PageObject):
     shares = PageElement(name='shares', context=True)
-    company = MultiPageElement(css='label.company', context=True)
+    company = MultiPageElement(css='label.company-label', context=True)
     source = MultiPageElement(css='label.source', context=True)
     transfer_button = PageElement(name='transfer-share', context=True)
