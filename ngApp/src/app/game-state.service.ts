@@ -18,7 +18,7 @@ export class GameStateService {
 	players: {[uuid: string]: Player};
 	companies: {[uuid: string]: Company};
 	shares: {[uuid: string]: Share};
-	private loaded = 4;
+	private loaded;
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
@@ -27,6 +27,7 @@ export class GameStateService {
 	) { }
 
 	loadGame(uuid: string): void {
+		this.loaded = 4;
 		this.gameService.getGame(uuid)
 			.then(game => {
 				this.game = game;
