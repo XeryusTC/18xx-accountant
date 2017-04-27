@@ -20,7 +20,8 @@ describe('GamePageComponent', () => {
 
 	beforeEach(async(() => {
 		activatedRoute = new ActivatedRouteStub();
-		gameStateSpy = jasmine.createSpyObj('gameStateSpy', ['loadGame'])
+		gameStateSpy = jasmine.createSpyObj('GameStateService',
+											['loadGame', 'isLoaded']);
 
 		TestBed.configureTestingModule({
 			declarations: [GamePageComponent, ValuesPipe],

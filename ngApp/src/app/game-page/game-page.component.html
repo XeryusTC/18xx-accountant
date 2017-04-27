@@ -1,4 +1,4 @@
-<div *ngIf="gameState.loaded == 0">
+<div *ngIf="gameState.isLoaded()">
 	<menu></menu>
 	<div class="row nested">
 		<div class="tp-9" id="players" *ngIf="gameState.players">
@@ -90,6 +90,6 @@
 	</div>
 </div>
 
-<div *ngIf="gameState.loaded > 0">
+<div *ngIf="!gameState.isLoaded()">
 	Loading game...
 </div>

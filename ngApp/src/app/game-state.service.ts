@@ -18,7 +18,12 @@ export class GameStateService {
 	players: {[uuid: string]: Player};
 	companies: {[uuid: string]: Company};
 	shares: {[uuid: string]: Share};
-	private loaded;
+
+	private gameLoaded: boolean = false;
+	private playersLoaded: boolean = false;
+	private companiesLoaded: boolean = false;
+	private playerSharesLoaded: boolean = false;
+	private companySharesLoaded: boolean = false;
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
@@ -26,18 +31,29 @@ export class GameStateService {
 				private shareService: ShareService
 	) { }
 
+	isLoaded(): boolean {
+		return (this.gameLoaded && this.playersLoaded && this.companiesLoaded
+			&& this.playerSharesLoaded && this.companySharesLoaded);
+	}
+
 	loadGame(uuid: string): void {
-		this.loaded = 4;
+		this.gameLoaded = false;
+		this.playersLoaded = false;
+		this.companiesLoaded = false;
+		this.playerSharesLoaded = false;
+		this.companySharesLoaded = false;
+
 		this.gameService.getGame(uuid)
 			.then(game => {
 				this.game = game;
+				this.gameLoaded = true;
 				// Get the players
 				this.playerService.getPlayerList(game.uuid).then(players => {
 					this.players = {};
 					for (let player of players) {
 						this.players[player.uuid] = player;
 					}
-					this.loaded -= 1;
+					this.playersLoaded = true;
 				});
 				// Get the companies
 				this.companyService.getCompanyList(game.uuid)
@@ -46,7 +62,7 @@ export class GameStateService {
 						for (let company of companies) {
 							this.companies[company.uuid] = company;
 						}
-					this.loaded -= 1;
+						this.companiesLoaded = true;
 					});
 				// Get the shares
 				this.shares = {}
@@ -55,14 +71,14 @@ export class GameStateService {
 						for (let share of shares) {
 							this.shares[share.uuid] = share;
 						}
-						this.loaded -= 1;
+						this.playerSharesLoaded = true;
 					});
 				this.shareService.getCompanyShareList(game.uuid)
 					.then(shares => {
 						for (let share of shares) {
 							this.shares[share.uuid] = share;
 						}
-						this.loaded -= 1;
+						this.companySharesLoaded = true;
 					});
 			});
 	}

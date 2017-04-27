@@ -225,4 +225,22 @@ describe('GameStateService', () => {
 			background_color: 'color4'
 		});
 	}));
+
+	it('is not loaded after initial creation', () => {
+		expect(service.isLoaded()).toBe(false);
+	});
+
+	it('marks as being loaded after loading game finishes', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.isLoaded()).toBe(true);
+	}));
+
+	it('calling loadGame() marks as being not loaded', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.isLoaded()).toBe(true);
+		service.loadGame('game-uuid');
+		expect(service.isLoaded()).toBe(false);
+	}));
 });
