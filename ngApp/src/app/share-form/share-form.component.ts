@@ -17,7 +17,7 @@ export class ShareFormComponent implements OnInit {
 	@Input() buyer;
 
 	constructor(
-		private gameState: GameStateService,
+		public gameState: GameStateService,
 		private transferShareService: TransferShareService
 	) { }
 

@@ -33,8 +33,9 @@ class FunctionalTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
         self.webdriver = webdriver.Chrome
-        self.browser = self.webdriver()
+        self.browser = self.webdriver(test_timeout=DEFAULT_WAIT)
         self.browser.implicitly_wait(DEFAULT_WAIT)
+        self.browser.set_script_timeout(DEFAULT_WAIT)
 
         if self.against_staging:
             from . import remote
