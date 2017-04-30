@@ -24,7 +24,7 @@ if [ ! -e /etc/systemd/system/xvfb.service ]; then
 	systemctl daemon-reload
 	systemctl enable xvfb.service
 	systemctl start xvfb.service
-	echo "export PATH=$PATH:/usr/lib/chromium" >> .bashrc
+	echo "export PATH=\$PATH:/usr/lib/chromium" >> .bashrc
 	echo "export DISPLAY=:99" >> .bashrc
 fi
 

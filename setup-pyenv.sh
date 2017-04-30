@@ -9,7 +9,7 @@ if [ ! -d ".pyenv" ]; then
 	git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
 	echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bash_profile
 	source ~/.bash_profile
-	echo 'source .bashrc' >> ~/.bash_profile
+	echo 'source ~/.bashrc' >> ~/.bash_profile
 
 	pyenv install 3.4.2
 	pyenv virtualenv 3.4.2 dev
