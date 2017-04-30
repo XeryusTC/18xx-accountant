@@ -6,6 +6,8 @@ from django.utils.six import StringIO
 from .. import factories
 from .. import models
 
+FAKE_UUID = '00000000-0000-0000-0000-000000000000'
+
 class CreategameTests(TestCase):
     def test_creates_game(self):
         self.assertEqual(models.Game.objects.count(), 0)
@@ -163,3 +165,69 @@ class CreatecompanyTests(TestCase):
         call_command('createcompany', str(self.game.pk), 'B&O')
         self.assertEqual(models.Company.objects.first().background_color,
             'white')
+
+class CreateplayershareTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory.create()
+        self.player = factories.PlayerFactory.create(game=self.game)
+        self.company = factories.CompanyFactory.create(game=self.game)
+
+    def test_requires_player_uuid(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createplayershare')
+        self.assertIn('owner', cm.exception.args[0])
+
+    def test_requires_company_uuid(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createplayershare')
+        self.assertIn('company', cm.exception.args[0])
+
+    def test_outputs_uuid_of_new_share(self):
+        out = StringIO()
+        call_command('createplayershare', str(self.player.pk),
+            str(self.company.pk), stdout=out)
+        self.assertEqual(out.getvalue().strip(),
+            str(models.PlayerShare.objects.first().pk))
+
+    def test_shares_owned_is_same_as_shares_parameter(self):
+        call_command('createplayershare', str(self.player.pk),
+            str(self.company.pk), shares=3)
+        self.assertEqual(models.PlayerShare.objects.first().shares, 3)
+
+    def test_shares_owned_is_one_by_default(self):
+        call_command('createplayershare', str(self.player.pk),
+            str(self.company.pk))
+        self.assertEqual(models.PlayerShare.objects.first().shares, 1)
+
+    def test_raises_CommandError_when_player_doesnt_exist(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createplayershare', FAKE_UUID, str(self.company.pk))
+        self.assertIn('This is not a valid UUID', cm.exception.args)
+
+    def test_raises_CommandError_when_company_doesnt_exist(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createplayershare', str(self.player.pk), FAKE_UUID)
+        self.assertIn('This is not a valid UUID', cm.exception.args)
+
+    def test_CommandError_when_player_and_company_not_in_the_same_game(self):
+        player = factories.PlayerFactory.create()
+        company = factories.CompanyFactory.create()
+        with self.assertRaises(CommandError) as cm:
+            call_command('createplayershare', str(player.pk), str(company.pk))
+        self.assertIn('Owner and company are not in the same game',
+            cm.exception.args)
+
+    def test_updates_existing_record_with_new_share_amount(self):
+        factories.PlayerShareFactory.create(owner=self.player,
+            company=self.company, shares=1)
+        call_command('createplayershare', str(self.player.pk),
+            str(self.company.pk), shares=4)
+        self.assertEqual(models.PlayerShare.objects.first().shares, 4)
+
+    def test_updating_shares_outputs_share_uuid(self):
+        out = StringIO()
+        share = factories.PlayerShareFactory.create(owner=self.player,
+            company=self.company, shares=2)
+        call_command('createplayershare', str(self.player.pk),
+            str(self.company.pk), shares=5, stdout=out)
+        self.assertEqual(out.getvalue().strip(), str(share.pk))
