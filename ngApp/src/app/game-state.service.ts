@@ -108,8 +108,6 @@ export class GameStateService {
 
 	shareInfo(owner: Player | Company): Object[] {
 		let res = [], company;
-		console.log('test');
-		console.log(owner.share_set);
 		for (let share of owner.share_set) {
 			console.log(share);
 			company = this.companies[this.shares[share].company];
