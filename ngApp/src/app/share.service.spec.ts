@@ -53,6 +53,16 @@ describe('ShareService', () => {
 		})));
 	});
 
+	it('getPlayerShareList() returns an array of shares on success', done => {
+		service.getPlayerShareList('game-uuid').then(response => {
+			expect(response).toEqual(testShareList);
+			done();
+		});
+		conn.mockRespond(new Response(new ResponseOptions({
+			body: JSON.stringify(testShareList)
+		})));
+	});
+
 	it('getCompanyShareList() queries the correct url for game', () => {
 		service.getCompanyShareList('game-uuid');
 		expect(conn).toBeDefined('no http service at all');
@@ -76,6 +86,16 @@ describe('ShareService', () => {
 			status: 404,
 			statusText: 'URL not found',
 			body: 'The page could not be found'
+		})));
+	});
+
+	it('getCompanyShareList() returns an array of shares on success', done => {
+		service.getCompanyShareList('game-uuid').then(response => {
+			expect(response).toEqual(testShareList);
+			done();
+		});
+		conn.mockRespond(new Response(new ResponseOptions({
+			body: JSON.stringify(testShareList)
 		})));
 	});
 });
