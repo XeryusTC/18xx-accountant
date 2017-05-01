@@ -47,7 +47,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else:
+        else: # pragma: no cover
             self.fail('There are no shares in the IPO')
         share_form.transfer_button(player['detail']).click()
 
