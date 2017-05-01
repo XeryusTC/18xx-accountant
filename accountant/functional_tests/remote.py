@@ -89,3 +89,19 @@ def createcompany(playbook_dir, inventory, game, name, cash=0, share_count=10,
             'text_color': text_color,
             'background_color': background_color,
         })
+
+def createplayershare(playbook_dir, inventory, owner, company, shares=1):
+    playbook = playbook_dir.child('createplayershare.yml')
+    return run_playbook(playbook, inventory, extra_vars={
+        'owner': owner,
+        'company': company,
+        'shares': shares
+    })
+
+def createcompanyshare(playbook_dir, inventory, owner, company, shares=1):
+    playbook = playbook_dir.child('createcompanyshare.yml')
+    return run_playbook(playbook,inventory, extra_vars={
+        'owner': owner,
+        'company': company,
+        'shares': shares
+    })

@@ -92,6 +92,28 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 **kwargs)
             return str(company.pk)
 
+    def create_player_share(self, owner, company, **kwargs):
+        if self.against_staging:
+            return remote.createplayershare(self.ansible_dir, self.inventory,
+                owner=owner, company=company, **kwargs)[1]
+        else:
+            owner = models.Player.objects.get(pk=owner)
+            company = models.Company.objects.get(pk=company)
+            share = factories.PlayerShareFactory.create(owner=owner,
+                company=company, **kwargs)
+            return str(share.pk)
+
+    def create_company_share(self, owner, company, **kwargs):
+        if self.against_staging:
+            return remote.createcompanyshare(self.ansible_dir, self.inventory,
+                owner=owner, company=company, **kwargs)[1]
+        else:
+            owner = models.Company.objects.get(pk=owner)
+            company = models.Company.objects.get(pk=company)
+            share = factories.CompanyShareFactory.create(owner=owner,
+                company=company, **kwargs)
+            return str(share.pk)
+
     def _test_has_failed(self): # pragma: no cover
         for method, error in self._outcome.errors:
             if error:
