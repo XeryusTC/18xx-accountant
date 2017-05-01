@@ -231,3 +231,71 @@ class CreateplayershareTests(TestCase):
         call_command('createplayershare', str(self.player.pk),
             str(self.company.pk), shares=5, stdout=out)
         self.assertEqual(out.getvalue().strip(), str(share.pk))
+
+
+class CreatecompanyshareTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory.create()
+        self.owner = factories.CompanyFactory.create(game=self.game)
+        self.company = factories.CompanyFactory.create(game=self.game)
+
+    def test_requires_owner_uuid(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createcompanyshare')
+        self.assertIn('owner', cm.exception.args[0])
+
+    def test_requires_company_uuid(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createcompanyshare')
+        self.assertIn('company', cm.exception.args[0])
+
+    def test_shares_owned_is_same_as_shares_parameter(self):
+        call_command('createcompanyshare', str(self.owner.pk),
+            str(self.company.pk), shares=7)
+        self.assertEqual(models.CompanyShare.objects.first().shares, 7)
+
+    def test_shares_owned_is_one_by_default(self):
+        call_command('createcompanyshare', str(self.owner.pk),
+            str(self.company.pk))
+        self.assertEqual(models.CompanyShare.objects.first().shares, 1)
+
+    def test_updates_existing_record_with_new_share_amount(self):
+        factories.CompanyShareFactory.create(owner=self.owner,
+            company=self.company, shares=2)
+        call_command('createcompanyshare', str(self.owner.pk),
+            str(self.company.pk), shares=5)
+        self.assertEqual(models.CompanyShare.objects.first().shares, 5)
+        self.assertEqual(models.CompanyShare.objects.count(), 1)
+
+    def test_outputs_uuid_of_new_share(self):
+        out = StringIO()
+        call_command('createcompanyshare', str(self.owner.pk),
+            str(self.company.pk), stdout=out)
+        self.assertEqual(out.getvalue().strip(),
+            str(models.CompanyShare.objects.first().pk))
+
+    def test_updating_shares_outputs_share_uuid(self):
+        out = StringIO()
+        share = factories.CompanyShareFactory.create(owner=self.owner,
+            company=self.company, shares=3)
+        call_command('createcompanyshare', str(self.owner.pk),
+            str(self.company.pk), shares=8, stdout=out)
+        self.assertEqual(out.getvalue().strip(), str(share.pk))
+
+    def test_raises_CommandError_when_owner_doesnt_exist(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createcompanyshare', FAKE_UUID, str(self.owner.pk))
+        self.assertIn('This is not a valid UUID', cm.exception.args)
+
+    def test_raises_CommandError_when_company_doesnt_exist(self):
+        with self.assertRaises(CommandError) as cm:
+            call_command('createcompanyshare', FAKE_UUID, str(self.company.pk))
+        self.assertIn('This is not a valid UUID', cm.exception.args)
+
+    def test_CommandError_when_owner_and_company_not_in_the_same_game(self):
+        owner = factories.CompanyFactory.create()
+        company = factories.CompanyFactory.create()
+        with self.assertRaises(CommandError) as cm:
+            call_command('createcompanyshare', str(owner.pk), str(company.pk))
+        self.assertIn('Owner and company are not in the same game',
+            cm.exception.args)
