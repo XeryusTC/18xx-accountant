@@ -37,6 +37,13 @@
 				<input type="radio" name="source" id="source-bank"
 					value="bank" [(ngModel)]="source"> Bank
 			</label>
+			<label *ngFor='let company of gameState.companies | values:"name"'
+				for="source-{{ company.name }}" class="source
+				fg-{{ company.text_color }} bg-{{ company.background_color }}">
+				<input type="radio" name="source" value="{{ company.uuid }}"
+					id="source-{{ company.name }}" [(ngModel)]="source">
+						{{ company.name }}
+			</label>
 		</div>
 	</div>
 

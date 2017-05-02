@@ -34,6 +34,10 @@ describe('ShareFormComponent', () => {
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
 						  'updateCompany', 'updateShare', 'companies']);
+		gameStateStub.players = {
+			[buyPlayer.uuid]: buyPlayer,
+			[sourcePlayer.uuid]: sourcePlayer
+		};
 		gameStateStub.companies = {
 			[buyCompany.uuid]: buyCompany,
 			[shareCompany.uuid]: shareCompany,
@@ -125,14 +129,14 @@ describe('ShareFormComponent', () => {
 	});
 
 	it('onSubmit() allows a share to be bought from a company', () => {
-		component.source = sourceCompany;
+		component.source = sourceCompany.uuid;
 		submitForm();
 		let args = transferShareStub.transferShare.calls.first().args;
 		expect(args[2]).toBe(sourceCompany);
 	});
 
 	it('onSubmit() allows a share to be bought from a player', () => {
-		component.source = sourcePlayer;
+		component.source = sourcePlayer.uuid;
 		submitForm();
 		let args = transferShareStub.transferShare.calls.first().args;
 		expect(args[2]).toBe(sourcePlayer);

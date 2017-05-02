@@ -13,7 +13,7 @@ import { TransferShareService } from '../transfer-share.service';
 export class ShareFormComponent implements OnInit {
 	company_share: string;
 	share_amount: number = 1;
-	source: Company | Player | string = 'ipo';
+	source: string = 'ipo';
 	@Input() buyer;
 
 	constructor(
@@ -27,8 +27,16 @@ export class ShareFormComponent implements OnInit {
 	onSubmit(e: Event) {
 		e.preventDefault();
 		let company_share = this.gameState.companies[this.company_share];
+		let realSource;
+		if (this.source in this.gameState.companies) {
+			realSource = this.gameState.companies[this.source];
+		} else if (this.source in this.gameState.players) {
+			realSource = this.gameState.players[this.source];
+		} else {
+			realSource = this.source;
+		}
 		this.transferShareService
-			.transferShare(this.buyer, company_share, this.source,
+			.transferShare(this.buyer, company_share, realSource,
 						   company_share.value, this.share_amount)
 				.then(result => {
 					if ('game' in result) {
