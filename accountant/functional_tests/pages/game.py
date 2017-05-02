@@ -51,6 +51,7 @@ class GamePage(PageObject):
                 'ipo_shares': self._ipo_shares(row),
                 'bank_shares': self._bank_shares(row),
                 'value': self._value(row),
+                'shares': self._shares(row),
                 'detail': self._detail(row),
             }
             res.append(info)
