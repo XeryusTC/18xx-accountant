@@ -82,12 +82,19 @@
 				</div>
 				<div class="tp-4">
 					<div *ngFor="let share of gameState.shareInfo(company)"
-						class="share">
+						class="share fg-{{ share.text_color }}
+							bg-{{ share.background_color }}">
 						{{ share.name }} {{ share.fraction * 100 }}%
 					</div>
+				</div>
 			</div>
 			<div class="row detail" *ngIf="selectedCompany===company.uuid">
-				<transfer-form [source]="company"></transfer-form>
+				<div class="tp-12">
+					<transfer-form [source]="company"></transfer-form>
+				</div>
+				<div class="tp-12">
+					<share-form [buyer]="company"></share-form>
+				</div>
 			</div>
 		</div>
 	</div>
