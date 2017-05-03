@@ -210,8 +210,6 @@ describe('GameStateService', () => {
 		service.loadGame('game-uuid');
 		tick();
 		let info = service.shareInfo(testPlayers[0]);
-		console.log(service.players['player-uuid-0'].share_set);
-		console.log(service.shares);
 		expect(info[0]).toEqual({
 			fraction: 0.2,
 			shares: 2,
@@ -245,6 +243,16 @@ describe('GameStateService', () => {
 		expect(info[0]['name']).toEqual('B&O');
 		expect(info[1]['name']).toEqual('C&O');
 		expect(info[2]['name']).toEqual('PMQ');
+	}));
+
+	it('shareInfo() doesnt include 0 share holdings', fakeAsync(() => {
+		testPlayerShares[0].shares = 0;
+		service.loadGame('game-uuid');
+		tick();
+		let info = service.shareInfo(testPlayers[0]);
+		expect(info.length).toBe(2);
+		expect(info[0]['name']).toBe('B&O');
+		expect(info[1]['name']).toBe('C&O');
 	}));
 
 	it('is not loaded after initial creation', () => {

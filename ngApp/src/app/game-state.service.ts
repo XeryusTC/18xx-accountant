@@ -109,6 +109,9 @@ export class GameStateService {
 	shareInfo(owner: Player | Company): Object[] {
 		let res = [], company;
 		for (let share of owner.share_set) {
+			if (this.shares[share].shares == 0) {
+				continue;
+			}
 			company = this.companies[this.shares[share].company];
 			res.push({
 				fraction: this.shares[share].shares / company.share_count,
