@@ -383,3 +383,85 @@ class BuyShareTests(FunctionalTestCase):
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
             buy_company['shares'][0].get_attribute('class'))
+
+    def test_company_can_buy_shares_from_other_company_treasury(self):
+        self.story('Create a game with two companies holding shares')
+        game_uuid = self.create_game(cash=12000)
+        buy_uuid = self.create_company(game_uuid, 'buy', cash=1000)
+        share_uuid = self.create_company(game_uuid, 'share', text='red-50',
+            background='yellow-900', cash=500)
+        self.create_company_share(share_uuid, buy_uuid, shares=5)
+        self.create_company_share(share_uuid, share_uuid, shares=7)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        buy_company, share_company = game_page.get_companies()
+
+        self.story('Set the value of the share company')
+        share_company['value'].clear()
+        share_company['value'].send_keys('70')
+
+        self.story('Buy company buys a share of the other company from its '
+            'treasury')
+        buy_company['elem'].click()
+        buy_company = game_page.get_companies()[0] # Get DOM updates
+        for label in share_form.source(buy_company['detail']):
+            if label.get_attribute('for') == 'source-share':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Share company has no treasury shares')
+        for label in share_form.company(buy_company['detail']):
+            if label.get_attribute('for') == 'company-share':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot find the share company in available shares list')
+        share_form.shares(buy_company['detail']).clear()
+        share_form.shares(buy_company['detail']).send_keys('4\n')
+
+        self.story('The page updates and shares have changed hands')
+        buy_company, share_company = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '12000')
+        self.assertEqual(buy_company['cash'].text, '720')
+        self.assertEqual(share_company['cash'].text, '780')
+        self.assertEqual(len(buy_company['shares']), 1)
+        self.assertEqual(buy_company['shares'][0].text, 'share 40%')
+        self.assertEqual(len(share_company['shares']), 2)
+        self.assertEqual(share_company['shares'][0].text, 'buy 50%')
+        self.assertEqual(share_company['shares'][1].text, 'share 30%')
+
+        self.story('Set the value of the share company')
+        buy_company['value'].clear()
+        buy_company['value'].send_keys('80')
+
+        self.story('Buy company buys one of its own shares back from the '
+            'share company')
+        buy_company['elem'].click()
+        buy_company = game_page.get_companies()[0] # Get DOM updates
+        for label in share_form.source(buy_company['detail']):
+            if label.get_attribute('for') == 'source-share':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Share company has no treasury shares')
+        for label in share_form.company(buy_company['detail']):
+            if label.get_attribute('for') == 'company-buy':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot find the buy company in available shares list')
+        share_form.shares(buy_company['detail']).clear()
+        share_form.shares(buy_company['detail']).send_keys('5\n')
+
+        self.story('The page updates and shares have changed hands')
+        buy_company, share_company = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '12000')
+        self.assertEqual(buy_company['cash'].text, '320')
+        self.assertEqual(share_company['cash'].text, '1180')
+        self.assertEqual(len(buy_company['shares']), 2)
+        self.assertEqual(buy_company['shares'][0].text, 'buy 50%')
+        self.assertEqual(buy_company['shares'][1].text, 'share 40%')
+        self.assertEqual(len(share_company['shares']), 1)
+        self.assertEqual(share_company['shares'][0].text, 'share 30%')
