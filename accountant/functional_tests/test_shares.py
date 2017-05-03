@@ -238,6 +238,51 @@ class BuyShareTests(FunctionalTestCase):
             company['shares'][0].get_attribute('class'))
         self.assertIn('bg-black', company['shares'][0].get_attribute('class'))
 
+    def test_company_can_buy_own_shares_from_bank_pool(self):
+        self.story('Create a game with a company with shares in the pool')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&M', text='red-900',
+            background='amber-400', bank_shares=5, cash=500)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+
+        self.story('Set the value of the B&M')
+        company = game_page.get_companies()[0]
+        company['value'].clear()
+        company['value'].send_keys(40)
+
+        self.story("Open the B&M's detail section, buy the pool shares")
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+        share_form.shares(company['detail']).clear()
+        share_form.shares(company['detail']).send_keys('5')
+        for label in share_form.company(company['detail']):
+            if label.get_attribute('for') == 'company-B&M':
+                self.assertIn('fg-red-900', label.get_attribute('class'))
+                self.assertIn('bg-amber-400', label.get_attribute('class'))
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Could not find the B&M in the list of shares')
+        for label in share_form.source(company['detail']):
+            if label.get_attribute('for') == 'source-bank':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('There is no option to buy from the bank')
+        share_form.transfer_button(company['detail']).click()
+
+        self.story('The page updates and money and shares have moved')
+        company = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '12200')
+        self.assertEqual(company['cash'].text, '300')
+        self.assertEqual(len(company['shares']), 1)
+        self.assertEqual(company['shares'][0].text, 'B&M 50%')
+        self.assertIn('fg-red-900',
+            company['shares'][0].get_attribute('class'))
+        self.assertIn('bg-amber-400',
+            company['shares'][0].get_attribute('class'))
 
     def test_company_can_buy_shares_from_other_company_ipo(self):
         self.story('Create a game with two companies')
@@ -286,6 +331,54 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(len(buy_company['shares']), 1)
         self.assertEqual(len(share_company['shares']), 0)
         self.assertEqual(buy_company['shares'][0].text, 'share 20%')
+        self.assertIn('fg-red-500',
+            buy_company['shares'][0].get_attribute('class'))
+        self.assertIn('bg-green-500',
+            buy_company['shares'][0].get_attribute('class'))
+
+    def test_company_can_buy_other_company_shares_from_pool(self):
+        self.story('Create a game with two companies')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'buy', cash=1000)
+        self.create_company(game_uuid, 'share', text='red-500',
+            background='green-500', bank_shares=10, cash=0)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        buy_company, share_company = game_page.get_companies()
+
+        self.story('Set the value of the share company')
+        share_company['value'].clear()
+        share_company['value'].send_keys('60')
+
+        self.story('Buy company buys shares of the other company from pool')
+        buy_company['elem'].click()
+        buy_company = game_page.get_companies()[0] # Get DOM updates
+        for label in share_form.company(buy_company['detail']):
+            if label.get_attribute('for') == 'company-share':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot find the share company in available shares list')
+        for label in share_form.source(buy_company['detail']):
+            if label.get_attribute('for') == 'source-bank':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('There are no shares in the pool')
+        share_form.shares(buy_company['detail']).clear()
+        share_form.shares(buy_company['detail']).send_keys('3\n')
+
+
+        self.story('The page updates and shares have changed hands')
+        buy_company, share_company = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '12180')
+        self.assertEqual(buy_company['cash'].text, '820')
+        self.assertEqual(share_company['cash'].text, '0')
+        self.assertEqual(len(buy_company['shares']), 1)
+        self.assertEqual(len(share_company['shares']), 0)
+        self.assertEqual(buy_company['shares'][0].text, 'share 30%')
         self.assertIn('fg-red-500',
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
