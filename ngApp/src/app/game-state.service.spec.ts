@@ -21,12 +21,14 @@ describe('GameStateService', () => {
 	let testCompanies = [
 		new Company('company-uuid-0', 'game-uuid', 'B&O', 100, 10),
 		new Company('company-uuid-1', 'game-uuid', 'PMQ', 200, 10),
-		new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10)
+		new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10),
+		new Company('company-uuid-3', 'game-uuid', 'C&O', 400, 5)
 	];
 	let testPlayerShares = [
-		new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-0', 2),
-		new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-1', 3),
+		new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-1', 3),
+		new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-0', 2),
 		new Share('share-uuid-2', 'player-uuid-1', 'company-uuid-0', 5),
+		new Share('share-uuid-6', 'player-uuid-0', 'company-uuid-3', 2),
 	];
 	let testCompanyShares= [
 		new Share('share-uuid-3', 'company-uuid-0', 'company-uuid-0', 2),
@@ -203,11 +205,13 @@ describe('GameStateService', () => {
 		testCompanies[0].background_color = 'color2';
 		testCompanies[1].text_color = 'color3';
 		testCompanies[1].background_color = 'color4';
-		testPlayers[0].share_set = ['share-uuid-0', 'share-uuid-1'];
+		testPlayers[0].share_set = ['share-uuid-0', 'share-uuid-1',
+			'share-uuid-6'];
 		service.loadGame('game-uuid');
 		tick();
-		tick();
 		let info = service.shareInfo(testPlayers[0]);
+		console.log(service.players['player-uuid-0'].share_set);
+		console.log(service.shares);
 		expect(info[0]).toEqual({
 			fraction: 0.2,
 			shares: 2,
@@ -217,6 +221,14 @@ describe('GameStateService', () => {
 			background_color: 'color2'
 		});
 		expect(info[1]).toEqual({
+			fraction: 0.4,
+			shares: 2,
+			share_count: 5,
+			name: 'C&O',
+			text_color: 'black',
+			background_color: 'white'
+		});
+		expect(info[2]).toEqual({
 			fraction: 0.3,
 			shares: 3,
 			share_count: 10,
@@ -224,6 +236,15 @@ describe('GameStateService', () => {
 			text_color: 'color3',
 			background_color: 'color4'
 		});
+	}));
+
+	it('shareInfo() sorts by company name', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		let info = service.shareInfo(testPlayers[0]);
+		expect(info[0]['name']).toEqual('B&O');
+		expect(info[1]['name']).toEqual('C&O');
+		expect(info[2]['name']).toEqual('PMQ');
 	}));
 
 	it('is not loaded after initial creation', () => {

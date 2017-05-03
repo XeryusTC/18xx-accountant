@@ -109,7 +109,6 @@ export class GameStateService {
 	shareInfo(owner: Player | Company): Object[] {
 		let res = [], company;
 		for (let share of owner.share_set) {
-			console.log(share);
 			company = this.companies[this.shares[share].company];
 			res.push({
 				fraction: this.shares[share].shares / company.share_count,
@@ -120,6 +119,13 @@ export class GameStateService {
 				background_color: company.background_color
 			});
 		}
-		return res;
+		return res.sort((o1, o2) => {
+			/* Names can never be equal, so we only need to test one case */
+			if (o1['name'] > o2['name']) {
+				return 1;
+			} else {
+				return -1;
+			}
+		});
 	}
 }
