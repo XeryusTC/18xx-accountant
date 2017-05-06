@@ -99,6 +99,13 @@ def buy_share(buyer, company, source, price, amount=1):
         company.bank_shares -= amount
         company.save()
 
+    # Update buyer instance if company is buying in itself
+    if isinstance(buyer, models.Company) and company.pk == buyer.pk:
+        buyer.refresh_from_db()
+    # Update source instance if company is selling itself
+    if isinstance(source, models.Company) and company.pk == source.pk:
+        source.refresh_from_db()
+
     # Transfer the money
     if buyer in (Share.BANK, Share.IPO):
         buyer = None

@@ -565,6 +565,29 @@ class CompanyShareTransactionTests(TestCase):
         with self.assertRaises(utils.DifferentGameException):
             utils.buy_share(utils.Share.BANK, self.company1, company, 16)
 
+    def test_detects_when_buyer_and_company_are_the_same(self):
+        """
+        Two copies of an instance can be passed and changes to one will be
+        overwritten by changes to the other. This is bad and shouldn't happen.
+        """
+        company = factories.CompanyFactory.create(ipo_shares=10)
+        buyer = models.Company.objects.get(pk=company.pk)
+        utils.buy_share(buyer, company, utils.Share.IPO, 17)
+        self.assertEqual(company.ipo_shares, 9)
+        self.assertEqual(buyer.ipo_shares, 9)
+
+    def test_detects_when_source_and_company_are_the_same(self):
+        """
+        Two copies of an instance can be passed and changes to one will be
+        overwritten by changes on the other. This is bad and shouldn't happen.
+        """
+        company = factories.CompanyFactory.create(bank_shares=0)
+        factories.CompanyShareFactory(owner=company, company=company, shares=5)
+        source = models.Company.objects.get(pk=company.pk)
+        utils.buy_share(utils.Share.BANK, company, source, 18)
+        self.assertEqual(company.bank_shares, 1)
+        self.assertEqual(source.bank_shares, 1)
+
 @mock.patch.object(utils, 'transfer_money')
 class OperateTests(TestCase):
     def setUp(self):
