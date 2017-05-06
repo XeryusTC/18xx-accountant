@@ -483,3 +483,47 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(buy_company['shares'][1].text, 'share 40%')
         self.assertEqual(len(share_company['shares']), 1)
         self.assertEqual(share_company['shares'][0].text, 'share 30%')
+
+
+class MiscellaneousShareTests(FunctionalTestCase):
+    def test_shares_in_pool_appear_in_bank_section(self):
+        self.story('Create game with a company with shares in the pool')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NYC', text='white', background='black',
+            ipo_shares=5, bank_shares=5)
+        self.create_company(game_uuid, 'N&W', text='yellow-400',
+            background='red-700', ipo_shares=7, bank_shares=3)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('There is a bank pool in the bank section holding the bank '
+            'pool shares')
+        self.assertEqual(len(game_page.bank_pool), 2)
+        self.assertEqual(game_page.bank_pool[0].text, 'N&W 30%')
+        self.assertIn('fg-yellow-400',
+            game_page.bank_pool[0].get_attribute('class'))
+        self.assertIn('bg-red-700',
+            game_page.bank_pool[0].get_attribute('class'))
+        self.assertEqual(game_page.bank_pool[1].text, 'NYC 50%')
+        self.assertIn('fg-white',
+            game_page.bank_pool[1].get_attribute('class'))
+        self.assertIn('bg-black',
+            game_page.bank_pool[1].get_attribute('class'))
+
+    def test_shares_not_in_pool_dont_appear_in_bank_section(self):
+        self.story('Create a game with two companies, one having pool shares')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NKP', text='grey-50',
+            background='black', ipo_shares=5, bank_shares=5)
+        self.create_company(game_uuid, 'B&M', text='yellow-400',
+            background='red-900', bank_shares=0)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('Only the NKP shares are in the pool')
+        self.assertEqual(len(game_page.bank_pool), 1)
+        self.assertEqual(game_page.bank_pool[0].text, 'NKP 50%')
+        self.assertIn('fg-grey-50',
+            game_page.bank_pool[0].get_attribute('class'))
+        self.assertIn('bg-black',
+            game_page.bank_pool[0].get_attribute('class'))
