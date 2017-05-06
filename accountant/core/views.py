@@ -199,10 +199,10 @@ class TransferShareView(APIView):
             # Add companies
             companies = [serializers.CompanySerializer(share, context=context)
                     .data]
-            if isinstance(buyer, models.Company):
+            if isinstance(buyer, models.Company) and buyer != share:
                 companies.append(serializers.CompanySerializer(buyer,
                     context=context).data)
-            if isinstance(source, models.Company):
+            if isinstance(source, models.Company) and source != share:
                 companies.append(serializers.CompanySerializer(source,
                     context=context).data)
             response['companies'] = companies

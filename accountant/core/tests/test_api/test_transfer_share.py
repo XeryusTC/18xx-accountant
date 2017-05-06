@@ -71,6 +71,29 @@ class ShareTransactionTests(APITestCase):
         self.assertEqual(self.buy_company.cash, 40)
         self.assertIn(40, [c['cash'] for c in response.data['companies']])
 
+    def test_company_buying_itself_is_not_in_response_twice(self):
+        self.data.update({'source_type': 'ipo', 'price': 0,
+            'buyer_type': 'company', 'company_buyer': self.share_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.share_company.refresh_from_db()
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(self.share_company.pk))
+        self.assertEqual(response.data['companies'][0]['ipo_shares'], 4)
+
+    def test_company_selling_itself_is_not_in_response_twice(self):
+        factories.CompanyShareFactory(owner=self.share_company,
+            company=self.share_company, shares=5)
+        self.data.update({'price': 1, 'source_type': 'company',
+            'company_source': self.share_company.pk, 'buyer_type': 'ipo',
+            'share': self.share_company.pk})
+        response = self.client.post(self.url, self.data, format='json')
+        self.share_company.refresh_from_db()
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(str(self.share_company.pk),
+            response.data['companies'][0]['uuid'])
+        self.assertEqual(response.data['companies'][0]['ipo_shares'], 6)
+
     def test_player_buying_share_is_in_response(self):
         self.data.update({'source_type': 'ipo', 'price': 70,
             'buyer_type': 'player', 'player_buyer': self.player.pk})
