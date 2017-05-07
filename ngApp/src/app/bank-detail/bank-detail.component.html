@@ -8,4 +8,20 @@
 			<span id="cash">{{ gameState.game.cash }}</span>
 		</div>
 	</div>
+	<div class="row">
+		<div class="tp-12">Bank pool</div>
+	</div>
+	<div class="row" *ngIf="gameState.companies">
+		<div class="tp-12">
+			<ng-container
+				*ngFor="let company of gameState.companies | values:'name'">
+				<div *ngIf="company.bank_shares != 0"
+					class="pool share fg-{{ company.text_color }}
+						bg-{{ company.background_color }}">
+					{{ company.name }}
+					{{ company.bank_shares * 100 / company.share_count }}%
+				</div>
+			</ng-container>
+		</div>
+	</div>
 </div>
