@@ -183,6 +183,15 @@ class ShareTransactionTests(APITestCase):
             response.data['shares'][0]['uuid'])
         self.assertEqual(response.data['shares'][0]['shares'], 3)
 
+    def test_share_company_is_up_to_date_in_response(self):
+        self.data.update({'price': -14, 'buyer_type': 'company',
+            'company_buyer': self.share_company.pk, 'source_type': 'ipo'})
+        response = self.client.post(self.url, self.data, format='json')
+        self.share_company.refresh_from_db()
+        self.assertEqual(self.share_company.cash,
+            response.data['companies'][0]['cash'])
+        self.assertEqual(self.share_company.cash, 14)
+
 
 @mock.patch.object(utils, 'buy_share')
 class ShareTransactionWithMockTests(APITestCase):

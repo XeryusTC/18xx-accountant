@@ -114,6 +114,9 @@ def buy_share(buyer, company, source, price, amount=1):
     else:
         transfer_money(buyer, source, price * amount)
 
+    # Refresh company to get changes is cash
+    company.refresh_from_db()
+
 def operate(company, amount, method):
     if method == OperateMethod.WITHHOLD:
         transfer_money(None, company, amount)
