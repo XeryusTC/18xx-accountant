@@ -59,6 +59,8 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '0')
         self.assertEqual(len(player['shares']), 1)
         self.assertEqual(player['shares'][0].text, 'NYC 30%')
+        self.assertEqual(company['ipo_shares'].text, '7')
+        self.assertEqual(company['bank_shares'].text, '0')
         self.assertIn('fg-amber-200',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-brown-300',
@@ -119,6 +121,8 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '0')
         self.assertEqual(len(player['shares']), 1)
         self.assertEqual(player['shares'][0].text, 'RDR 40%')
+        self.assertEqual(company['ipo_shares'].text, '10')
+        self.assertEqual(company['bank_shares'].text, '1')
         self.assertIn('fg-yellow-800',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-600',
@@ -183,6 +187,8 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '140')
         self.assertEqual(len(player['shares']), 1)
         self.assertEqual(player['shares'][0].text, 'C&O 20%')
+        self.assertEqual(company['ipo_shares'].text, '0')
+        self.assertEqual(company['bank_shares'].text, '0')
         self.assertIn('fg-blue-300',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-yellow-300',
@@ -234,6 +240,8 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '40')
         self.assertEqual(len(company['shares']), 1)
         self.assertEqual(company['shares'][0].text, 'CPR 30%')
+        self.assertEqual(company['ipo_shares'].text, '7')
+        self.assertEqual(company['bank_shares'].text, '0')
         self.assertIn('fg-red-500',
             company['shares'][0].get_attribute('class'))
         self.assertIn('bg-black', company['shares'][0].get_attribute('class'))
@@ -279,6 +287,8 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(company['cash'].text, '300')
         self.assertEqual(len(company['shares']), 1)
         self.assertEqual(company['shares'][0].text, 'B&M 50%')
+        self.assertEqual(company['ipo_shares'].text, '10')
+        self.assertEqual(company['bank_shares'].text, '0')
         self.assertIn('fg-red-900',
             company['shares'][0].get_attribute('class'))
         self.assertIn('bg-amber-400',
@@ -331,6 +341,10 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(len(buy_company['shares']), 1)
         self.assertEqual(len(share_company['shares']), 0)
         self.assertEqual(buy_company['shares'][0].text, 'share 20%')
+        self.assertEqual(buy_company['ipo_shares'].text, '10')
+        self.assertEqual(buy_company['bank_shares'].text, '0')
+        self.assertEqual(share_company['ipo_shares'].text, '8')
+        self.assertEqual(share_company['bank_shares'].text, '0')
         self.assertIn('fg-red-500',
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
@@ -379,6 +393,10 @@ class BuyShareTests(FunctionalTestCase):
         self.assertEqual(len(buy_company['shares']), 1)
         self.assertEqual(len(share_company['shares']), 0)
         self.assertEqual(buy_company['shares'][0].text, 'share 30%')
+        self.assertEqual(buy_company['ipo_shares'].text, '10')
+        self.assertEqual(buy_company['bank_shares'].text, '0')
+        self.assertEqual(share_company['ipo_shares'].text, '10')
+        self.assertEqual(share_company['bank_shares'].text, '7')
         self.assertIn('fg-red-500',
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
