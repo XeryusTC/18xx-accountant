@@ -66,7 +66,7 @@ class Company(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.ipo_shares:
+        if self.ipo_shares == None:
             self.ipo_shares = self.share_count
         super(Company, self).save(*args, **kwargs)
 

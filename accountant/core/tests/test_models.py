@@ -143,6 +143,11 @@ class CompanyTests(TestCase):
         company.refresh_from_db()
         self.assertEqual(company.ipo_shares, 5)
 
+    def test_can_set_ipo_shares_to_be_zero(self):
+        company = Company.objects.create(game=self.game, ipo_shares=0)
+        company.refresh_from_db()
+        self.assertEqual(company.ipo_shares, 0)
+
     def test_no_shares_in_bank_by_default(self):
         company = Company(game=self.game)
         self.assertEqual(company.bank_shares, 0)
