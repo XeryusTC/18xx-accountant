@@ -613,6 +613,67 @@ class SellShareTests(FunctionalTestCase):
         self.assertEqual(len(game_page.bank_pool), 0)
         self.assertEqual(len(company['shares']), 0)
 
+    def test_player_can_short_sell_shares_to_pool(self):
+        self.story('Create a game with a player owning some shares')
+        game_uuid = self.create_game()
+        player_uuid = self.create_player(game_uuid, 'Charlie', cash=0)
+        company_uuid = self.create_company(game_uuid, 'Erie', cash=0,
+            ipo_shares=0, bank_shares=0)
+        self.create_player_share(player_uuid, company_uuid, shares=2)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('The player should be the only one owning shares')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(len(player['shares']), 1)
+        self.assertEqual(player['shares'][0].text, 'Erie 20%')
+        self.assertEqual(company['ipo_shares'].text, '0')
+        self.assertEqual(company['bank_shares'].text, '0')
+        self.assertEqual(len(company['shares']), 0)
+
+        self.story('Set the value of the Erie')
+        company['value'].clear()
+        company['value'].send_keys('50')
+
+        self.story('The player sells some shares')
+        player['row'].click()
+        player = game_page.get_players()[0]
+        share_form = game.ShareForm(self.browser)
+        share_form.sell_share(player['detail']).click()
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('3')
+
+        self.story('Select the Erie to sell it')
+        for label in share_form.company(player['detail']):
+            if label.get_attribute('for') == 'company-Erie':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Erie is not in the owned shares list')
+
+        self.story('Select the bank pool to sell the shares to')
+        for label in share_form.source(player['detail']):
+            if label.get_attribute('for') == 'source-bank':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot select the bank pool to sell to')
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('The page updates and shares and money have changed hands')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '11850')
+        self.assertEqual(player['cash'].text, '150')
+        self.assertEqual(len(player['shares']), 1)
+        self.assertEqual(player['shares'][0].text, 'Erie -10%')
+        self.assertEqual(company['ipo_shares'].text, '0')
+        self.assertEqual(company['bank_shares'].text, '3')
+        self.assertEqual(len(game_page.bank_pool), 1)
+        self.assertEqual(game_page.bank_pool[0].text, 'Erie 30%')
+        self.assertEqual(len(company['shares']), 0)
+
     def test_company_can_sell_shares_to_bank_pool(self):
         self.story('Create a game with a company owning some shares')
         game_uuid = self.create_game()
