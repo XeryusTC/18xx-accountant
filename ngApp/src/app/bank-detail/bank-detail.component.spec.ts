@@ -4,6 +4,7 @@ import { By }                               from '@angular/platform-browser';
 import { Game } from '../models/game';
 import { BankDetailComponent } from './bank-detail.component';
 import { GameStateService }    from '../game-state.service';
+import { ValuesPipe }          from '../values.pipe';
 
 describe('BankDetailComponent', () => {
 	let component: BankDetailComponent;
@@ -16,7 +17,7 @@ describe('BankDetailComponent', () => {
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
-			declarations: [ BankDetailComponent ],
+			declarations: [ BankDetailComponent, ValuesPipe ],
 			providers: [
 				{provide: GameStateService, useValue: gameStateStub}
 			]
