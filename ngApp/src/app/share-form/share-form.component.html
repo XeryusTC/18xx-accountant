@@ -1,5 +1,19 @@
 <form (ngSubmit)="onSubmit($event)">
 	<div class="row">
+		<div class="tp-3">Buy/sell</div>
+		<div class="tp-9">
+			<label for="action-buy">
+				<input type="radio" name="action" id="action-buy"
+					value="buy" [(ngModel)]="action"> Buy
+			</label>
+			<label for="action-sell">
+				<input type="radio" name="action" id="action-sell"
+					value="sell" [(ngModel)]="action"> Sell
+			</label>
+		</div>
+	</div>
+
+	<div class="row">
 		<div class="tp-3">
 			<label for="shares">Shares</label>
 		</div>

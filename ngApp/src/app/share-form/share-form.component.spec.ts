@@ -79,6 +79,10 @@ describe('ShareFormComponent', () => {
 		expect(component.share_amount).toBe(1);
 	});
 
+	it('action is buy by default', () => {
+		expect(component.action).toBe('buy');
+	});
+
 	it('onSubmit() uses correct amount of shares', () => {
 		component.share_amount = 42;
 		submitForm();
@@ -154,6 +158,14 @@ describe('ShareFormComponent', () => {
 		submitForm();
 		let args = transferShareStub.transferShare.calls.first().args;
 		expect(args[3]).toBe(82);
+	});
+
+	it('onSubmit() uses negative shares when the action is sell', () => {
+		shareCompany.value = 100;
+		component.action = 'sell'
+		submitForm();
+		let args = transferShareStub.transferShare.calls.first().args;
+		expect(args[4]).toBe(-1);
 	});
 
 	it('game instance should be updated when affected', fakeAsync(() => {

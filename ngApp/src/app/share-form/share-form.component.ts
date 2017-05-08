@@ -14,6 +14,7 @@ export class ShareFormComponent implements OnInit {
 	company_share: string;
 	share_amount: number = 1;
 	source: string = 'ipo';
+	action: string = 'buy';
 	@Input() buyer;
 
 	constructor(
@@ -28,6 +29,8 @@ export class ShareFormComponent implements OnInit {
 		e.preventDefault();
 		let company_share = this.gameState.companies[this.company_share];
 		let realSource;
+		let amount = this.share_amount;
+
 		if (this.source in this.gameState.companies) {
 			realSource = this.gameState.companies[this.source];
 		} else if (this.source in this.gameState.players) {
@@ -35,9 +38,14 @@ export class ShareFormComponent implements OnInit {
 		} else {
 			realSource = this.source;
 		}
+
+		if (this.action == 'sell') {
+			amount = -this.share_amount;
+		}
+
 		this.transferShareService
 			.transferShare(this.buyer, company_share, realSource,
-						   company_share.value, this.share_amount)
+						   company_share.value, amount)
 				.then(result => {
 					if ('game' in result) {
 						this.gameState.updateGame(result.game);
