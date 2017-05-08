@@ -550,6 +550,69 @@ class SellShareTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_pool[0].text, 'CPR 30%')
         self.assertEqual(len(company['shares']), 0)
 
+    def test_player_can_sell_shares_to_ipo(self):
+        self.story('Create a game with a player owning some shares')
+        game_uuid = self.create_game()
+        player_uuid = self.create_player(game_uuid, 'Bob', cash=0)
+        company_uuid = self.create_company(game_uuid, 'NNH', cash=0,
+            text='orange-400', background='black', ipo_shares=0,
+            bank_shares=0)
+        self.create_player_share(player_uuid, company_uuid, shares=9)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('The player should be the only one owning shares')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(len(player['shares']), 1)
+        self.assertEqual(player['shares'][0].text, 'NNH 90%')
+        self.assertEqual(company['ipo_shares'].text, '0')
+        self.assertEqual(company['bank_shares'].text, '0')
+        self.assertEqual(len(company['shares']), 0)
+
+        self.story('Set the value of the NNH')
+        company['value'].clear()
+        company['value'].send_keys('20')
+
+        self.story('The player sells some shares')
+        player['row'].click()
+        player = game_page.get_players()[0]
+        share_form = game.ShareForm(self.browser)
+        share_form.sell_share(player['detail']).click()
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('5')
+
+        self.story('Select the NNH to sell it')
+        for label in share_form.company(player['detail']):
+            if label.get_attribute('for') == 'company-NNH':
+                self.assertIn('fg-orange-400', label.get_attribute('class'))
+                self.assertIn('bg-black', label.get_attribute('class'))
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('NNH is not in the owned shares list')
+
+        self.story('Select the IPO to sell the shares to')
+        for label in share_form.source(player['detail']):
+            if label.get_attribute('for') == 'source-ipo':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot select the IPO to sell to')
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('The page updates and shares and money have changed hands')
+        player = game_page.get_players()[0]
+        company = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '11900')
+        self.assertEqual(player['cash'].text, '100')
+        self.assertEqual(len(player['shares']), 1)
+        self.assertEqual(player['shares'][0].text, 'NNH 40%')
+        self.assertEqual(company['ipo_shares'].text, '5')
+        self.assertEqual(company['bank_shares'].text, '0')
+        self.assertEqual(len(game_page.bank_pool), 0)
+        self.assertEqual(len(company['shares']), 0)
+
 
 class MiscellaneousShareTests(FunctionalTestCase):
     def test_shares_in_pool_appear_in_bank_section(self):
