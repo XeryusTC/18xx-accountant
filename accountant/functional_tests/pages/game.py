@@ -93,3 +93,5 @@ class ShareForm(PageObject):
     company = MultiPageElement(css='label.company-label', context=True)
     source = MultiPageElement(css='label.source', context=True)
     transfer_button = PageElement(name='transfer-share', context=True)
+    buy_share = PageElement(id_='action-buy', context=True)
+    sell_share = PageElement(id_='action-sell', context=True)
