@@ -18,7 +18,7 @@
 					class="player">
 					<div class="row" (click)="selectPlayer(player)">
 						<div class="tp-2 name">{{ player.name }}</div>
-						<div class="tp-1 cash text-right">
+						<div class="tp-1 cash text-cash">
 							{{ player.cash }}
 						</div>
 						<div class="tp-9">
@@ -63,15 +63,15 @@
 			<div class="tp-1">In IPO</div>
 			<div class="tp-1">In Bank</div>
 			<div class="tp-1">Value</div>
-			<div class="tp-4">Shares</div>
+			<div class="tp-5">Shares</div>
 		</div>
 		<hr />
 		<div *ngFor="let company of gameState.companies | values:'name'"
 			class="company">
-			<div class="row bg-{{company.background_color}}
+			<div class="row summary bg-{{company.background_color}}
 			fg-{{company.text_color}}" (click)="selectCompany(company)">
 				<div class="tp-2 name">{{ company.name }}</div>
-				<div class="tp-1 cash text-right">{{ company.cash }}</div>
+				<div class="tp-1 cash text-cash">{{ company.cash }}</div>
 				<div class="tp-1 share_count">
 					{{ company.share_count }}
 				</div>
@@ -81,7 +81,7 @@
 					<input type="number" [(ngModel)]="company.value"
 						(click)="$event.stopPropagation()">
 				</div>
-				<div class="tp-4">
+				<div class="tp-5">
 					<div *ngFor="let share of gameState.shareInfo(company)"
 						class="share fg-{{ share.text_color }}
 							bg-{{ share.background_color }}">

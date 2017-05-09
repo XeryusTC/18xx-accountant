@@ -16,8 +16,13 @@ body {
 	text-align: center;
 }
 
-.text-right {
+.text-cash {
 	text-align: right;
+	padding-right: 1rem !important;
+}
+
+div.detail {
+	margin-top: .15rem !important;
 }
 
 hr {
@@ -26,10 +31,54 @@ hr {
 	margin: .25rem 0;
 }
 
+label.color-select {
+	margin-bottom: 0;
+}
+
 label.transfer, label.company-label, label.source, div.share {
 	display: inline-block;
 	margin: 0 0.1rem;
+	padding: 0.15rem;
+	line-height: 1rem;
 }
+
+div.company .summary {
+	padding: 0.2rem;
+	line-height: 1.8rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 300;
+	letter-spacing: -.1rem;
+	margin-bottom: 2rem;
+	margin-top: 0;
+	line-height: 1.2;
+}
+
+h1 {
+	font-size: 3.4rem;
+}
+
+h2 {
+	font-size: 2.8rem;
+}
+
+h3 {
+	font-size: 2.6rem;
+}
+
+h4 {
+	font-size: 2.2rem;
+}
+
+h5 {
+	font-size: 1.8rem;
+}
+
+h6 {
+	font-size: 1.4rem;
+}
+
 
 /*****************
  * Form elements *
@@ -74,59 +123,18 @@ input[type='number'], input[type='text'], textarea, select {
 	-webkit-appearance: none;
 	   -moz-appearance: none;
 	        appearance: none;
-	background-color: transparent;
-	border: 0.125rem solid #37474f;
+	background-color: rgba(255, 255, 255, 0.54);
+	border: 0.12rem solid #37474f;
 	box-shadow: none;
 	box-sizing: inherit;
 	height: 2rem;
-	padding: .2rem .8rem;
+	padding: .2rem .5rem;
 	width: 100%;
 }
 
 input[type='number']:focus, input[type='text']:focus, textarea:focus,
 select:focus {
 	border-color: #546e7a;
-}
-
-label {
-	display: block;
-	font-weight: 700;
-}
-
-label.color-select {
-	margin-bottom: 0;
-}
-
-h1, h2, h3, h4, h5, h6 {
-	font-weight: 300;
-	letter-spacing: -.1rem;
-	margin-bottom: 2rem;
-	margin-top: 0;
-	line-height: 1.2;
-}
-
-h1 {
-	font-size: 3.4rem;
-}
-
-h2 {
-	font-size: 2.8rem;
-}
-
-h3 {
-	font-size: 2.6rem;
-}
-
-h4 {
-	font-size: 2.2rem;
-}
-
-h5 {
-	font-size: 1.8rem;
-}
-
-h6 {
-	font-size: 1.4rem;
 }
 
 /* Based off Modest Grid (www.modestgrid.com) but uses rem instad of px */
