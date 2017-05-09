@@ -16,10 +16,8 @@ class BuyShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(player['cash'].text, '1000')
-        self.assertEqual(company['cash'].text, '0')
-        self.assertEqual(len(player['shares']), 0)
-        self.assertEqual(company['ipo_shares'].text, '10')
+        self.verify_player(player, cash=1000, shares=[])
+        self.verify_company(company, cash=0, ipo_shares=10)
 
         self.story('Set the value of the NYC')
         company['value'].clear()
@@ -55,17 +53,12 @@ class BuyShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[-1]
         self.assertEqual(game_page.bank_cash.text, '12270')
-        self.assertEqual(player['cash'].text, '730')
-        self.assertEqual(company['cash'].text, '0')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'NYC 30%')
-        self.assertEqual(company['ipo_shares'].text, '7')
-        self.assertEqual(company['bank_shares'].text, '0')
+        self.verify_player(player, cash=730, shares=['NYC 30%'])
+        self.verify_company(company, cash=0, ipo_shares=7, bank_shares=0)
         self.assertIn('fg-amber-200',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-brown-300',
             player['shares'][0].get_attribute('class'))
-        self.assertEqual(company['ipo_shares'].text, '7')
 
     def test_player_can_buy_shares_from_bank_pool(self):
         self.story('Start a game with a player and a company')
@@ -79,11 +72,9 @@ class BuyShareTests(FunctionalTestCase):
         self.story('Confirm cash and share amounts')
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
+        self.verify_player(player, cash=1000, shares=[])
+        self.verify_company(company, cash=0, bank_shares=5, ipo_shares=10)
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(player['cash'].text, '1000')
-        self.assertEqual(company['cash'].text, '0')
-        self.assertEqual(len(player['shares']), 0)
-        self.assertEqual(company['bank_shares'].text, '5')
 
         self.story('Set the value of the RDR')
         company['value'].clear()
@@ -117,17 +108,12 @@ class BuyShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12240')
-        self.assertEqual(player['cash'].text, '760')
-        self.assertEqual(company['cash'].text, '0')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'RDR 40%')
-        self.assertEqual(company['ipo_shares'].text, '10')
-        self.assertEqual(company['bank_shares'].text, '1')
+        self.verify_player(player, cash=760, shares=['RDR 40%'])
         self.assertIn('fg-yellow-800',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-600',
             player['shares'][0].get_attribute('class'))
-        self.assertEqual(company['bank_shares'].text, '1')
+        self.verify_company(company, cash=0, ipo_shares=10, bank_shares=1)
 
     def test_player_can_buy_shares_from_company_treasury(self):
         self.story('Start with a player and a company with treasury shares')
@@ -143,11 +129,8 @@ class BuyShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(player['cash'].text, '1500')
-        self.assertEqual(company['cash'].text, '100')
-        self.assertEqual(len(player['shares']), 0)
-        self.assertEqual(len(company['shares']), 1)
-        self.assertEqual(company['shares'][0].text, 'C&O 100%')
+        self.verify_player(player, cash=1500, shares=[])
+        self.verify_company(company, cash=100, shares=['C&O 100%'])
 
         self.story('Set the value of the C&O')
         company = game_page.get_companies()[0]
@@ -183,18 +166,13 @@ class BuyShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(player['cash'].text, '1460')
-        self.assertEqual(company['cash'].text, '140')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'C&O 20%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '0')
+        self.verify_player(player, cash=1460, shares=['C&O 20%'])
         self.assertIn('fg-blue-300',
             player['shares'][0].get_attribute('class'))
         self.assertIn('bg-yellow-300',
             player['shares'][0].get_attribute('class'))
-        self.assertEqual(len(company['shares']), 1)
-        self.assertEqual(company['shares'][0].text, 'C&O 80%')
+        self.verify_company(company, cash=140, ipo_shares=0, bank_shares=0,
+            shares=['C&O 80%'])
 
     def test_company_can_buy_shares_from_own_ipo(self):
         self.story('Create a game with a company')
@@ -237,11 +215,8 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page reloads and shares have been bought')
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12060')
-        self.assertEqual(company['cash'].text, '40')
-        self.assertEqual(len(company['shares']), 1)
-        self.assertEqual(company['shares'][0].text, 'CPR 30%')
-        self.assertEqual(company['ipo_shares'].text, '7')
-        self.assertEqual(company['bank_shares'].text, '0')
+        self.verify_company(company, cash=40, shares=['CPR 30%'], ipo_shares=7,
+            bank_shares=0)
         self.assertIn('fg-red-500',
             company['shares'][0].get_attribute('class'))
         self.assertIn('bg-black', company['shares'][0].get_attribute('class'))
@@ -284,11 +259,8 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page updates and money and shares have moved')
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12200')
-        self.assertEqual(company['cash'].text, '300')
-        self.assertEqual(len(company['shares']), 1)
-        self.assertEqual(company['shares'][0].text, 'B&M 50%')
-        self.assertEqual(company['ipo_shares'].text, '10')
-        self.assertEqual(company['bank_shares'].text, '0')
+        self.verify_company(company, cash=300, shares=['B&M 50%'],
+            ipo_shares=10, bank_shares=0)
         self.assertIn('fg-red-900',
             company['shares'][0].get_attribute('class'))
         self.assertIn('bg-amber-400',
@@ -336,15 +308,10 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page reloads and money and shares have changed hands')
         buy_company, share_company = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '12020')
-        self.assertEqual(buy_company['cash'].text, '980')
-        self.assertEqual(share_company['cash'].text, '0')
-        self.assertEqual(len(buy_company['shares']), 1)
-        self.assertEqual(len(share_company['shares']), 0)
-        self.assertEqual(buy_company['shares'][0].text, 'share 20%')
-        self.assertEqual(buy_company['ipo_shares'].text, '10')
-        self.assertEqual(buy_company['bank_shares'].text, '0')
-        self.assertEqual(share_company['ipo_shares'].text, '8')
-        self.assertEqual(share_company['bank_shares'].text, '0')
+        self.verify_company(buy_company, cash=980, shares=['share 20%'],
+            ipo_shares=10, bank_shares=0)
+        self.verify_company(share_company, cash=0, shares=[], ipo_shares=8,
+            bank_shares=0)
         self.assertIn('fg-red-500',
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
@@ -388,15 +355,10 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page updates and shares have changed hands')
         buy_company, share_company = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '12180')
-        self.assertEqual(buy_company['cash'].text, '820')
-        self.assertEqual(share_company['cash'].text, '0')
-        self.assertEqual(len(buy_company['shares']), 1)
-        self.assertEqual(len(share_company['shares']), 0)
-        self.assertEqual(buy_company['shares'][0].text, 'share 30%')
-        self.assertEqual(buy_company['ipo_shares'].text, '10')
-        self.assertEqual(buy_company['bank_shares'].text, '0')
-        self.assertEqual(share_company['ipo_shares'].text, '10')
-        self.assertEqual(share_company['bank_shares'].text, '7')
+        self.verify_company(buy_company, cash=820, shares=['share 30%'],
+            ipo_shares=10, bank_shares=0)
+        self.verify_company(share_company, cash=0, shares=[],
+            ipo_shares=10, bank_shares=7)
         self.assertIn('fg-red-500',
             buy_company['shares'][0].get_attribute('class'))
         self.assertIn('bg-green-500',
@@ -442,13 +404,9 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page updates and shares have changed hands')
         buy_company, share_company = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(buy_company['cash'].text, '720')
-        self.assertEqual(share_company['cash'].text, '780')
-        self.assertEqual(len(buy_company['shares']), 1)
-        self.assertEqual(buy_company['shares'][0].text, 'share 40%')
-        self.assertEqual(len(share_company['shares']), 2)
-        self.assertEqual(share_company['shares'][0].text, 'buy 50%')
-        self.assertEqual(share_company['shares'][1].text, 'share 30%')
+        self.verify_company(buy_company, cash=720, shares=['share 40%'])
+        self.verify_company(share_company, cash=780,
+            shares=['buy 50%', 'share 30%'])
 
         self.story('Set the value of the share company')
         buy_company['value'].clear()
@@ -476,13 +434,9 @@ class BuyShareTests(FunctionalTestCase):
         self.story('The page updates and shares have changed hands')
         buy_company, share_company = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '12000')
-        self.assertEqual(buy_company['cash'].text, '320')
-        self.assertEqual(share_company['cash'].text, '1180')
-        self.assertEqual(len(buy_company['shares']), 2)
-        self.assertEqual(buy_company['shares'][0].text, 'buy 50%')
-        self.assertEqual(buy_company['shares'][1].text, 'share 40%')
-        self.assertEqual(len(share_company['shares']), 1)
-        self.assertEqual(share_company['shares'][0].text, 'share 30%')
+        self.verify_company(buy_company, cash=320,
+            shares=['buy 50%', 'share 40%'])
+        self.verify_company(share_company, cash=1180, shares=['share 30%'])
 
 
 class SellShareTests(FunctionalTestCase):
@@ -499,11 +453,9 @@ class SellShareTests(FunctionalTestCase):
         self.story('The player should be the only one owning shares')
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'CPR 50%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '0')
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, cash=0, shares=['CPR 50%'])
+        self.verify_company(company, cash=0, ipo_shares=0, bank_shares=0,
+            shares=[])
 
         self.story('Set the value of the CPR')
         company['value'].clear()
@@ -541,14 +493,11 @@ class SellShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '11970')
-        self.assertEqual(player['cash'].text, '30')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'CPR 20%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '3')
         self.assertEqual(len(game_page.bank_pool), 1)
         self.assertEqual(game_page.bank_pool[0].text, 'CPR 30%')
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, cash=30, shares=['CPR 20%'])
+        self.verify_company(company, ipo_shares=0, bank_shares=3, cash=0,
+            shares=[])
 
     def test_player_can_sell_shares_to_ipo(self):
         self.story('Create a game with a player owning some shares')
@@ -564,11 +513,9 @@ class SellShareTests(FunctionalTestCase):
         self.story('The player should be the only one owning shares')
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'NNH 90%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '0')
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, cash=0, shares=['NNH 90%'])
+        self.verify_company(company, cash=0, ipo_shares=0, bank_shares=0,
+            shares=[])
 
         self.story('Set the value of the NNH')
         company['value'].clear()
@@ -605,13 +552,10 @@ class SellShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '11900')
-        self.assertEqual(player['cash'].text, '100')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'NNH 40%')
-        self.assertEqual(company['ipo_shares'].text, '5')
-        self.assertEqual(company['bank_shares'].text, '0')
         self.assertEqual(len(game_page.bank_pool), 0)
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, cash=100, shares=['NNH 40%'])
+        self.verify_company(company, cash=0, ipo_shares=5, bank_shares=0,
+            shares=[])
 
     def test_player_can_short_sell_shares_to_pool(self):
         self.story('Create a game with a player owning some shares')
@@ -626,11 +570,8 @@ class SellShareTests(FunctionalTestCase):
         self.story('The player should be the only one owning shares')
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'Erie 20%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '0')
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, shares=['Erie 20%'])
+        self.verify_company(company, ipo_shares=0, bank_shares=0, shares=[])
 
         self.story('Set the value of the Erie')
         company['value'].clear()
@@ -665,14 +606,11 @@ class SellShareTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         company = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '11850')
-        self.assertEqual(player['cash'].text, '150')
-        self.assertEqual(len(player['shares']), 1)
-        self.assertEqual(player['shares'][0].text, 'Erie -10%')
-        self.assertEqual(company['ipo_shares'].text, '0')
-        self.assertEqual(company['bank_shares'].text, '3')
         self.assertEqual(len(game_page.bank_pool), 1)
         self.assertEqual(game_page.bank_pool[0].text, 'Erie 30%')
-        self.assertEqual(len(company['shares']), 0)
+        self.verify_player(player, cash=150, shares=['Erie -10%'])
+        self.verify_company(company, cash=0, ipo_shares=0, bank_shares=3,
+            shares=[])
 
     def test_company_can_sell_shares_to_bank_pool(self):
         self.story('Create a game with a company owning some shares')
@@ -686,11 +624,8 @@ class SellShareTests(FunctionalTestCase):
 
         self.story('The sell company should be the only one owning shares')
         sell, share = game_page.get_companies()
-        self.assertEqual(len(sell['shares']), 1)
-        self.assertEqual(sell['shares'][0].text, 'share 100%')
-        self.assertEqual(share['ipo_shares'].text, '0')
-        self.assertEqual(share['bank_shares'].text, '0')
-        self.assertEqual(len(share['shares']), 0)
+        self.verify_company(sell, shares=['share 100%'])
+        self.verify_company(share, shares=[])
 
         self.story('Set the value of the share company')
         share['value'].clear()
@@ -724,14 +659,11 @@ class SellShareTests(FunctionalTestCase):
         self.story('The page updates and shares and money have changed hands')
         sell, share = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '11790')
-        self.assertEqual(sell['cash'].text, '210')
-        self.assertEqual(len(sell['shares']), 1)
-        self.assertEqual(sell['shares'][0].text, 'share 30%')
-        self.assertEqual(share['ipo_shares'].text, '0')
-        self.assertEqual(share['bank_shares'].text, '7')
-        self.assertEqual(len(share['shares']), 0)
         self.assertEqual(len(game_page.bank_pool), 1)
         self.assertEqual(game_page.bank_pool[0].text, 'share 70%')
+        self.verify_company(sell, cash=210, shares=['share 30%'])
+        self.verify_company(share, ipo_shares=0, bank_shares=7, shares=[],
+            cash=0)
 
     def test_company_can_sell_shares_to_ipo(self):
         self.story('Create a game with a company owning some shares')
@@ -745,11 +677,8 @@ class SellShareTests(FunctionalTestCase):
 
         self.story('The sell company should be the only one owning shares')
         sell, share = game_page.get_companies()
-        self.assertEqual(len(sell['shares']), 1)
-        self.assertEqual(sell['shares'][0].text, 'share 100%')
-        self.assertEqual(share['ipo_shares'].text, '0')
-        self.assertEqual(share['bank_shares'].text, '0')
-        self.assertEqual(len(share['shares']), 0)
+        self.verify_company(sell, shares=['share 100%'])
+        self.verify_company(share, ipo_shares=0, bank_shares=0, shares=[])
 
         self.story('Set the value of the share company')
         share['value'].clear()
@@ -783,13 +712,10 @@ class SellShareTests(FunctionalTestCase):
         self.story('The page updates and shares and money have changed hands')
         sell, share = game_page.get_companies()
         self.assertEqual(game_page.bank_cash.text, '11840')
-        self.assertEqual(sell['cash'].text, '160')
-        self.assertEqual(len(sell['shares']), 1)
-        self.assertEqual(sell['shares'][0].text, 'share 60%')
-        self.assertEqual(share['ipo_shares'].text, '4')
-        self.assertEqual(share['bank_shares'].text, '0')
-        self.assertEqual(len(share['shares']), 0)
         self.assertEqual(len(game_page.bank_pool), 0)
+        self.verify_company(sell, cash=160, shares=['share 60%'])
+        self.verify_company(share, cash=0, ipo_shares=4, bank_shares=0,
+            shares=[])
 
 
 class MiscellaneousShareTests(FunctionalTestCase):

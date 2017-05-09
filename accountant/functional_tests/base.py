@@ -114,6 +114,38 @@ class FunctionalTestCase(StaticLiveServerTestCase):
                 company=company, **kwargs)
             return str(share.pk)
 
+    def verify_player(self, player, name=None, cash=None,
+                      shares=None): # pragma: no cover
+        if name is not None:
+            self.assertEqual(player['name'].text, name)
+        if cash is not None:
+            self.assertEqual(player['cash'].text, str(cash))
+        if shares is not None:
+            self.assertSequenceEqual(shares,
+                [s.text for s in player['shares']])
+
+    def verify_company(self, company, name=None, cash=None, share_count=None,
+                       ipo_shares=None, bank_shares=None, shares=None,
+                       text=None, background=None): # pragma: no cover
+        if name is not None:
+            self.assertEqual(company['name'].text, name)
+        if cash is not None:
+            self.assertEqual(company['cash'].text, str(cash))
+        if share_count is not None:
+            self.assertEqual(company['share_count'].text, str(share_count))
+        if ipo_shares is not None:
+            self.assertEqual(company['ipo_shares'].text, str(ipo_shares))
+        if bank_shares is not None:
+            self.assertEqual(company['bank_shares'].text, str(bank_shares))
+        if shares is not None:
+            self.assertSequenceEqual(shares,
+                [s.text for s in company['shares']])
+        if text is not None:
+            self.assertin('fg-' + text, company['elem'].get_attribute('class'))
+        if background is not None:
+            self.assertin('bg-' + background,
+                company['elem'].get_attribute('class'))
+
     def _test_has_failed(self): # pragma: no cover
         for method, error in self._outcome.errors:
             if error:
