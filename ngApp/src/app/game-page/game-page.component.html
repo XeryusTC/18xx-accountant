@@ -78,7 +78,8 @@
 				<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
 				<div class="tp-1 bank">{{ company.bank_shares }}</div>
 				<div class="tp-1 value">
-					<input type="number" [(ngModel)]="company.value">
+					<input type="number" [(ngModel)]="company.value"
+						(click)="$event.stopPropagation()">
 				</div>
 				<div class="tp-4">
 					<div *ngFor="let share of gameState.shareInfo(company)"

@@ -294,6 +294,60 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertIsNone(player['detail'])
         self.assertIsNotNone(company['detail'])
 
+    def test_clicking_value_field_doesnt_open_company_detail_section(self):
+        self.story('Start a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&M')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story("Clicking the value input doesn't open the detail section")
+        company = game_page.get_companies()[0]
+        self.assertIsNone(company['detail'])
+        company['value'].click()
+        company = game_page.get_companies()[0] # Get DOM updates
+        self.assertIsNone(company['detail'])
+
+    def test_clicking_value_field_doesnt_close_player_detail_section(self):
+        self.story('Start a game with a player and a company')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.create_company(game_uuid, 'B&O')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('Open the player detail')
+        player = game_page.get_players()[0]
+        player['row'].click()
+        player = game_page.get_players()[0] # Get DOM updates
+        self.assertIsNotNone(player['detail'])
+
+        self.story('Click the company value field')
+        company = game_page.get_companies()[0]
+        company['value'].click()
+        player = game_page.get_players()[0] # Get DOM updates
+        self.assertIsNotNone(player['detail'])
+
+    def test_clicking_value_field_doesnt_close_other_company_section(self):
+        self.story('Start a game with two companies')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NNH')
+        self.create_company(game_uuid, 'NYC')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story("Open the NNH's detail section")
+        nnh = game_page.get_companies()[0]
+        nnh['elem'].click()
+        nnh = game_page.get_companies()[0] # Get DOM updates
+        self.assertIsNotNone(nnh['detail'])
+
+        self.story("Click the NYC's value field")
+        nyc = game_page.get_companies()[1]
+        nyc['value'].click()
+        nnh = game_page.get_companies()[0] # Get DOM updates
+        self.assertIsNotNone(nnh['detail'])
+
     def test_company_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game(cash=11600)
