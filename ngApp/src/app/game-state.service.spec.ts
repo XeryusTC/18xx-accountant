@@ -180,6 +180,18 @@ describe('GameStateService', () => {
 		console.log(service.companies.length, companies.length);
 	}));
 
+	it('updateCompany() keeps old company value', fakeAsync(() => {
+		let company = Company.fromJson({uuid: 'company-uuid-1', name: 'PMQ',
+			cash: 1, game: 'game-uuid', share_count: 10, ipo_shares: 5,
+			bank_shares: 9, player_owners: [], share_set: [],
+			text_color: 'black', background_color: 'white'});
+		service.loadGame('game-uuid');
+		tick();
+		service.companies['company-uuid-1'].value = 72;
+		service.updateCompany(company);
+		expect(service.companies['company-uuid-1'].value).toBe(72);
+	}));
+
 	it('updateShare() updates instance of share', fakeAsync(() => {
 		let share = new Share('share-uuid-0', 'player-uuid-0',
 							  'company-uuid-0', 7);

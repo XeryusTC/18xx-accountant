@@ -97,6 +97,7 @@ export class GameStateService {
 	}
 
 	updateCompany(company: Company): void {
+		company.value = this.companies[company.uuid].value;
 		this.companies = Object.assign({}, this.companies);
 		this.companies[company.uuid] = company;
 	}

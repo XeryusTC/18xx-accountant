@@ -790,3 +790,40 @@ class MiscellaneousShareTests(FunctionalTestCase):
         self.assertEqual('Buy', share_form.transfer_button(company['detail'])
             .get_attribute('value'))
         self.assertEqual('from', share_form.action(company['detail']).text)
+
+    def test_company_value_remains_the_same_after_buying_a_share(self):
+        """Fix bug where the value field is empty after buying a share"""
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'C&O', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('Set the value of the C&O')
+        company = game_page.get_companies()[0]
+        company['value'].clear()
+        company['value'].send_keys('67')
+        self.assertEqual(company['value'].get_attribute('value'), '67')
+
+        self.story('Let the C&O buy one of its own shares')
+        company['elem'].click()
+        company = game_page.get_companies()[0] # Get DOM updates
+        share_form = game.ShareForm(self.browser)
+        for label in share_form.company(company['detail']):
+            if label.get_attribute('for') == 'company-C&O':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('The C&O is not in the list of available companies')
+        for label in share_form.source(company['detail']):
+            if label.get_attribute('for') == 'source-ipo':
+                label.click()
+                break
+        else: # pragma: no cover
+            self.fail('Cannot buy form the IPO')
+        share_form.shares(company['detail']).clear()
+        share_form.shares(company['detail']).send_keys('3\n')
+
+        self.story('The page updates, but the value of the C&O is the same')
+        company = game_page.get_companies()[0] # Get DOM updates
+        self.assertEqual(company['value'].get_attribute('value'), '67')
