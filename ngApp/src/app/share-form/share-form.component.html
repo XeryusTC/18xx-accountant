@@ -1,7 +1,6 @@
 <form (ngSubmit)="onSubmit($event)">
-	<div class="row">
-		<div class="tp-3">Buy/sell</div>
-		<div class="tp-9">
+	<div class="row inline-form">
+		<div class="tp-2">
 			<label for="action-buy">
 				<input type="radio" name="action" id="action-buy"
 					value="buy" [(ngModel)]="action"> Buy
@@ -11,22 +10,23 @@
 					value="sell" [(ngModel)]="action"> Sell
 			</label>
 		</div>
-	</div>
-
-	<div class="row">
-		<div class="tp-3">
-			<label for="shares">Shares</label>
-		</div>
-		<div class="tp-9">
+		<div class="tp-2">
 			<input name="shares" id="shares" type="number"
 				[(ngModel)]="share_amount">
 		</div>
+		<div class="tp-2">
+			<label for="shares">Shares</label>
+		</div>
+		<div class="tp-2">
+			<input type="submit" name="transfer-share" value="Buy"
+				*ngIf="action=='buy'">
+			<input type="submit" name="transfer-share" value="Sell"
+				*ngIf="action=='sell'">
+		</div>
 	</div>
 	<div class="row">
-		<div class="tp-3">
-			Company
-		</div>
-		<div class="tp-9">
+		<div class="tp-1">of</div>
+		<div class="tp-11">
 			<label *ngFor='let company of gameState.companies | values:"name"'
 				for="company-{{ company.name }}" class="company-label
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
@@ -39,10 +39,9 @@
 	</div>
 
 	<div class="row">
-		<div class="tp-3">
-			Source
-		</div>
-		<div class="tp-9">
+		<div class="tp-1" id="action-text" *ngIf="action=='buy'">from</div>
+		<div class="tp-1" id="action-text" *ngIf="action=='sell'">to</div>
+		<div class="tp-11">
 			<label for="source-ipo" class="source">
 				<input type="radio" name="source" id="source-ipo" value="ipo"
 					[(ngModel)]="source"> IPO
@@ -62,8 +61,5 @@
 	</div>
 
 	<div class="row">
-		<div class="tp-3">
-			<input type="submit" name="transfer-share" value="OK">
-		</div>
 	</div>
 </form>
