@@ -1,5 +1,5 @@
 <form (ngSubmit)="onSubmit($event)">
-	<div class="row">
+	<div class="row inline-form">
 		<div class="tp-1">
 			<label for="name">Transfer</label>
 		</div>
@@ -7,9 +7,9 @@
 			<input type="number" name="amount" id="amount"
 									  [(ngModel)]="amount">
 		</div>
-		<div class="tp-1">to</div>
 
-		<div class="tp-6">
+		<div class="tp-7">
+			to
 			<label for="target-bank" class="transfer">
 				<input type="radio" name="target" id="target-bank" value="bank"
 					[(ngModel)]="target"> Bank
