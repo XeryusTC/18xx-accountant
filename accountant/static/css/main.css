@@ -37,7 +37,7 @@ label.color-select {
 
 label.transfer, label.company-label, label.source, div.share {
 	display: inline-block;
-	margin: 0 0.1rem;
+	margin: 0.1rem 0.1rem;
 	padding: 0.15rem;
 	line-height: 1rem;
 }
@@ -51,10 +51,24 @@ div.inline-form {
 	line-height: 1.8rem;
 }
 
+div.player {
+	margin: 0.05rem 0;
+	line-height: 1.5rem;
+}
+
+div.odd-player {
+	background-color: #CFD8DC;
+}
+
+div.share-container {
+	margin-top: 0.1rem;
+	margin-bottom: 0.1rem;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	font-weight: 300;
 	letter-spacing: -.1rem;
-	margin-bottom: 2rem;
+	margin-bottom: 0.5rem;
 	margin-top: 0;
 	line-height: 1.2;
 }

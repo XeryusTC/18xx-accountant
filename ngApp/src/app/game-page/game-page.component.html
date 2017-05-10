@@ -14,14 +14,14 @@
 					<div class="tp-9">Shares</div>
 				</div>
 				<hr />
-				<div *ngFor="let player of gameState.players | values:'name'"
-					class="player">
+				<div *ngFor="let player of gameState.players | values:'name';
+					let odd=odd" class="player" [class.odd-player]="odd">
 					<div class="row" (click)="selectPlayer(player)">
 						<div class="tp-2 name">{{ player.name }}</div>
 						<div class="tp-1 cash text-cash">
 							{{ player.cash }}
 						</div>
-						<div class="tp-9">
+						<div class="tp-9 share-container">
 							<div *ngFor="let share of gameState.shareInfo(player)"
 								class="share fg-{{ share.text_color }}
 								bg-{{ share.background_color }}">
