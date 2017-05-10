@@ -95,3 +95,4 @@ class ShareForm(PageObject):
     transfer_button = PageElement(name='transfer-share', context=True)
     buy_share = PageElement(id_='action-buy', context=True)
     sell_share = PageElement(id_='action-sell', context=True)
+    action = PageElement(id_='action-text', context=True)

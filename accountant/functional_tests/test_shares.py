@@ -760,3 +760,33 @@ class MiscellaneousShareTests(FunctionalTestCase):
             game_page.bank_pool[0].get_attribute('class'))
         self.assertIn('bg-black',
             game_page.bank_pool[0].get_attribute('class'))
+
+    def test_text_on_confirm_button_changes_with_action(self):
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&O')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story("Open the company's detail section")
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+
+        self.story('The share form confirm button should read Buy')
+        share_form = game.ShareForm(self.browser)
+        self.assertEqual('Buy', share_form.transfer_button(company['detail'])
+            .get_attribute('value'))
+        self.assertEqual('from', share_form.action(company['detail']).text)
+
+        self.story('Selecting sell changes the text to Sell')
+        share_form.sell_share(company['detail']).click()
+        self.assertEqual('Sell', share_form.transfer_button(company['detail'])
+            .get_attribute('value'))
+        self.assertEqual('to', share_form.action(company['detail']).text)
+
+        self.story('Changing back again updates the text to Buy')
+        share_form.buy_share(company['detail']).click()
+        self.assertEqual('Buy', share_form.transfer_button(company['detail'])
+            .get_attribute('value'))
+        self.assertEqual('from', share_form.action(company['detail']).text)
