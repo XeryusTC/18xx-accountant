@@ -3,11 +3,12 @@ import { NO_ERRORS_SCHEMA }                 from '@angular/core';
 
 import { ActivatedRoute, ActivatedRouteStub } from '../testing/router-stubs';
 
-import { Player }            from '../models/player';
-import { Company }           from '../models/company';
-import { GamePageComponent } from './game-page.component';
-import { GameStateService } from '../game-state.service';
-import { ValuesPipe } from '../values.pipe';
+import { Player }                  from '../models/player';
+import { Company }                 from '../models/company';
+import { GamePageComponent }       from './game-page.component';
+import { GameStateService }        from '../game-state.service';
+import { SelectedInstanceService } from '../selected-instance.service';
+import { ValuesPipe }              from '../values.pipe';
 
 describe('GamePageComponent', () => {
 	let component: GamePageComponent;
@@ -28,7 +29,8 @@ describe('GamePageComponent', () => {
 			schemas: [NO_ERRORS_SCHEMA],
 			providers: [
 				{provide: ActivatedRoute, useValue: activatedRoute},
-				{provide: GameStateService, useValue: gameStateSpy}
+				{provide: GameStateService, useValue: gameStateSpy},
+				SelectedInstanceService
 			]
 		})
 		.compileComponents();
@@ -52,27 +54,10 @@ describe('GamePageComponent', () => {
 		expect(gameStateSpy.loadGame.calls.first().args[0]).toBe('test uuid');
 	});
 
-	it('selectPlayer() should set to player UUID', () => {
-		expect(component.selectedPlayer).toBeUndefined();
-		component.selectPlayer(testPlayer);
-		expect(component.selectedPlayer).toBe(testPlayer.uuid);
-	});
-
-	it('selectPlayer() should unset the selectedCompany', () => {
-		component.selectedCompany = testCompany.uuid;
-		component.selectPlayer(testPlayer);
-		expect(component.selectedCompany).toBeUndefined();
-	});
-
-	it('selectCompany() should set to company UUID', () => {
-		expect(component.selectedCompany).toBeUndefined();
-		component.selectCompany(testCompany);
-		expect(component.selectedCompany).toBe(testCompany.uuid);
-	});
-
-	it('selectCompany() should unset the selectedPlayer', () => {
-		component.selectedPlayer = testPlayer.uuid;
-		component.selectCompany(testCompany);
-		expect(component.selectedPlayer).toBeUndefined();
+	it('select functionality should be removed', () => {
+		expect(component['selectPlayer']).toBeUndefined();
+		expect(component['selectedPlayer']).toBeUndefined();
+		expect(component['selectCompany']).toBeUndefined();
+		expect(component['selectedCompany']).toBeUndefined();
 	});
 });

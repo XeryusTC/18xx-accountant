@@ -4,36 +4,27 @@ import { Title }                  from '@angular/platform-browser';
 
 import 'rxjs/add/operator/switchMap';
 
-import { Game }          from '../models/game';
-import { Player }        from '../models/player';
-import { Company }       from '../models/company';
-import { GameStateService } from '../game-state.service';
+import { Game }                    from '../models/game';
+import { Player }                  from '../models/player';
+import { Company }                 from '../models/company';
+import { GameStateService }        from '../game-state.service';
+import { SelectedInstanceService } from '../selected-instance.service';
 
 @Component({
 	selector: 'app-game-page',
 	templateUrl: './game-page.component.html',
-	styleUrls: ['./game-page.component.css']
+	styleUrls: ['./game-page.component.css'],
+	providers: [SelectedInstanceService]
 })
 export class GamePageComponent implements OnInit {
 	uuid_sub;
-	selectedPlayer: string;
-	selectedCompany: string;
 
 	constructor(
 		private titleService: Title,
 		private route: ActivatedRoute,
-		public gameState: GameStateService
+		public gameState: GameStateService,
+		public selected: SelectedInstanceService
 	) { }
-
-	selectPlayer(player: Player): void {
-		this.selectedPlayer = player.uuid;
-		this.selectedCompany = undefined;
-	}
-
-	selectCompany(company: Company): void {
-		this.selectedCompany = company.uuid;
-		this.selectedPlayer = undefined;
-	}
 
 	ngOnInit() {
 		this.titleService.setTitle('18xx Accountant');
