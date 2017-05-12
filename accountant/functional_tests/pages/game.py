@@ -96,3 +96,10 @@ class ShareForm(PageObject):
     buy_share = PageElement(id_='action-buy', context=True)
     sell_share = PageElement(id_='action-sell', context=True)
     action = PageElement(id_='action-text', context=True)
+
+
+class OperateForm(PageObject):
+    revenue  = PageElement(name='revenue',  context=True)
+    full     = PageElement(name='full',     context=True)
+    half     = PageElement(name='half',     context=True)
+    withhold = PageElement(name='withhold', context=True)
