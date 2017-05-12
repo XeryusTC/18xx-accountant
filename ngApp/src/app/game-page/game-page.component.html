@@ -2,9 +2,7 @@
 	<menu></menu>
 	<div class="row nested">
 		<div class="tp-9">
-			<div class="section">
 				<player-section *ngIf="gameState.players"></player-section>
-			</div>
 		</div>
 
 		<div class="tp-3">
@@ -12,12 +10,8 @@
 		</div>
 	</div>
 
-	<div class="row nested">
-		<div class="tp-12">
-			<div class="section">
-				<company-section *ngIf="gameState.companies"></company-section>
-			</div>
-		</div>
+	<div class="section">
+		<company-section *ngIf="gameState.companies"></company-section>
 	</div>
 </div>
 
