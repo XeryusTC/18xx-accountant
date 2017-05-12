@@ -30,6 +30,7 @@ import { StartGameFormComponent }  from
 import { TransferFormComponent }   from
 	'./transfer-form/transfer-form.component';
 import { ShareFormComponent } from './share-form/share-form.component';
+import { PlayerSectionComponent } from './player-section/player-section.component';
 
 @NgModule({
 	declarations: [
@@ -45,7 +46,8 @@ import { ShareFormComponent } from './share-form/share-form.component';
 		AddCompanyFormComponent,
 		ValuesPipe,
 		TransferFormComponent,
-		ShareFormComponent
+		ShareFormComponent,
+		PlayerSectionComponent
 	],
 	imports: [
 		BrowserModule,
