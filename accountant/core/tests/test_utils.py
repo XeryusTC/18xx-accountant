@@ -632,21 +632,20 @@ class OperateTests(TestCase):
         utils.operate(self.company, 40, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, company2, 8)
 
-    def test_remainder_after_paying_dividends_goes_to_company(self,
+    def test_shareholder_payout_is_proportional_to_percentage_owned(self,
             mock_transfer_money):
-        self.setup_test_shares()
-        utils.operate(self.company, 76, utils.OperateMethod.FULL)
-        mock_transfer_money.assert_any_call(None, self.company, 6)
-
-    def test_avoid_rounding_errors_in_calculating_remainder(self,
-            mock_transfer_money):
-        self.company.share_count = 2
-        self.company.ipo_shares = 0
-        self.company.bank_shares = 0
+        self.company.share_count = 4
         factories.PlayerShareFactory(owner=self.alice, company=self.company,
-            shares=2)
-        utils.operate(self.company, 5, utils.OperateMethod.FULL)
-        mock_transfer_money.assert_called_once_with(None, self.alice, 5)
+            shares=3)
+        utils.operate(self.company, 40, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.alice, 30)
+
+    def test_payout_is_rounded_down_when_fraction(self, mock_transfer_money):
+        self.setup_test_shares()
+        utils.operate(self.company, 157, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.alice, 47)
+        mock_transfer_money.assert_any_call(None, self.bob, 15)
+        mock_transfer_money.assert_any_call(None, self.company, 15)
 
     def test_players_hand_in_cash_if_they_have_shorted_shares(self,
             mock_transfer_money):
@@ -687,7 +686,7 @@ class OperateTests(TestCase):
         utils.operate(self.company, 170, utils.OperateMethod.HALF)
         mock_transfer_money.assert_any_call(None, self.company, 85)
         mock_transfer_money.assert_any_call(None, self.company, 8)
-        mock_transfer_money.assert_any_call(None, self.company, 5)
+        mock_transfer_money.assert_any_call(None, self.company, 8)
 
     def test_players_with_shorted_shares_hand_in_cash_when_paying_half(self,
             mock_transfer_money):
@@ -744,3 +743,9 @@ class NoMoneyOperateTests(TestCase):
         utils.operate(self.company, 640, utils.OperateMethod.WITHHOLD)
         self.bob.refresh_from_db()
         self.assertEqual(self.bob.cash, 0)
+
+    def test_company_gets_no_remaider(self):
+        self.setup_test_shares()
+        utils.operate(self.company, 109, utils.OperateMethod.FULL)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.cash, 10)
