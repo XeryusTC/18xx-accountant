@@ -10,7 +10,7 @@ import { SelectedInstanceService } from '../selected-instance.service';
 })
 export class CompanySectionComponent implements OnInit {
 	constructor(
-		private gameState: GameStateService,
+		public gameState: GameStateService,
 		private selected: SelectedInstanceService
 	) { }
 
