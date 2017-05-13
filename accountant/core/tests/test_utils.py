@@ -702,6 +702,52 @@ class OperateTests(TestCase):
         utils.operate(self.company, 280, utils.OperateMethod.HALF)
         mock_transfer_money.assert_any_call(None, self.bob, 0)
 
+    def test_returns_list_of_affected_player_shareholders(self,
+            mock_transfer_money):
+        factories.PlayerFactory(game=self.game)
+        self.setup_test_shares()
+        affected = utils.operate(self.company, 100, utils.OperateMethod.FULL)
+        self.assertCountEqual(affected[0], [self.alice, self.bob])
+
+    def test_returns_list_of_affected_players_when_paying_half(self,
+            mock_transfer_money):
+        factories.PlayerFactory(game=self.game)
+        self.setup_test_shares()
+        affected = utils.operate(self.company, 100, utils.OperateMethod.HALF)
+        self.assertCountEqual(affected[0], [self.alice, self.bob])
+
+    def test_list_of_affected_players_is_empty_when_withholding(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        affected = utils.operate(self.company, 100,
+            utils.OperateMethod.WITHHOLD)
+        self.assertEqual(affected[0], [])
+
+    def test_returns_list_of_affected_company_shareholders(self,
+            mock_transfer_money):
+        c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
+        factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
+        self.setup_test_shares()
+        affected = utils.operate(self.company, 100, utils.OperateMethod.FULL)
+        self.assertCountEqual(affected[1], [self.company, c1])
+
+    def test_returns_list_of_affected_companies_when_paying_half(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
+        factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
+        affected = utils.operate(self.company, 100, utils.OperateMethod.HALF)
+        self.assertCountEqual(affected[1], [self.company, c1])
+
+    def test_only_returns_current_company_as_affected_when_withholding(self,
+            mock_transfer_money):
+        self.setup_test_shares()
+        c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
+        factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
+        affected = utils.operate(self.company, 100,
+            utils.OperateMethod.WITHHOLD)
+        self.assertCountEqual(affected[1], [self.company])
+
 
 class NoMoneyOperateTests(TestCase):
     """Sometimes it is better to test database changes than using mocks"""

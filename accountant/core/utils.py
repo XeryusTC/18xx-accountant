@@ -118,18 +118,29 @@ def buy_share(buyer, company, source, price, amount=1):
     company.refresh_from_db()
 
 def operate(company, amount, method):
+    affected_players = []
+    affected_companies = []
     if method == OperateMethod.WITHHOLD:
         transfer_money(None, company, amount)
+        affected_companies.append(company)
     elif method == OperateMethod.HALF:
-        operate(company, int(amount / 2), OperateMethod.WITHHOLD)
-        operate(company, int(amount / 2), OperateMethod.FULL)
+        affected_players, affected_companies = operate(company,
+            int(amount / 2), OperateMethod.WITHHOLD)
+        affected = operate(company, int(amount / 2), OperateMethod.FULL)
+        affected_players += affected[0]
+        affected_companies += affected[1]
     elif method == OperateMethod.FULL:
         dividends_per_share = amount / company.share_count
         # Pay dividend to players
         for share in company.playershare_set.all():
             dividend = int(dividends_per_share * share.shares)
             transfer_money(None, share.owner, dividend)
+            if dividend != 0:
+                affected_players.append(share.owner)
         # Pay dividend to companies
         for share in company.companyshare_set.all():
             dividend = int(dividends_per_share * share.shares)
             transfer_money(None, share.owner, int(dividend))
+            if dividend != 0:
+                affected_companies.append(share.owner)
+    return list(set(affected_players)), list(set(affected_companies))
