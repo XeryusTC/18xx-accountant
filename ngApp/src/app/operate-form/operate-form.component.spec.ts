@@ -1,7 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule }                      from '@angular/forms';
+import { async, ComponentFixture, TestBed, fakeAsync, tick}
+	from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import { Company }              from '../models/company';
+import { Game }                 from '../models/game';
+import { Player }               from '../models/player';
 import { GameStateService }     from '../game-state.service';
 import { OperateFormComponent } from './operate-form.component';
 import { OperateService }       from '../operate.service';
@@ -16,9 +19,11 @@ describe('OperateFormComponent', () => {
 	beforeEach(async(() => {
 		operateServiceStub = jasmine
 			.createSpyObj('OperateService', ['operate']);
+		operateServiceStub.operate.and.callFake(() => Promise.resolve(null));
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
 						  'updateCompany']);
+
 		TestBed.configureTestingModule({
 			imports: [FormsModule],
 			declarations: [OperateFormComponent],
@@ -78,4 +83,46 @@ describe('OperateFormComponent', () => {
 		expect(operateSpy.calls.any()).toBeTruthy();
 		expect(operateSpy.calls.first().args[0]).toBe('withhold');
 	});
+
+	it('game instance should be updated when affected', fakeAsync(() => {
+		let newGame = new Game('game-uuid', 1);
+		operateServiceStub.operate
+			.and.callFake(() => Promise.resolve({game: newGame}));
+		component.operate('any');
+		tick();
+		expect(gameStateStub.updateGame.calls.first().args[0]).toBe(newGame);
+	}));
+
+	it('player instances should be updated when affected', fakeAsync(() => {
+		let newPlayers = [new Player('player-uuid-0', 'game-uuid', 'Alice', 0),
+			new Player('player-uuid-1', 'game-uuid', 'Alice', 1)];
+		operateServiceStub.operate
+			.and.callFake(() => Promise.resolve({players: newPlayers}));
+		component.operate('any');
+		tick();
+		expect(gameStateStub.updatePlayer.calls.count()).toBe(2);
+		expect(gameStateStub.updatePlayer.calls.argsFor(0)[0])
+			.toBe(newPlayers[0]);
+		expect(gameStateStub.updatePlayer.calls.argsFor(1)[0])
+			.toBe(newPlayers[1]);
+	}));
+
+	it('company instances should be updated when affected', fakeAsync(() => {
+		let newCompanies = [
+			new Company('company-uuid-0', 'game-uuid', 'C&O', 0, 10),
+			new Company('company-uuid-1', 'game-uuid', 'PRR', 0, 10),
+			new Company('company-uuid-2', 'game-uuid', 'Erie', 0, 10)
+		];
+		operateServiceStub.operate
+			.and.callFake(() => Promise.resolve({companies: newCompanies}));
+		component.operate('any');
+		tick();
+		expect(gameStateStub.updateCompany.calls.count()).toBe(3);
+		expect(gameStateStub.updateCompany.calls.argsFor(0)[0])
+			.toBe(newCompanies[0]);
+		expect(gameStateStub.updateCompany.calls.argsFor(1)[0])
+			.toBe(newCompanies[1]);
+		expect(gameStateStub.updateCompany.calls.argsFor(2)[0])
+			.toBe(newCompanies[2]);
+	}));
 });

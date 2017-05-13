@@ -22,7 +22,17 @@ export class OperateFormComponent implements OnInit {
 	}
 
 	operate(method: string): void {
-		this.operateService.operate(this.company, this.revenue, method);
+		this.operateService.operate(this.company, this.revenue, method)
+			.then(result => {
+				if ('game' in result)
+					this.gameState.updateGame(result.game);
+				if ('players' in result)
+					for (let player of result.players)
+						this.gameState.updatePlayer(player);
+				if ('companies' in result)
+					for (let company of result.companies)
+						this.gameState.updateCompany(company);
+			});
 	}
 
 	full(): void {
