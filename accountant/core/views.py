@@ -245,6 +245,8 @@ class OperateView(APIView):
                 serializer.validated_data['amount'], method)
 
             # Construct response
+            company.refresh_from_db()
+            company.game.refresh_from_db()
             context = {'request': request}
             response = {
                 'companies': [],

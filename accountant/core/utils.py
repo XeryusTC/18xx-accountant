@@ -136,7 +136,6 @@ def operate(company, amount, method):
         affected_players, affected_companies = operate(company,
             withhold, OperateMethod.WITHHOLD)
         affected = operate(company, distribute, OperateMethod.FULL)
-        company.refresh_from_db()
         # Update affected players and companies
         affected_players += affected[0]
         affected_companies += affected[1]
