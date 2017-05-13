@@ -681,12 +681,14 @@ class OperateTests(TestCase):
         utils.operate(self.company, 300, utils.OperateMethod.HALF)
         mock_transfer_money.assert_any_call(None, self.company, 15)
 
-    def test_paying_half_pays_remainder_to_company(self, mock_transfer_money):
+    def test_paying_half_rounds_in_favour_of_shareholders(self,
+            mock_transfer_money):
         self.setup_test_shares()
-        utils.operate(self.company, 170, utils.OperateMethod.HALF)
-        mock_transfer_money.assert_any_call(None, self.company, 85)
-        mock_transfer_money.assert_any_call(None, self.company, 8)
-        mock_transfer_money.assert_any_call(None, self.company, 8)
+        self.company.share_set.get(company=self.company).shares = 0
+        utils.operate(self.company, 70, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.alice, 12)
+        mock_transfer_money.assert_any_call(None, self.bob, 4)
+        mock_transfer_money.assert_any_call(None, self.company, 30)
 
     def test_players_with_shorted_shares_hand_in_cash_when_paying_half(self,
             mock_transfer_money):

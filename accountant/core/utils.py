@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from enum import Enum
+import math
 from . import models
 
 class SameEntityError(Exception):
@@ -124,9 +125,19 @@ def operate(company, amount, method):
         transfer_money(None, company, amount)
         affected_companies.append(company)
     elif method == OperateMethod.HALF:
+        # Calculate how to split
+        withhold = amount / 2
+        distribute = amount / 2
+        if distribute % company.share_count != 0:
+            distribute = math.ceil(distribute / company.share_count)
+            distribute *= company.share_count
+            withhold = amount - distribute
+        # Distribute earnings
         affected_players, affected_companies = operate(company,
-            int(amount / 2), OperateMethod.WITHHOLD)
-        affected = operate(company, int(amount / 2), OperateMethod.FULL)
+            withhold, OperateMethod.WITHHOLD)
+        affected = operate(company, distribute, OperateMethod.FULL)
+        company.refresh_from_db()
+        # Update affected players and companies
         affected_players += affected[0]
         affected_companies += affected[1]
     elif method == OperateMethod.FULL:
