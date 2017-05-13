@@ -34,6 +34,7 @@ class OperateTests(FunctionalTestCase):
         self.story('The page updates and everyone receives their dividends')
         alice, bob = game_page.get_players()
         bno, nyc = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '11902')
         self.verify_player(alice, cash=42)
         self.verify_player(bob, cash=14)
         self.verify_company(bno, cash=28)
@@ -41,7 +42,7 @@ class OperateTests(FunctionalTestCase):
 
     def test_company_can_operate_and_pay_half_dividends(self):
         self.story('start a game with two players and two companies')
-        game_uuid = self.create_game()
+        game_uuid = self.create_game(cash=100)
         player1_uuid = self.create_player(game_uuid, 'Alice', cash=0)
         player2_uuid = self.create_player(game_uuid, 'Bob', cash=0)
         company1_uuid = self.create_company(game_uuid, 'C&O', cash=0,
@@ -66,6 +67,7 @@ class OperateTests(FunctionalTestCase):
         self.story('The page updates and dividends have been paid out')
         alice, bob = game_page.get_players()
         cno, nnh = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '25')
         self.verify_player(alice, cash=15)
         self.verify_player(bob, cash=5)
         self.verify_company(cno, cash=50) # 40 + 2 * 5
