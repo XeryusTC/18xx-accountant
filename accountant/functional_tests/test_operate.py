@@ -72,3 +72,36 @@ class OperateTests(FunctionalTestCase):
         self.verify_player(bob, cash=5)
         self.verify_company(cno, cash=50) # 40 + 2 * 5
         self.verify_company(nnh, cash=5)
+
+    def test_company_can_withhold_revenue(self):
+        self.story('start a game with two players and two companies')
+        game_uuid = self.create_game(cash=100)
+        player1_uuid = self.create_player(game_uuid, 'Alice', cash=0)
+        player2_uuid = self.create_player(game_uuid, 'Bob', cash=0)
+        company1_uuid = self.create_company(game_uuid, 'Erie', cash=0,
+            ipo_shares=2, bank_shares=1)
+        company2_uuid = self.create_company(game_uuid, 'PRR', cash=0)
+        self.create_player_share(player1_uuid, company1_uuid, shares=4)
+        self.create_player_share(player2_uuid, company1_uuid, shares=2)
+        self.create_company_share(company1_uuid, company1_uuid, shares=0)
+        self.create_company_share(company2_uuid, company1_uuid, shares=1)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('Open the Erie detail section, withhold some revenue')
+        erie = game_page.get_companies()[0]
+        erie['elem'].click()
+        erie = game_page.get_companies()[0] # Get DOM updates
+        operate_form = game.OperateForm(self.browser)
+        operate_form.revenue(erie['detail']).clear()
+        operate_form.revenue(erie['detail']).send_keys('40')
+        operate_form.withhold(erie['detail']).click()
+
+        self.story('The page updates and revenue has been withheld')
+        alice, bob = game_page.get_players()
+        erie, prr = game_page.get_companies()
+        self.assertEqual(game_page.bank_cash.text, '60')
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(erie, cash=40)
+        self.verify_company(prr, cash=0)
