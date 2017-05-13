@@ -10,6 +10,7 @@ import { CompanyService }       from './company.service';
 import { TransferMoneyService } from './transfer-money.service';
 import { TransferShareService } from './transfer-share.service';
 import { ShareService }         from './share.service';
+import { OperateService }       from './operate.service';
 
 import { ValuesPipe } from './values.pipe';
 
@@ -65,6 +66,7 @@ import { CompanySectionComponent } from './company-section/company-section.compo
 		TransferMoneyService,
 		TransferShareService,
 		ShareService,
+		OperateService,
 		Title
 	],
 	bootstrap: [AppComponent]
