@@ -33,6 +33,7 @@ import { TransferFormComponent }   from
 import { ShareFormComponent } from './share-form/share-form.component';
 import { PlayerSectionComponent } from './player-section/player-section.component';
 import { CompanySectionComponent } from './company-section/company-section.component';
+import { OperateFormComponent } from './operate-form/operate-form.component';
 
 @NgModule({
 	declarations: [
@@ -50,7 +51,8 @@ import { CompanySectionComponent } from './company-section/company-section.compo
 		TransferFormComponent,
 		ShareFormComponent,
 		PlayerSectionComponent,
-		CompanySectionComponent
+		CompanySectionComponent,
+		OperateFormComponent
 	],
 	imports: [
 		BrowserModule,
