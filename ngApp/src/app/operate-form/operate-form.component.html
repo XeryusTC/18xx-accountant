@@ -1,3 +1,14 @@
-<p>
-  operate-form works!
-</p>
+<form>
+	<div class="row inline-form">
+		<div class="tp-2">
+			<label for="revenue">Revenue</label>
+		</div>
+		<div class="tp-2">
+			<input type="number" name="revenue" id="revenue"
+				[(ngModel)]="revenue">
+		</div>
+		<div class="tp-2">
+			<button name="full" (click)="full()">Full dividend</button>
+		</div>
+	</div>
+</form>
