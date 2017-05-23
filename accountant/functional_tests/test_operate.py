@@ -21,7 +21,7 @@ class OperateTests(FunctionalTestCase):
         self.story('Open B&O detail section, there is an operate form')
         bno, nyc = game_page.get_companies()
         bno['elem'].click()
-        bno = game_page.get_companies()[0] # Get DOM updates
+        bno = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
         self.assertEqual('0',
             operate_form.revenue(bno['detail']).get_attribute('value'))
@@ -58,7 +58,7 @@ class OperateTests(FunctionalTestCase):
         self.story('Open C&O detail section, and fill in the operate form')
         cno = game_page.get_companies()[0]
         cno['elem'].click()
-        cno = game_page.get_companies()[0] # Get DOM updates
+        cno = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
         operate_form.revenue(cno['detail']).clear()
         operate_form.revenue(cno['detail']).send_keys('90')
@@ -70,7 +70,7 @@ class OperateTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '25')
         self.verify_player(alice, cash=15)
         self.verify_player(bob, cash=5)
-        self.verify_company(cno, cash=50) # 40 + 2 * 5
+        self.verify_company(cno, cash=50)  # 40 + 2 * 5
         self.verify_company(nnh, cash=5)
 
     def test_company_can_withhold_revenue(self):
@@ -91,7 +91,7 @@ class OperateTests(FunctionalTestCase):
         self.story('Open the Erie detail section, withhold some revenue')
         erie = game_page.get_companies()[0]
         erie['elem'].click()
-        erie = game_page.get_companies()[0] # Get DOM updates
+        erie = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
         operate_form.revenue(erie['detail']).clear()
         operate_form.revenue(erie['detail']).send_keys('40')

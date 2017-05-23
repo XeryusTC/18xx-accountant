@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 from .base import FunctionalTestCase
 from .pages import game
 

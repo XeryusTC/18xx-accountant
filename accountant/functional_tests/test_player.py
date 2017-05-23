@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 from .base import FunctionalTestCase
 from .pages import game
 
@@ -23,8 +22,6 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertEqual(add_player.header.text, 'Add player')
         self.assertEqual(self.browser.title, 'Add player')
 
-        self.story('The game field is not visible')
-        #self.assertEqual(add_player.game.get_attribute('type'), 'hidden')
         self.story('She enters her name and a starting amount of cash')
         add_player.name.clear()
         add_player.name.send_keys('Alice')
@@ -181,14 +178,14 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('She clicks the first player and the details appear')
         players[0]['row'].click()
-        players = game_page.get_players() # Get DOM updates
+        players = game_page.get_players()  # Get DOM updates
         self.assertIsNotNone(players[0]['detail'])
         self.assertIsNone(players[1]['detail'])
 
         self.story("She clicks the second player, the first player's details"
             "disappear and the second player's appear")
         players[1]['row'].click()
-        players = game_page.get_players() # Get DOM updates
+        players = game_page.get_players()  # Get DOM updates
         self.assertIsNone(players[0]['detail'])
         self.assertIsNotNone(players[1]['detail'])
 
@@ -251,7 +248,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('Alice goes to transfer money again')
         player['row'].click()
-        player = game_page.get_players()[0] # Get DOM updates
+        player = game_page.get_players()[0]  # Get DOM updates
         transfer_form.amount(player['detail']).clear()
         transfer_form.amount(player['detail']).send_keys('10')
         self.story("This time she doesn't select a target, the bank should be"
@@ -295,7 +292,7 @@ class ManagePlayerTests(FunctionalTestCase):
                 self.story('She then selects the company')
                 transfer_form.target(label)[0].click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('No company called CPR found in transfer form')
         transfer_form.transfer_button(player['detail']).click()
 
@@ -323,9 +320,9 @@ class ManagePlayerTests(FunctionalTestCase):
         transfer_form.amount(alice['detail']).send_keys(67)
         for radio in transfer_form.target(alice['detail']):
             if radio.get_attribute('id') == 'target-Bob':
-               radio.click()
-               break
-        else: # pragma: no cover
+                radio.click()
+                break
+        else:  # pragma: no cover
             self.fail('Could not find Bob in the transfer form')
         transfer_form.transfer_button(alice['detail']).click()
 

@@ -6,7 +6,6 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from ansible.inventory import Inventory
 from ansible.executor.playbook_executor import PlaybookExecutor
-from ansible.utils.vars import load_extra_vars
 from ansible.plugins.callback import CallbackBase
 
 Options = namedtuple('Options', ['listtags', 'listtasks', 'listhosts',
@@ -69,7 +68,8 @@ def creategame(playbook_dir, inventory_file, cash=12000):
 
 def createplayer(playbook_dir, inventory, game, name, cash=0):
     playbook = playbook_dir.child('createplayer.yml')
-    return run_playbook(playbook, inventory, extra_vars={
+    return run_playbook(playbook, inventory,
+        extra_vars={
             'game': game,
             'player_name': name,
             'cash': cash,
@@ -79,7 +79,8 @@ def createcompany(playbook_dir, inventory, game, name, cash=0, share_count=10,
         ipo_shares=10, bank_shares=0, text_color='black',
         background_color='white'):
     playbook = playbook_dir.child('createcompany.yml')
-    return run_playbook(playbook, inventory, extra_vars={
+    return run_playbook(playbook, inventory,
+        extra_vars={
             'game': game,
             'company_name': name,
             'cash': cash,
@@ -100,8 +101,9 @@ def createplayershare(playbook_dir, inventory, owner, company, shares=1):
 
 def createcompanyshare(playbook_dir, inventory, owner, company, shares=1):
     playbook = playbook_dir.child('createcompanyshare.yml')
-    return run_playbook(playbook,inventory, extra_vars={
-        'owner': owner,
-        'company': company,
-        'shares': shares
-    })
+    return run_playbook(playbook, inventory,
+        extra_vars={
+            'owner': owner,
+            'company': company,
+            'shares': shares
+        })

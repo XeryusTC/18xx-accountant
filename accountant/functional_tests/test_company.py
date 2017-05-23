@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 from .base import FunctionalTestCase
 from .pages import game
 
@@ -257,14 +256,14 @@ class ManageCompanyTests(FunctionalTestCase):
 
         self.story('She clicks the first company and the detail appear')
         companies[0]['elem'].click()
-        companies = game_page.get_companies() # Need to retrieve DOM updates
+        companies = game_page.get_companies()  # Need to retrieve DOM updates
         self.assertIsNotNone(companies[0]['detail'])
         self.assertIsNone(companies[1]['detail'])
 
         self.story("She clicks the second company, the first company's"
             "details disappear and the second company's details appear")
         companies[1]['elem'].click()
-        companies = game_page.get_companies() # Need to retrieve DOM updates
+        companies = game_page.get_companies()  # Need to retrieve DOM updates
         self.assertIsNone(companies[0]['detail'])
         self.assertIsNotNone(companies[1]['detail'])
 
@@ -305,7 +304,7 @@ class ManageCompanyTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         self.assertIsNone(company['detail'])
         company['value'].click()
-        company = game_page.get_companies()[0] # Get DOM updates
+        company = game_page.get_companies()[0]  # Get DOM updates
         self.assertIsNone(company['detail'])
 
     def test_clicking_value_field_doesnt_close_player_detail_section(self):
@@ -319,13 +318,13 @@ class ManageCompanyTests(FunctionalTestCase):
         self.story('Open the player detail')
         player = game_page.get_players()[0]
         player['row'].click()
-        player = game_page.get_players()[0] # Get DOM updates
+        player = game_page.get_players()[0]  # Get DOM updates
         self.assertIsNotNone(player['detail'])
 
         self.story('Click the company value field')
         company = game_page.get_companies()[0]
         company['value'].click()
-        player = game_page.get_players()[0] # Get DOM updates
+        player = game_page.get_players()[0]  # Get DOM updates
         self.assertIsNotNone(player['detail'])
 
     def test_clicking_value_field_doesnt_close_other_company_section(self):
@@ -339,13 +338,13 @@ class ManageCompanyTests(FunctionalTestCase):
         self.story("Open the NNH's detail section")
         nnh = game_page.get_companies()[0]
         nnh['elem'].click()
-        nnh = game_page.get_companies()[0] # Get DOM updates
+        nnh = game_page.get_companies()[0]  # Get DOM updates
         self.assertIsNotNone(nnh['detail'])
 
         self.story("Click the NYC's value field")
         nyc = game_page.get_companies()[1]
         nyc['value'].click()
-        nnh = game_page.get_companies()[0] # Get DOM updates
+        nnh = game_page.get_companies()[0]  # Get DOM updates
         self.assertIsNotNone(nnh['detail'])
 
     def test_company_can_transfer_money_to_bank(self):
@@ -361,7 +360,7 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '11600')
         self.story("She opens the company's detail view")
         company['elem'].click()
-        company = game_page.get_companies()[0] # get DOM updates
+        company = game_page.get_companies()[0]  # get DOM updates
 
         self.story('There is a form that allows her to send money')
         transfer_form = game.TransferForm(self.browser)
@@ -374,7 +373,7 @@ class ManageCompanyTests(FunctionalTestCase):
         transfer_form.transfer_button(company['detail']).click()
 
         self.story("The page updates and the company's cash amount is lower")
-        company = game_page.get_companies()[0] # get DOM updates
+        company = game_page.get_companies()[0]  # get DOM updates
         self.assertEqual(company['cash'].text, '300')
         self.assertEqual(game_page.bank_cash.text, '11700')
 
@@ -388,7 +387,7 @@ class ManageCompanyTests(FunctionalTestCase):
         transfer_form.transfer_button(company['detail']).click()
 
         self.story('After the page updates the sees the amounts have changed')
-        company = game_page.get_companies()[0] # get DOM updates
+        company = game_page.get_companies()[0]  # get DOM updates
         self.assertEqual(company['cash'].text, '250')
         self.assertEqual(game_page.bank_cash.text, '11750')
 
@@ -418,7 +417,7 @@ class ManageCompanyTests(FunctionalTestCase):
             if radio.get_attribute('id') == 'target-Alice':
                 radio.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Could not find Alice in the transfer form')
         transfer_form.transfer_button(company['detail']).click()
 
@@ -453,7 +452,7 @@ class ManageCompanyTests(FunctionalTestCase):
                 self.assertIn('fg-amber-200', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Could not find the NYC in the transfer form')
         transfer_form.transfer_button(cpr['detail']).click()
 
@@ -475,7 +474,7 @@ class ManageCompanyTests(FunctionalTestCase):
         bno['elem'].click()
 
         transfer_form = game.TransferForm(self.browser)
-        bno = game_page.get_companies()[0] # Get DOM updates
+        bno = game_page.get_companies()[0]  # Get DOM updates
         self.assertEqual(['Bank'],
             [label.text for label in transfer_form.labels(bno['detail'])])
 

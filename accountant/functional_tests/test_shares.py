@@ -37,7 +37,7 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-brown-300', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('No company called NYC found in share list')
 
         self.story('Buy the share from the IPO')
@@ -45,7 +45,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There are no shares in the IPO')
         share_form.transfer_button(player['detail']).click()
 
@@ -92,7 +92,7 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-green-600', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('No company called PMQ found in share list')
 
         self.story('Select the bank as a source')
@@ -100,7 +100,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There is no option to set the bank as the source')
         share_form.transfer_button(player['detail']).click()
 
@@ -140,7 +140,7 @@ class BuyShareTests(FunctionalTestCase):
         self.story("Open Alice's detail section, buy shares C&O from the C&O")
         player = game_page.get_players()[0]
         player['row'].click()
-        player = game_page.get_players()[0] # Get DOM updates
+        player = game_page.get_players()[0]  # Get DOM updates
         share_form = game.ShareForm(self.browser)
         share_form.shares(player['detail']).clear()
         share_form.shares(player['detail']).send_keys('2')
@@ -148,7 +148,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'company-C&O':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('No company called C&O found in share list')
 
         self.story('Select the C&O as the source')
@@ -158,7 +158,7 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-yellow-300', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There is no option to set the C&O as the source')
         share_form.transfer_button(player['detail']).click()
 
@@ -200,7 +200,7 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-black', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot find the CPR in the list of companies')
 
         self.story('Select the IPO as the source')
@@ -208,7 +208,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There are no shares in the IPO?')
         share_form.transfer_button(company['detail']).click()
 
@@ -246,13 +246,13 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-amber-400', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Could not find the B&M in the list of shares')
         for label in share_form.source(company['detail']):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There is no option to buy from the bank')
         share_form.transfer_button(company['detail']).click()
 
@@ -293,7 +293,7 @@ class BuyShareTests(FunctionalTestCase):
                 self.assertIn('bg-green-500', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot find the share company in available shares list')
 
         self.story('Select the IPO as the source')
@@ -301,7 +301,7 @@ class BuyShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There are no shares in the IPO')
         share_form.transfer_button(buy_company['detail']).click()
 
@@ -335,22 +335,21 @@ class BuyShareTests(FunctionalTestCase):
 
         self.story('Buy company buys shares of the other company from pool')
         buy_company['elem'].click()
-        buy_company = game_page.get_companies()[0] # Get DOM updates
+        buy_company = game_page.get_companies()[0]  # Get DOM updates
         for label in share_form.company(buy_company['detail']):
             if label.get_attribute('for') == 'company-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot find the share company in available shares list')
         for label in share_form.source(buy_company['detail']):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('There are no shares in the pool')
         share_form.shares(buy_company['detail']).clear()
         share_form.shares(buy_company['detail']).send_keys('3\n')
-
 
         self.story('The page updates and shares have changed hands')
         buy_company, share_company = game_page.get_companies()
@@ -385,18 +384,18 @@ class BuyShareTests(FunctionalTestCase):
         self.story('Buy company buys a share of the other company from its '
             'treasury')
         buy_company['elem'].click()
-        buy_company = game_page.get_companies()[0] # Get DOM updates
+        buy_company = game_page.get_companies()[0]  # Get DOM updates
         for label in share_form.source(buy_company['detail']):
             if label.get_attribute('for') == 'source-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Share company has no treasury shares')
         for label in share_form.company(buy_company['detail']):
             if label.get_attribute('for') == 'company-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot find the share company in available shares list')
         share_form.shares(buy_company['detail']).clear()
         share_form.shares(buy_company['detail']).send_keys('4\n')
@@ -415,18 +414,18 @@ class BuyShareTests(FunctionalTestCase):
         self.story('Buy company buys one of its own shares back from the '
             'share company')
         buy_company['elem'].click()
-        buy_company = game_page.get_companies()[0] # Get DOM updates
+        buy_company = game_page.get_companies()[0]  # Get DOM updates
         for label in share_form.source(buy_company['detail']):
             if label.get_attribute('for') == 'source-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Share company has no treasury shares')
         for label in share_form.company(buy_company['detail']):
             if label.get_attribute('for') == 'company-buy':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot find the buy company in available shares list')
         share_form.shares(buy_company['detail']).clear()
         share_form.shares(buy_company['detail']).send_keys('5\n')
@@ -477,7 +476,7 @@ class SellShareTests(FunctionalTestCase):
                 self.assertIn('bg-black', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('CPR is not in the owned shares list')
 
         self.story('Select the bank so the shares end up in there')
@@ -485,7 +484,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the bank to sell to')
         share_form.transfer_button(player['detail']).click()
 
@@ -536,7 +535,7 @@ class SellShareTests(FunctionalTestCase):
                 self.assertIn('bg-black', label.get_attribute('class'))
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('NNH is not in the owned shares list')
 
         self.story('Select the IPO to sell the shares to')
@@ -544,7 +543,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the IPO to sell to')
         share_form.transfer_button(player['detail']).click()
 
@@ -590,7 +589,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'company-Erie':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Erie is not in the owned shares list')
 
         self.story('Select the bank pool to sell the shares to')
@@ -598,7 +597,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the bank pool to sell to')
         share_form.transfer_button(player['detail']).click()
 
@@ -644,7 +643,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'company-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the share company to sell to')
 
         self.story('Select the bank to sell to it')
@@ -652,7 +651,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-bank':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the bank to sell to')
         share_form.transfer_button(sell['detail']).click()
 
@@ -697,7 +696,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'company-share':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the share company to sell to')
 
         self.story('Select the IPO to sell to it')
@@ -705,7 +704,7 @@ class SellShareTests(FunctionalTestCase):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot select the IPO to sell to')
         share_form.transfer_button(sell['detail']).click()
 
@@ -807,23 +806,23 @@ class MiscellaneousShareTests(FunctionalTestCase):
 
         self.story('Let the C&O buy one of its own shares')
         company['elem'].click()
-        company = game_page.get_companies()[0] # Get DOM updates
+        company = game_page.get_companies()[0]  # Get DOM updates
         share_form = game.ShareForm(self.browser)
         for label in share_form.company(company['detail']):
             if label.get_attribute('for') == 'company-C&O':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('The C&O is not in the list of available companies')
         for label in share_form.source(company['detail']):
             if label.get_attribute('for') == 'source-ipo':
                 label.click()
                 break
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.fail('Cannot buy form the IPO')
         share_form.shares(company['detail']).clear()
         share_form.shares(company['detail']).send_keys('3\n')
 
         self.story('The page updates, but the value of the C&O is the same')
-        company = game_page.get_companies()[0] # Get DOM updates
+        company = game_page.get_companies()[0]  # Get DOM updates
         self.assertEqual(company['value'].get_attribute('value'), '67')

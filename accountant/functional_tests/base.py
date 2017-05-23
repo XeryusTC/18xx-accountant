@@ -2,14 +2,13 @@
 from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import inspect
-import signal
 from pytractor import webdriver
 from unipath import Path
 
 try:
     from . import remote
 except ImportError:
-    pass # Ignore error, we're most likely testing locally/running CI
+    pass  # Ignore error, we're most likely testing locally/running CI
 from core import factories
 from core import models
 
@@ -42,10 +41,10 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             remote.flushdb(self.ansible_dir, self.inventory)
 
         if self.verbosity >= 2:
-            print() # Start stories on a fresh line
+            print()  # Start stories on a fresh line
 
     def tearDown(self):
-        if self._test_has_failed(): # pragma: no cover
+        if self._test_has_failed():  # pragma: no cover
             SCREEN_DUMP_LOCATION.mkdir()
             for ix, handle in enumerate(self.browser.window_handles):
                 self.browser.switch_to_window(handle)
@@ -115,7 +114,7 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             return str(share.pk)
 
     def verify_player(self, player, name=None, cash=None,
-                      shares=None): # pragma: no cover
+                      shares=None):  # pragma: no cover
         if name is not None:
             self.assertEqual(player['name'].text, name)
         if cash is not None:
@@ -126,7 +125,7 @@ class FunctionalTestCase(StaticLiveServerTestCase):
 
     def verify_company(self, company, name=None, cash=None, share_count=None,
                        ipo_shares=None, bank_shares=None, shares=None,
-                       text=None, background=None): # pragma: no cover
+                       text=None, background=None):  # pragma: no cover
         if name is not None:
             self.assertEqual(company['name'].text, name)
         if cash is not None:
@@ -146,29 +145,29 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             self.assertin('bg-' + background,
                 company['elem'].get_attribute('class'))
 
-    def _test_has_failed(self): # pragma: no cover
+    def _test_has_failed(self):  # pragma: no cover
         for method, error in self._outcome.errors:
             if error:
                 return True
         return False
 
-    def _take_screenshot(self, filename): # pragma: no cover
+    def _take_screenshot(self, filename):  # pragma: no cover
         print('Screenshot to', filename)
         self.browser.get_screenshot_as_file(filename)
 
-    def _dump_html(self, filename): # pragma: no cover
+    def _dump_html(self, filename):  # pragma: no cover
         print('Dumping HTML to', filename)
         filename.write_file(self.browser.page_source)
 
-    def _get_filename(self, windowid): # pragma: no cover
+    def _get_filename(self, windowid):  # pragma: no cover
         timestamp = datetime.now().isoformat().replace(':', '.')[:19]
-        return Path(SCREEN_DUMP_LOCATION, \
+        return Path(SCREEN_DUMP_LOCATION,
             '{cls}.{method}-window{windowid}-{timestamp}'.format(
                 cls=self.__class__.__name__, method=self._testMethodName,
                 windowid=windowid, timestamp=timestamp))
 
     @classmethod
-    def _get_options(cls): # pragma: no cover
+    def _get_options(cls):  # pragma: no cover
         """Get value of verbosity level argument given to manage.py"""
         # Code taken from http://stackoverflow.com/questions/27456881/
         for s in reversed(inspect.stack()):
