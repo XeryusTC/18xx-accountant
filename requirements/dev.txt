@@ -8,7 +8,7 @@ Faker==0.7.5
 python-dateutil==2.6.0
 six==1.10.0
 -e git+https://github.com/mwalkowski/pytractor#egg=pytractor
-flake==3.3.0
+flake8==3.3.0
 pyflakes==1.5.0
 mccabe==0.6.1
 pycodestyle==2.3.1
