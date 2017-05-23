@@ -1,0 +1,20 @@
+[flake8]
+statistics = true
+exclude =
+	.git,
+	__pycache__,
+	interface,
+	migrations,
+	admin.py,
+	settings,
+	manage.py
+ignore =
+	# Only one line between functions is used, ignore the error
+	E302,
+	# Ignore under idented lines for now
+	E128,
+	# 'if cond == None' is preferred over 'if cond is none'
+	E711,
+	# It should be allowed to neatly align operators and arguments
+	E221,
+	E241
