@@ -407,7 +407,7 @@ class CompanyShareTransactionTests(TestCase):
         factories.CompanyShareFactory(owner=self.company1,
             company=self.company2)
         factories.CompanyShareFactory(owner=self.company2,
-            company=self.company2, shares = 3)
+            company=self.company2, shares=3)
         utils.buy_share(self.company1, self.company2, self.company2, 6)
         self.assertEqual(2,
             self.company1.share_set.get(company=self.company2).shares)
@@ -451,7 +451,7 @@ class CompanyShareTransactionTests(TestCase):
 
     @mock.patch.object(utils, 'transfer_money')
     def test_buying_multiple_shares_from_company_charges_for_each_share(self,
-        mock_transfer_money):
+            mock_transfer_money):
         factories.CompanyShareFactory(owner=self.company2,
             company=self.company2, shares=3)
         utils.buy_share(self.company1, self.company2, self.company2, 1, 3)
@@ -650,15 +650,13 @@ class OperateTests(TestCase):
     def test_players_hand_in_cash_if_they_have_shorted_shares(self,
             mock_transfer_money):
         self.setup_test_shares()
-        share = self.bob.share_set.filter(company=self.company).update(
-            shares=-1)
+        self.bob.share_set.filter(company=self.company).update(shares=-1)
         utils.operate(self.company, 120, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.bob, -12)
 
     def test_player_owning_no_shares_gets_no_money(self, mock_transfer_money):
         self.setup_test_shares()
-        share = self.bob.share_set.filter(company=self.company).update(
-            shares=0)
+        self.bob.share_set.filter(company=self.company).update(shares=0)
         utils.operate(self.company, 90, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.bob, 0)
 
@@ -786,8 +784,7 @@ class NoMoneyOperateTests(TestCase):
 
     def test_players_with_shorted_shares_dont_pay_when_withholding(self):
         self.setup_test_shares()
-        share = self.bob.share_set.filter(company=self.company).update(
-            shares=-1)
+        self.bob.share_set.filter(company=self.company).update(shares=-1)
         utils.operate(self.company, 640, utils.OperateMethod.WITHHOLD)
         self.bob.refresh_from_db()
         self.assertEqual(self.bob.cash, 0)

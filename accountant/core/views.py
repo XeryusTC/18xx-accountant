@@ -83,7 +83,7 @@ class TransferMoneyView(APIView):
             if serializer.source_instance != None \
                     and serializer.dest_instance != None \
                     and serializer.source_instance.game != \
-                        serializer.dest_instance.game:
+                        serializer.dest_instance.game:  # noqa
                 return Response(
                     {'non_field_errors': serializers.DIFFERENT_GAME_ERROR},
                     status=status.HTTP_400_BAD_REQUEST)
@@ -178,8 +178,8 @@ class TransferShareView(APIView):
             # Construct the response, starting with the game
             context = {'request': request}
             response = {}
-            if (buyer == utils.Share.IPO or buyer == utils.Share.BANK
-                or source == utils.Share.IPO or source == utils.Share.BANK):
+            if (buyer == utils.Share.IPO or buyer == utils.Share.BANK or
+                    source == utils.Share.IPO or source == utils.Share.BANK):
                 share.game.refresh_from_db()
                 response['game'] = serializers.GameSerializer(
                     share.game, context=context).data

@@ -8,7 +8,7 @@ from .. import serializers
 class CompanySerializerTests(TestCase):
     def test_returns_user_friendly_message_when_company_not_unique(self):
         game = factories.GameFactory()
-        company = factories.CompanyFactory(game=game, name='test')
+        factories.CompanyFactory(game=game, name='test')
         s = serializers.CompanySerializer(data={'game': game.pk,
             'name': 'test'})
         with self.assertRaises(exceptions.ValidationError):
@@ -20,7 +20,7 @@ class CompanySerializerTests(TestCase):
 class PlayerSerializerTests(TestCase):
     def test_returns_user_friendly_message_when_player_not_unique(self):
         game = factories.GameFactory()
-        player = factories.PlayerFactory(game=game, name='test')
+        factories.PlayerFactory(game=game, name='test')
         s = serializers.PlayerSerializer(data={'game': game.pk,
             'name': 'test'})
         with self.assertRaises(exceptions.ValidationError):

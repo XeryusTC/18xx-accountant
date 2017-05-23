@@ -4,10 +4,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from unittest import mock
 
-from ... import models
 from ... import factories
 from ... import utils
-from ... import serializers
 from ... import views
 
 class ShareTransactionTests(APITestCase):
@@ -396,8 +394,7 @@ class ShareTransactionWithMockTests(APITestCase):
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'ipo', 'source_type': 'company',
             'company_source': self.buy_company.pk,
-            'share': self.source_company.pk, 'share': self.source_company.pk,
-            'price': 21}
+            'share': self.source_company.pk, 'price': 21}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
@@ -408,8 +405,7 @@ class ShareTransactionWithMockTests(APITestCase):
         mock_buy_share.side_effect = utils.InvalidShareTransaction
         data = {'buyer_type': 'bank', 'source_type': 'company',
             'company_source': self.buy_company.pk,
-            'share': self.source_company.pk, 'share': self.source_company.pk,
-            'price': 22}
+            'share': self.source_company.pk, 'price': 22}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(views.NO_AVAILABLE_SHARES_ERROR,
@@ -449,7 +445,7 @@ class ShareTransactionWithMockTests(APITestCase):
             [views.NO_AVAILABLE_SHARES_ERROR])
 
     def test_handles_different_game_exception(self, mock_buy_share):
-        company = factories.CompanyFactory()
+        factories.CompanyFactory()
         player = factories.PlayerFactory()
         mock_buy_share.side_effect = utils.DifferentGameException
         data = {'buyer_type': 'player', 'player_buyer': player.pk,
@@ -465,4 +461,4 @@ class ShareTransactionWithMockTests(APITestCase):
             'source_type': 'ipo', 'share': self.source_company.pk,
             'price': 31, 'amount': 1}
         with self.assertRaises(Exception):
-            response = self.client.post(self.url, data, format='json')
+            self.client.post(self.url, data, format='json')

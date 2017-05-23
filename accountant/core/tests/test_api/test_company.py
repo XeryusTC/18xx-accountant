@@ -23,7 +23,7 @@ class CompanyTests(APITestCase):
 
     def test_cannot_create_duplicate_company_for_single_game(self):
         """Disallow creating two companies with the same name in a game."""
-        company = factories.CompanyFactory.create(game=self.game, name='B&O')
+        factories.CompanyFactory.create(game=self.game, name='B&O')
         url = reverse('company-list')
         data = {'name': 'B&O', 'game': self.game.pk}
 
@@ -109,7 +109,7 @@ class CompanyShareTests(APITestCase):
         """
         company1, company2 = factories.CompanyFactory.create_batch(size=2,
             game=self.game)
-        share = factories.CompanyShareFactory.create(owner=company1,
+        factories.CompanyShareFactory.create(owner=company1,
             company=company2)
         url = reverse('companyshare-list')
         data = {'owner': company1.pk, 'company': company2.pk}
@@ -142,7 +142,7 @@ class CompanyShareTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
-            [str(s.uuid) for s in  shares])
+            [str(s.uuid) for s in shares])
 
     def test_retrieve_all_shares_in_a_game(self):
         companies = factories.CompanyFactory.create_batch(game=self.game,
@@ -157,4 +157,4 @@ class CompanyShareTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
-            [str(s.uuid) for s in  shares])
+            [str(s.uuid) for s in shares])

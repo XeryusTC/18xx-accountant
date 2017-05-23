@@ -2,10 +2,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-import unittest
 from unittest import mock
 
-from ... import models
 from ... import factories
 from ... import serializers
 from ... import utils

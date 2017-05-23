@@ -45,7 +45,7 @@ def buy_share(buyer, company, source, price, amount=1):
     elif source == Share.BANK and company.bank_shares < amount:
         raise InvalidShareTransaction()
 
-    if isinstance(source, models.Company): # Share comes from a company
+    if isinstance(source, models.Company):  # Share comes from a company
         try:
             source_share = models.CompanyShare.objects.get(owner=source,
                 company=company)
@@ -53,7 +53,7 @@ def buy_share(buyer, company, source, price, amount=1):
             raise InvalidShareTransaction()
         if source_share.shares < amount:
             raise InvalidShareTransaction()
-    elif isinstance(source, models.Player): # Share comes from a player
+    elif isinstance(source, models.Player):  # Share comes from a player
         try:
             source_share = models.PlayerShare.objects.get(owner=source,
                 company=company)
@@ -76,7 +76,7 @@ def buy_share(buyer, company, source, price, amount=1):
     elif buyer == Share.BANK:
         company.bank_shares += amount
         company.save()
-    else: # Comes from company or player
+    else:  # Comes from company or player
         # Create share object if necessary
         try:
             share = buyer.share_set.get(company=company)

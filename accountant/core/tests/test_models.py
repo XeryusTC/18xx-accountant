@@ -36,15 +36,15 @@ class PlayerTests(TestCase):
         self.assertEqual(player.name, 'Player')
 
     def test_cannot_create_duplicate_players_in_the_same_game(self):
-        p1 = factories.PlayerFactory.create(name='Alice', game=self.game)
-        p2 = Player(name='Alice', game=self.game)
+        factories.PlayerFactory.create(name='Alice', game=self.game)
+        player = Player(name='Alice', game=self.game)
         with self.assertRaises(IntegrityError):
-            p2.save()
+            player.save()
 
     def test_can_create_players_with_different_name_in_the_same_game(self):
-        p1 = factories.PlayerFactory.create(name='Alice', game=self.game)
-        p2 = Player(name='Bob', game=self.game)
-        p2.save()
+        factories.PlayerFactory.create(name='Alice', game=self.game)
+        player = Player(name='Bob', game=self.game)
+        player.save()
 
     def test_game_required(self):
         player = Player()
@@ -83,15 +83,15 @@ class CompanyTests(TestCase):
         self.assertEqual(company.name, 'Company')
 
     def test_cannot_create_duplicate_companies_in_the_same_game(self):
-        c1 = factories.CompanyFactory.create(name='B&O', game=self.game)
-        c2 = Company(name='B&O', game=self.game)
+        factories.CompanyFactory.create(name='B&O', game=self.game)
+        company = Company(name='B&O', game=self.game)
         with self.assertRaises(IntegrityError):
-            c2.save()
+            company.save()
 
     def test_can_create_companies_with_different_name_in_the_same_game(self):
-        c1 = factories.CompanyFactory.create(name='B&O', game=self.game)
-        c2 = Company(name='C&O', game=self.game)
-        c2.save()
+        factories.CompanyFactory.create(name='B&O', game=self.game)
+        company = Company(name='C&O', game=self.game)
+        company.save()
 
     def test_can_create_same_company_for_different_game(self):
         game2 = factories.GameFactory.create()
@@ -117,14 +117,14 @@ class CompanyTests(TestCase):
         self.assertEqual(list(self.game.companies.all()), [company])
 
     def test_has_text_color(self):
-        company = Company(text_color='blue-500')
+        Company(text_color='blue-500')
 
     def test_default_text_color_is_black(self):
         company = Company(game=self.game)
         self.assertEqual(company.text_color, 'black')
 
     def test_has_background_color(self):
-        company = Company(background_color='white')
+        Company(background_color='white')
 
     def test_default_background_color_is_white(self):
         company = Company(game=self.game)
@@ -182,12 +182,11 @@ class PlayerShareTests(TestCase):
             [players[0]])
 
     def test_player_knows_about_company_it_owns(self):
-        share = PlayerShare.objects.create(owner=self.player,
-            company=self.company)
+        PlayerShare.objects.create(owner=self.player, company=self.company)
         self.assertIn(self.company, list(self.player.shares.all()))
 
     def test_player_owns_one_share_by_default(self):
-        player = factories.PlayerFactory.create(game=self.game)
+        factories.PlayerFactory.create(game=self.game)
         share = PlayerShare(owner=self.player, company=self.company)
         self.assertEqual(share.shares, 1)
 
@@ -226,8 +225,7 @@ class CompanyShareTests(TestCase):
             list(self.company1.company_owners.all()))
 
     def test_company_knows_about_companies_it_owns(self):
-        share = CompanyShare.objects.create(owner=self.company1,
-            company=self.company2)
+        CompanyShare.objects.create(owner=self.company1, company=self.company2)
         self.assertIn(self.company2, list(self.company1.shares.all()))
 
     def test_company_owns_one_share_by_default(self):

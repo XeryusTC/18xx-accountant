@@ -23,7 +23,7 @@ class PlayerTests(APITestCase):
 
     def test_cannot_create_duplicate_player_for_single_game(self):
         """Disallow creating two players with the same name in a game."""
-        player = factories.PlayerFactory.create(game=self.game, name='Alice')
+        factories.PlayerFactory.create(game=self.game, name='Alice')
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': self.game.pk}
 
@@ -94,7 +94,7 @@ class PlayerShareTests(APITestCase):
         """
         player = factories.PlayerFactory.create(game=self.game)
         company = factories.CompanyFactory.create(game=self.game)
-        share = factories.PlayerShareFactory.create(owner=player,
+        factories.PlayerShareFactory.create(owner=player,
             company=company)
         url = reverse('playershare-list')
         data = {'owner': player.pk, 'company': company.pk}

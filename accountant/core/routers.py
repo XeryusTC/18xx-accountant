@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 from django.urls.exceptions import NoReverseMatch
+from rest_framework import exceptions
 from rest_framework import routers
 from rest_framework import views
 from rest_framework import reverse
 from rest_framework import response
 
-# Taken from http://stackoverflow.com/questions/18817988/using-django-rest-frameworks-browsable-api-with-apiviews#23321478
-class HybridRouter(routers.DefaultRouter): # pragma: no cover
+# Taken from
+# http://stackoverflow.com/questions/18817988/using-django-rest-frameworks-browsable-api-with-apiviews#23321478
+class HybridRouter(routers.DefaultRouter):  # pragma: no cover
     def __init__(self, *args, **kwargs):
         super(HybridRouter, self).__init__(*args, **kwargs)
         self._api_view_urls = {}
@@ -42,7 +44,7 @@ class HybridRouter(routers.DefaultRouter): # pragma: no cover
 
         if api_urls and self.schema_title:
             view_renderers += list(self.schema_renderers)
-            schema_generator = SchemaGenerator(title=self.schema_title,
+            schema_generator = views.SchemaGenerator(title=self.schema_title,
                 url=self.schema_url, patterns=api_urls)
             schema_media_types = [renderer.media_type
                 for renderer in self.schema_renderers]
@@ -59,7 +61,7 @@ class HybridRouter(routers.DefaultRouter): # pragma: no cover
                     schema = schema_generator.get_schema(request)
                     if schema is None:
                         raise exceptions.PermissionDenied()
-                    return Response(schema)
+                    return response.Response(schema)
 
                 # Return a plain {"name": "hyperlink"} response.
                 ret = OrderedDict()
