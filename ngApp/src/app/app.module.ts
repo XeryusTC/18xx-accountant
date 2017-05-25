@@ -4,6 +4,7 @@ import { FormsModule }          from '@angular/forms';
 import { HttpModule }           from '@angular/http';
 
 import { CompanyService }       from './company.service';
+import { ErrorService }         from './error.service';
 import { GameService }          from './game.service';
 import { GameStateService }     from './game-state.service';
 import { OperateService }       from './operate.service';
@@ -64,6 +65,7 @@ import { TransferFormComponent }
 	],
 	providers: [
 		CompanyService,
+		ErrorService,
 		GameStateService,
 		GameService,
 		OperateService,
