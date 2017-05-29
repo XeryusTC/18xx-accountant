@@ -44,3 +44,13 @@ class HomePageTest(FunctionalTestCase):
         self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
         game_page = game.GamePage(self.browser)
         self.assertEqual(game_page.bank_cash.text, '9000')
+
+    def test_gives_error_on_non_existent_game(self):
+        self.story('Alice is a user who requests a non existing game')
+        self.browser.get(self.server_url + '/game/non-existent')
+
+        self.story('There is a box overlaying the page that shows an error')
+        error_page = game.ErrorPage(self.browser)
+        self.assertGreater(len(error_page.errors), 0)
+        self.assertEqual(error_page.errors[0].text,
+            'Game not found. Return to home page.')

@@ -103,3 +103,7 @@ class OperateForm(PageObject):
     full     = PageElement(name='full',     context=True)
     half     = PageElement(name='half',     context=True)
     withhold = PageElement(name='withhold', context=True)
+
+
+class ErrorPage(PageObject):
+    errors = MultiPageElement(css=".error")
