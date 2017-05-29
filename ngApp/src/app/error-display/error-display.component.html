@@ -1,6 +1,7 @@
-<div class="error-background" *ngIf="errors.hasErrors()">
+<div class="error-background" *ngIf="errors.hasErrors()"
+	(click)="errors.clean()">
 	<div class="error-container">
-		<div class="close button">Close</div>
+		<div class="close button" (click)="errors.clean()">Close</div>
 		<div class="errorlist">
 			<div class="error" *ngFor="let error of errors.getErrors()"
 				[innerHTML]="error">

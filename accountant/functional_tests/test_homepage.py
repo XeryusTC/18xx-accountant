@@ -54,3 +54,7 @@ class HomePageTest(FunctionalTestCase):
         self.assertGreater(len(error_page.errors), 0)
         self.assertEqual(error_page.errors[0].text,
             'Game not found. Return to home page.')
+
+        self.story('Clicking the close button closes the error display')
+        error_page.close.click()
+        self.assertEqual(error_page.errors, [])

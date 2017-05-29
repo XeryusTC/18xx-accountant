@@ -107,3 +107,4 @@ class OperateForm(PageObject):
 
 class ErrorPage(PageObject):
     errors = MultiPageElement(css=".error")
+    close = PageElement(css='.close')
