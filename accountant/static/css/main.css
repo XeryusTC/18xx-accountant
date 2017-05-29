@@ -97,6 +97,37 @@ h6 {
 	font-size: 1.4rem;
 }
 
+/*****************
+ * Error display *
+ *****************/
+.error-background {
+	position: absolute;
+	left: 0rem;
+	right: 0rem;
+	top: 0rem;
+	bottom: 0rem;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+}
+
+.error-container {
+	margin: 4rem 0.4rem;
+	background-color: white;
+}
+
+.error-container .close {
+	margin: 0.3rem;
+}
+
+.error {
+	background-color: #f44336;
+	line-height: 2.5rem;
+	padding: 0.2rem;
+}
+
+.error + .error {
+	margin-top: 0.4rem;
+}
 
 /*****************
  * Form elements *
