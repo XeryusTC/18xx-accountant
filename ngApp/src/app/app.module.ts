@@ -37,6 +37,7 @@ import { StartGameFormComponent }
 import { StartPageComponent }   from './start-page/start-page.component';
 import { TransferFormComponent }
 	from './transfer-form/transfer-form.component';
+import { ErrorDisplayComponent } from './error-display/error-display.component';
 
 @NgModule({
 	declarations: [
@@ -56,6 +57,7 @@ import { TransferFormComponent }
 		StartPageComponent,
 		TransferFormComponent,
 		ValuesPipe,
+		ErrorDisplayComponent,
 	],
 	imports: [
 		BrowserModule,
