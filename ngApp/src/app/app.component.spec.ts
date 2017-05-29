@@ -1,5 +1,6 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { By }                               from '@angular/platform-browser';
+import { NO_ERRORS_SCHEMA }                 from '@angular/core';
 
 import { RouterOutletStubComponent } from './testing/router-stubs';
 
@@ -16,6 +17,7 @@ describe('AppComponent', () => {
 				AppComponent,
 				RouterOutletStubComponent
 			],
+			schemas: [NO_ERRORS_SCHEMA]
 		}).compileComponents();
 	}));
 
@@ -32,4 +34,9 @@ describe('AppComponent', () => {
 		el = fixture.debugElement.query(By.css('router-outlet')).nativeElement;
 		expect(el).toBeTruthy();
 	}));
+
+	it('should have the error display', () => {
+		el = fixture.debugElement.query(By.css('error-display')).nativeElement;
+		expect(el).toBeTruthy();
+	});
 });

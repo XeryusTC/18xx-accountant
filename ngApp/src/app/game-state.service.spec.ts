@@ -6,6 +6,7 @@ import { Company }          from './models/company';
 import { Share }            from './models/share';
 
 import { CompanyService }   from './company.service';
+import { ErrorService }     from './error.service';
 import { GameService }      from './game.service';
 import { GameStateService, DIFFERENT_GAME_ERROR } from './game-state.service';
 import { PlayerService }    from './player.service';
@@ -58,6 +59,11 @@ describe('GameStateService', () => {
 	let shareService = jasmine
 		.createSpyObj('ShareService', ['getPlayerShareList',
 					  'getCompanyShareList']);
+
+	// Error service mock
+	let errorService = jasmine
+		.createSpyObj('ErrorService', ['getErrors', 'hasErrors', 'addError']);
+
 	shareService.getPlayerShareList
 		.and.callFake(() => Promise.resolve(testPlayerShares));
 	shareService.getCompanyShareList
@@ -65,7 +71,8 @@ describe('GameStateService', () => {
 
 	beforeEach(() => {
 		service = new GameStateService(gameService, playerService,
-									   companyService, shareService);
+									   companyService, shareService,
+									   errorService);
 	});
 
 	it('loading a game use game service', () => {
@@ -283,5 +290,19 @@ describe('GameStateService', () => {
 		expect(service.isLoaded()).toBe(true);
 		service.loadGame('game-uuid');
 		expect(service.isLoaded()).toBe(false);
+	}));
+
+	it('adds error when game does not exist', fakeAsync(() => {
+		gameService.getGame.and.callFake(() => Promise.reject({
+			_body: {detail: 'Not found.'},
+			status: 404,
+			statusText: 'Not Found',
+			type: 2
+		}));
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.isLoaded()).toBe(false);
+		expect(errorService.addError.calls.first().args[0])
+			.toMatch('^Game not found');
 	}));
 });

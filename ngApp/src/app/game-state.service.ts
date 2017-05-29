@@ -5,12 +5,15 @@ import { Player }         from './models/player';
 import { Company }        from './models/company';
 import { Share }          from './models/share';
 
+import { ErrorService }   from './error.service';
 import { GameService }    from './game.service';
 import { PlayerService }  from './player.service';
 import { CompanyService } from './company.service';
 import { ShareService }   from './share.service';
 
 export const DIFFERENT_GAME_ERROR = 'This game is different from the old one';
+const GAME_NOT_FOUND_ERROR =
+	'Game not found. <a href="/">Return to home page</a>.'
 
 @Injectable()
 export class GameStateService {
@@ -28,7 +31,8 @@ export class GameStateService {
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
 			    private companyService: CompanyService,
-				private shareService: ShareService
+				private shareService: ShareService,
+				private errorService: ErrorService
 	) { }
 
 	isLoaded(): boolean {
@@ -80,6 +84,12 @@ export class GameStateService {
 						}
 						this.companySharesLoaded = true;
 					});
+			})
+			.catch((error: any) => {
+				if (error.status == 404) {
+					console.error('Game not found');
+					this.errorService.addError(GAME_NOT_FOUND_ERROR);
+				}
 			});
 	}
 
