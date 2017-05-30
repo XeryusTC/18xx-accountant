@@ -1,6 +1,6 @@
 <form (ngSubmit)="onSubmit()" #playerForm="ngForm">
 	<div *ngIf="errors" class="errorlist row">
-		<div *ngFor="let error of errors" class="tp-12">
+		<div *ngFor="let error of errors" class="tp-12 error">
 			{{error}}
 		</div>
 	</div>

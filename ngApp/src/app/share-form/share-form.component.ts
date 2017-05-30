@@ -16,6 +16,7 @@ export class ShareFormComponent implements OnInit {
 	source: string = 'ipo';
 	action: string = 'buy';
 	@Input() buyer;
+	errors: string[];
 
 	constructor(
 		public gameState: GameStateService,
@@ -64,6 +65,15 @@ export class ShareFormComponent implements OnInit {
 						for (let share of result.shares) {
 							this.gameState.updateShare(share);
 						}
+					}
+				})
+				.catch(error => {
+					this.errors = [];
+					console.log('Share transfer error', error.json());
+					/* istanbul ignore else */
+					if ('non_field_errors' in error.json()) {
+						this.errors = this.errors
+							.concat(error.json()['non_field_errors']);
 					}
 				});
 	}

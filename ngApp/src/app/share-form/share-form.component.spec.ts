@@ -206,4 +206,16 @@ describe('ShareFormComponent', () => {
 		expect(gameStateStub.updateShare.calls.first().args[0])
 			.toBe(newShare);
 	}));
+
+	it('adds error when given error response', fakeAsync(() => {
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.reject({
+				json: () => { return {non_field_errors:
+					["This is a non-field error"]}
+				}
+			}));
+		submitForm();
+		tick();
+		expect(component.errors).toEqual(['This is a non-field error']);
+	}));
 });

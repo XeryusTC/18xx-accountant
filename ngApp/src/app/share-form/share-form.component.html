@@ -1,4 +1,7 @@
 <form (ngSubmit)="onSubmit($event)">
+	<div class="row" *ngFor="let error of errors">
+		<div class="tp-12 error" [innerHTML]="error"></div>
+	</div>
 	<div class="row inline-form">
 		<div class="tp-2">
 			<label for="action-buy">
