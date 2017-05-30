@@ -1,20 +1,20 @@
-<form (ngSubmit)="onSubmit($event)">
+<form (ngSubmit)="onSubmit($event)" #shareForm="ngForm">
 	<div class="row" *ngFor="let error of errors">
 		<div class="tp-12 error" [innerHTML]="error"></div>
 	</div>
 	<div class="row inline-form">
 		<div class="tp-2">
 			<label for="action-buy">
-				<input type="radio" name="action" id="action-buy"
+				<input type="radio" name="action" id="action-buy" required
 					value="buy" [(ngModel)]="action"> Buy
 			</label>
 			<label for="action-sell">
-				<input type="radio" name="action" id="action-sell"
+				<input type="radio" name="action" id="action-sell" required
 					value="sell" [(ngModel)]="action"> Sell
 			</label>
 		</div>
 		<div class="tp-2">
-			<input name="shares" id="shares" type="number"
+			<input name="shares" id="shares" type="number" required
 				[(ngModel)]="share_amount">
 		</div>
 		<div class="tp-2">
@@ -22,9 +22,9 @@
 		</div>
 		<div class="tp-2">
 			<input type="submit" name="transfer-share" value="Buy"
-				*ngIf="action=='buy'">
+				*ngIf="action=='buy'" [disabled]="!shareForm.form.valid">
 			<input type="submit" name="transfer-share" value="Sell"
-				*ngIf="action=='sell'">
+				*ngIf="action=='sell'" [disabled]="!shareForm.form.valid">
 		</div>
 	</div>
 	<div class="row">
@@ -34,7 +34,7 @@
 				for="company-{{ company.name }}" class="company-label
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
 				<input type="radio" name="company" value="{{ company.uuid }}"
-					id="company-{{ company.name }}"
+					id="company-{{ company.name }}" required
 					[(ngModel)]="company_share">
 				{{ company.name }}
 			</label>
@@ -47,22 +47,20 @@
 		<div class="tp-11">
 			<label for="source-ipo" class="source">
 				<input type="radio" name="source" id="source-ipo" value="ipo"
-					[(ngModel)]="source"> IPO
+					[(ngModel)]="source" required> IPO
 			</label>
 			<label for="source-bank" class="source">
 				<input type="radio" name="source" id="source-bank"
-					value="bank" [(ngModel)]="source"> Bank
+					value="bank" [(ngModel)]="source" required> Bank
 			</label>
 			<label *ngFor='let company of gameState.companies | values:"name"'
 				for="source-{{ company.name }}" class="source
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
 				<input type="radio" name="source" value="{{ company.uuid }}"
-					id="source-{{ company.name }}" [(ngModel)]="source">
+					id="source-{{ company.name }}" [(ngModel)]="source"
+					required>
 						{{ company.name }}
 			</label>
 		</div>
-	</div>
-
-	<div class="row">
 	</div>
 </form>
