@@ -1,10 +1,10 @@
-<form (ngSubmit)="onSubmit($event)">
+<form (ngSubmit)="onSubmit($event)" #transferForm="ngForm">
 	<div class="row inline-form">
 		<div class="tp-1">
 			<label for="name">Transfer</label>
 		</div>
 		<div class="tp-2">
-			<input type="number" name="amount" id="amount"
+			<input type="number" name="amount" id="amount" required
 									  [(ngModel)]="amount">
 		</div>
 
@@ -12,7 +12,7 @@
 			to
 			<label for="target-bank" class="transfer">
 				<input type="radio" name="target" id="target-bank" value="bank"
-					[(ngModel)]="target"> Bank
+					[(ngModel)]="target" required> Bank
 			</label>
 			<ng-container
 				*ngFor='let company of gameState.companies | values:"name"'>
@@ -20,7 +20,8 @@
 					class="transfer fg-{{ company.text_color }}
 						bg-{{ company.background_color }}">
 					<input type="radio" name="target" value="{{company.uuid}}"
-						id="target-{{ company.name }}" [(ngModel)]="target">
+						id="target-{{ company.name }}" [(ngModel)]="target"
+						required>
 				{{ company.name }}
 				</label>
 			</ng-container>
@@ -29,14 +30,16 @@
 				<label *ngIf='player != source'
 				   for="target-{{ player.name }}" class="transfer">
 					<input type="radio" name="target" value="{{ player.uuid }}"
-						id="target-{{ player.name }}" [(ngModel)]="target">
+						id="target-{{ player.name }}" [(ngModel)]="target"
+						required>
 					{{ player.name }}
 				</label>
 			</ng-container>
 		</div>
 
 		<div class="tp-2">
-			<input type="submit" name="transfer" value="Transfer">
+			<input type="submit" name="transfer" value="Transfer"
+				[disabled]="!transferForm.form.valid">
 		</div>
 	</div>
 </form>
