@@ -195,7 +195,23 @@ folder to the user, including the Angular2 app. The deployment script
 registers a gunicorn service with systemd, it will use your domain in the
 name of the service. systemd is automatically restarted after deployment.
 
-### Running tests against staging
+### Running tests against staging server
+Testing against a staging server is quit similar to running the functional
+tests. The only difference is that you need to tell Django that you want
+to test against an external server. This is done by adding the `-s` or
+`--staging` flag to the test command. The `--staging` takes two
+parameters, the first is the URL that the website can be accessed at, the
+second parameter is the inventory file that you used to deploy to the
+server. The new testing command becomes
+```
+python manage.py test -s <url> <inventory> functional_tests
+```
+
+Only the functional tests can be run against a staging server, all other
+tests are always ran on the local machine. WARNING: Running the functional
+testsagainst the staging server will clear the database between each test,
+so if you accidentally run the tests against your production server you
+will loose all your data.
 
 ### Software installed
 The deploy script installs the following software which is all required
@@ -205,11 +221,4 @@ nginx
 Python 3 (3.4.2 on Debian Jesse)
 git
 PostgreSQL
-```
-Additionally it will also install dependencies for python, most of which
-can be found in `requirements/production.txt` but it will additionally
-install the following packages:
-```
-psycopg2
-virtualenv
 ```
