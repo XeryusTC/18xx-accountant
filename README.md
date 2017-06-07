@@ -143,3 +143,73 @@ coverage html
 ```
 to create a coverage report. You can view the coverage report by opening
 the file `accountant/htmlcov/index.html` in your browser.
+
+## Deploying
+Provisioning and deploying to a server is handled by
+[Ansible](https://ansible.com/). Unfortunately Ansible does not work with
+Python 3.4.2 which is the version used for development. During setup of
+the VM Python 3.6.0 was also installed. You can enable this for a single
+console by executing the command:
+```
+pyenv shell ansible
+```
+It has all the requirements to run the website installed, and it also
+supplies Ansible. To deploy you first need to create an inventory file so
+that Ansible knows which server to deploy to and how to access it. The
+inventory also holds some of the configuration options. An example
+inventory file can be found in `deploy/inventory.example`, it should be
+pretty explanatory on what you need to set the variables to, although it
+might be wise to consult the
+[Ansible documentation](https://docs.ansible.com/). Once you have an
+inventory file you can deploy to your server running the following command
+in the `/vagrant/` directory:
+```
+ansible-playbook -i <your inventory file> -K deploy/deploy.yml
+```
+This command will first ask you for your sudo password. If this does not
+require a password you can leave out the `-K`. The command will compile
+the Angular2 front-end in production mode if this has not already been
+done, this can take a while without output so you need to be patient.
+
+Ansible will install all necessary software on your server and configure
+it to serve the application on the domain you specified in the inventory
+file. It will also create a database account and store it in the file
+`deploy/credentials/postgrespassword` which does what the name suggests.
+If you loose this file then Ansible will not be able to manage the
+database any more. Next to this file is also a `secret_key` file, this is
+to set Django's `SECRET_KEY` setting and it is not as important to not
+loose this file.
+
+The deployment script assumes that you want to serve the website over
+HTTPS only. It expects that there is a small separate configuration file
+which specifies how the site should be served over a secure connection,
+no reference file is supplied at the moment. The software also assumes
+that the server is running Debian Jesse, although it is likely to work
+fine on other Debian based distros as well. It also assumes that systemd
+is present on the system.
+
+The application source and data will be present at
+`/var/www/sites/<your domain>/` where there is a virtualenv to contain all
+Python dependencies. nginx is used to serve all the files in the `static/`
+folder to the user, including the Angular2 app. The deployment script
+registers a gunicorn service with systemd, it will use your domain in the
+name of the service. systemd is automatically restarted after deployment.
+
+### Running tests against staging
+
+### Software installed
+The deploy script installs the following software which is all required
+to run the website
+```
+nginx
+Python 3 (3.4.2 on Debian Jesse)
+git
+PostgreSQL
+```
+Additionally it will also install dependencies for python, most of which
+can be found in `requirements/production.txt` but it will additionally
+install the following packages:
+```
+psycopg2
+virtualenv
+```
