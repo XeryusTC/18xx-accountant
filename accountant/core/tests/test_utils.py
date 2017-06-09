@@ -647,7 +647,7 @@ class OperateTests(TestCase):
         mock_transfer_money.assert_any_call(None, self.bob, 15)
         mock_transfer_money.assert_any_call(None, self.company, 15)
 
-    def test_players_hand_in_cash_if_they_have_shorted_shares(self,
+    def test_players_with_short_shares_loose_money(self,
             mock_transfer_money):
         self.setup_test_shares()
         self.bob.share_set.filter(company=self.company).update(shares=-1)
@@ -688,7 +688,7 @@ class OperateTests(TestCase):
         mock_transfer_money.assert_any_call(None, self.bob, 4)
         mock_transfer_money.assert_any_call(None, self.company, 30)
 
-    def test_players_with_shorted_shares_hand_in_cash_when_paying_half(self,
+    def test_players_with_shorted_shares_loose_money_when_paying_half(self,
             mock_transfer_money):
         self.setup_test_shares()
         self.bob.share_set.filter(company=self.company).update(shares=-1)
@@ -702,51 +702,42 @@ class OperateTests(TestCase):
         utils.operate(self.company, 280, utils.OperateMethod.HALF)
         mock_transfer_money.assert_any_call(None, self.bob, 0)
 
-    def test_returns_list_of_affected_player_shareholders(self,
+    def test_returns_dictionary_of_affected_entities(self,
             mock_transfer_money):
-        factories.PlayerFactory(game=self.game)
         self.setup_test_shares()
         affected = utils.operate(self.company, 100, utils.OperateMethod.FULL)
-        self.assertCountEqual(affected[0], [self.alice, self.bob])
+        self.assertEqual(affected, {self.alice: 30,
+                                    self.bob: 10,
+                                    self.company: 10})
 
-    def test_returns_list_of_affected_players_when_paying_half(self,
+    def test_does_not_return_unaffected_entities(self,
             mock_transfer_money):
-        factories.PlayerFactory(game=self.game)
-        self.setup_test_shares()
-        affected = utils.operate(self.company, 100, utils.OperateMethod.HALF)
-        self.assertCountEqual(affected[0], [self.alice, self.bob])
-
-    def test_list_of_affected_players_is_empty_when_withholding(self,
-            mock_transfer_money):
-        self.setup_test_shares()
-        affected = utils.operate(self.company, 100,
-            utils.OperateMethod.WITHHOLD)
-        self.assertEqual(affected[0], [])
-
-    def test_returns_list_of_affected_company_shareholders(self,
-            mock_transfer_money):
+        player = factories.PlayerFactory(game=self.game)
         c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
         factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
         self.setup_test_shares()
         affected = utils.operate(self.company, 100, utils.OperateMethod.FULL)
-        self.assertCountEqual(affected[1], [self.company, c1])
+        self.assertNotIn(player, affected.keys())
+        self.assertNotIn(c2, affected.keys())
 
-    def test_returns_list_of_affected_companies_when_paying_half(self,
+    def test_returns_dictionary_of_affected_entities_when_paying_half(self,
             mock_transfer_money):
-        self.setup_test_shares()
+        player = factories.PlayerFactory(game=self.game)
         c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
         factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
+        self.setup_test_shares()
         affected = utils.operate(self.company, 100, utils.OperateMethod.HALF)
-        self.assertCountEqual(affected[1], [self.company, c1])
+        self.assertEqual(affected, {self.alice: 15,
+                                    self.bob: 5,
+                                    self.company: 55,
+                                    c1: 5})
 
-    def test_only_returns_current_company_as_affected_when_withholding(self,
+    def test_only_current_company_is_affected_when_withholding(self,
             mock_transfer_money):
         self.setup_test_shares()
-        c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
-        factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
         affected = utils.operate(self.company, 100,
             utils.OperateMethod.WITHHOLD)
-        self.assertCountEqual(affected[1], [self.company])
+        self.assertEqual(affected, {self.company: 100})
 
 
 class NoMoneyOperateTests(TestCase):
