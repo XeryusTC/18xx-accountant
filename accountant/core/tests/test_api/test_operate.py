@@ -25,7 +25,7 @@ class OperateTests(APITestCase):
 
     def test_company_can_pay_full_dividends(self, mock_operate):
         data = {'company': self.company.pk, 'amount': 10, 'method': 'full'}
-        mock_operate.return_value = ([], [])
+        mock_operate.return_value = {}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_operate.assert_called_once_with(self.company, 10,
@@ -33,7 +33,7 @@ class OperateTests(APITestCase):
 
     def test_company_can_pay_half_dividends(self, mock_operate):
         data = {'company': self.company.pk, 'amount': 20, 'method': 'half'}
-        mock_operate.return_value = ([], [])
+        mock_operate.return_value = {}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_operate.assert_called_once_with(self.company, 20,
@@ -41,7 +41,7 @@ class OperateTests(APITestCase):
 
     def test_company_can_withhold_revenue(self, mock_operate):
         data = {'company': self.company.pk, 'amount': 30, 'method': 'withhold'}
-        mock_operate.return_value = ([], [])
+        mock_operate.return_value = {}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_operate.assert_called_once_with(self.company, 30,
@@ -54,7 +54,8 @@ class OperateTests(APITestCase):
     def test_gives_list_of_affected_players_on_full_dividends(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 40, 'method': 'full'}
-        mock_operate.return_value = ([self.alice, self.bob], [self.company])
+        mock_operate.return_value = {self.alice: 1, self.bob: 2,
+            self.company: 3}
         response = self.client.post(self.url, data, format='json')
         self.assertCountEqual([str(self.alice.pk), str(self.bob.pk)],
             [p['uuid'] for p in response.data['players']])
@@ -62,7 +63,8 @@ class OperateTests(APITestCase):
     def test_gives_list_of_affected_players_on_half_dividends(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 50, 'method': 'half'}
-        mock_operate.return_value = ([self.alice, self.bob], [self.company])
+        mock_operate.return_value = {self.alice: 1, self.bob: 2,
+            self.company: 3}
         response = self.client.post(self.url, data, format='json')
         self.assertCountEqual([str(self.alice.pk), str(self.bob.pk)],
             [p['uuid'] for p in response.data['players']])
@@ -70,14 +72,14 @@ class OperateTests(APITestCase):
     def test_does_not_give_list_of_players_when_withholding(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 60, 'method': 'withhold'}
-        mock_operate.return_value = ([], [self.company])
+        mock_operate.return_value = {self.company: 60}
         response = self.client.post(self.url, data, format='json')
         self.assertNotIn('players', response.data)
 
     def test_gives_list_of_affected_companies_on_full_dividends(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 70, 'method': 'full'}
-        mock_operate.return_value = ([], [self.company, self.company2])
+        mock_operate.return_value = {self.company: 35, self.company2: 35}
         response = self.client.post(self.url, data, format='json')
         self.assertCountEqual([str(self.company.pk), str(self.company2.pk)],
             [c['uuid'] for c in response.data['companies']])
@@ -85,7 +87,7 @@ class OperateTests(APITestCase):
     def test_gives_list_of_affected_companies_on_half_dividends(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 80, 'method': 'half'}
-        mock_operate.return_value = ([], [self.company, self.company2])
+        mock_operate.return_value = {self.company: 60, self.company2: 20}
         response = self.client.post(self.url, data, format='json')
         self.assertCountEqual([str(self.company.pk), str(self.company2.pk)],
             [c['uuid'] for c in response.data['companies']])
@@ -93,7 +95,7 @@ class OperateTests(APITestCase):
     def test_gives_list_of_affected_companies_when_withholding(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 90, 'method': 'withhold'}
-        mock_operate.return_value = ([], [self.company])
+        mock_operate.return_value = {self.company: 90}
         response = self.client.post(self.url, data, format='json')
         self.assertCountEqual([str(self.company.pk)],
             [c['uuid'] for c in response.data['companies']])
@@ -101,6 +103,6 @@ class OperateTests(APITestCase):
     def test_always_returns_list_of_affected_game(self,
             mock_operate):
         data = {'company': self.company.pk, 'amount': 100, 'method': 'full'}
-        mock_operate.return_value = ([], [self.company])
+        mock_operate.return_value = {self.company: 100}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(str(self.game.pk), response.data['game']['uuid'])

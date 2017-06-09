@@ -241,7 +241,7 @@ class OperateView(APIView):
 
             company = models.Company.objects.get(
                 pk=serializer.validated_data['company'])
-            affected_players, affected_companies = utils.operate(company,
+            affected = utils.operate(company,
                 serializer.validated_data['amount'], method)
 
             # Construct response
@@ -253,14 +253,15 @@ class OperateView(APIView):
                 'game': serializers.GameSerializer(company.game,
                     context=context).data
             }
-            if affected_players:
-                response['players'] = []
-                for player in affected_players:
+            for entity, _ in affected.items():
+                if isinstance(entity, models.Player):
+                    if 'players' not in response:
+                        response['players'] = []
                     response['players'].append(serializers.PlayerSerializer(
-                        player, context=context).data)
-            for company in affected_companies:
-                response['companies'].append(serializers.CompanySerializer(
-                    company, context=context).data)
+                        entity, context=context).data)
+                elif isinstance(entity, models.Company):
+                    response['companies'].append(serializers.CompanySerializer(
+                        entity, context=context).data)
 
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
