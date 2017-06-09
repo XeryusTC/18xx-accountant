@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.utils import timezone
 import uuid
 
 from .. import factories
-from ..models import Game, Player, Company, PlayerShare, CompanyShare
+from ..models import Game, Player, Company, PlayerShare, CompanyShare, LogEntry
 
 class GameTests(TestCase):
     def test_pk_is_uuid(self):
@@ -244,3 +246,35 @@ class CompanyShareTests(TestCase):
 
     def test_company_can_own_its_own_shares(self):
         CompanyShare.objects.create(owner=self.company1, company=self.company1)
+
+
+class LogEntryTests(TestCase):
+    def setUp(self):
+        self.game = factories.GameFactory.create()
+
+    def test_pk_is_uuid(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsInstance(entry.pk, uuid.UUID)
+
+    def test_game_required(self):
+        entry = LogEntry()
+        with self.assertRaises(IntegrityError):
+            entry.save()
+
+    def test_has_time_field(self):
+        entry = LogEntry.objects.create(game=self.game)
+        entry.time
+
+    def test_time_field_is_set_to_current_time(self):
+        entry = LogEntry.objects.create(game=self.game)
+        time = timezone.now()
+        self.assertAlmostEqual(entry.time, time, delta=timedelta(seconds=5))
+
+    def test_are_sorted_anti_chronological(self):
+        entry1 = LogEntry.objects.create(game=self.game,
+            time=timezone.make_aware(datetime(1970, 1, 1, 12, 0, 0)))
+        entry2 = LogEntry.objects.create(game=self.game,
+            time=timezone.make_aware(datetime(1970, 1, 2, 1, 0, 0)))
+        entry3 = LogEntry.objects.create(game=self.game,
+            time=timezone.make_aware(datetime(1970, 1, 1, 18, 0, 0)))
+        self.assertEqual(list(self.game.log.all()), [entry2, entry3, entry1])

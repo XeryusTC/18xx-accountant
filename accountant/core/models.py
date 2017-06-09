@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils import timezone
 import uuid
 
 colors = ('red', 'pink', 'purple', 'deep purple', 'indigo', 'blue',
@@ -99,3 +100,13 @@ class CompanyShare(models.Model):
     @property
     def game(self):
         return self.company.game
+
+
+class LogEntry(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+        editable=False)
+    game = models.ForeignKey(Game, related_name='log')
+    time = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-time']
