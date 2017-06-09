@@ -119,38 +119,47 @@ def buy_share(buyer, company, source, price, amount=1):
     company.refresh_from_db()
 
 def operate(company, amount, method):
-    affected_players = []
-    affected_companies = []
+    affected = {}
     if method == OperateMethod.WITHHOLD:
-        transfer_money(None, company, amount)
-        affected_companies.append(company)
+        affected[company] = amount
     elif method == OperateMethod.HALF:
-        # Calculate how to split
         withhold = amount / 2
         distribute = amount / 2
-        if distribute % company.share_count != 0:
+        affected = _distribute_dividends(company, distribute)
+        # If not every entity receives an integer amount then we have to
+        # round in favour of the share holders
+        if not all(d.is_integer() for e, d in affected.items()):
             distribute = math.ceil(distribute / company.share_count)
             distribute *= company.share_count
             withhold = amount - distribute
-        # Distribute earnings
-        affected_players, affected_companies = operate(company,
-            withhold, OperateMethod.WITHHOLD)
-        affected = operate(company, distribute, OperateMethod.FULL)
-        # Update affected players and companies
-        affected_players += affected[0]
-        affected_companies += affected[1]
+            affected = _distribute_dividends(company, distribute)
+        if company not in affected:
+            affected[company] = 0
+        affected[company] += withhold
     elif method == OperateMethod.FULL:
-        dividends_per_share = amount / company.share_count
-        # Pay dividend to players
-        for share in company.playershare_set.all():
-            dividend = int(dividends_per_share * share.shares)
-            transfer_money(None, share.owner, dividend)
-            if dividend != 0:
-                affected_players.append(share.owner)
-        # Pay dividend to companies
-        for share in company.companyshare_set.all():
-            dividend = int(dividends_per_share * share.shares)
-            transfer_money(None, share.owner, int(dividend))
-            if dividend != 0:
-                affected_companies.append(share.owner)
-    return list(set(affected_players)), list(set(affected_companies))
+        affected = _distribute_dividends(company, amount)
+        # If some entities don't receive an integer amount then we have to
+        # get rid of the remainder
+        if not all(d.is_integer() for e, d in affected.items()):
+            for entity in affected:
+                affected[entity] = math.floor(affected[entity])
+
+    # Pay actual dividends
+    for entity, amount in affected.items():
+        transfer_money(None, entity, amount)
+    return affected
+
+def _distribute_dividends(company, amount):
+    result = {}
+    dividends_per_share = amount / company.share_count
+    # Calculate dividends paid to players
+    for share in company.playershare_set.all():
+        dividend = dividends_per_share * share.shares
+        if dividend != 0:
+            result[share.owner] = dividend
+    # Calculate dividends pait to companies
+    for share in company.companyshare_set.all():
+        dividend = dividends_per_share  * share.shares
+        if dividend != 0:
+            result[share.owner] = dividend
+    return result
