@@ -642,7 +642,7 @@ class OperateTests(TestCase):
 
     def test_payout_is_rounded_down_when_fraction(self, mock_transfer_money):
         self.setup_test_shares()
-        utils.operate(self.company, 157, utils.OperateMethod.FULL)
+        affected = utils.operate(self.company, 157, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.alice, 47)
         mock_transfer_money.assert_any_call(None, self.bob, 15)
         mock_transfer_money.assert_any_call(None, self.company, 15)
@@ -657,14 +657,9 @@ class OperateTests(TestCase):
     def test_player_owning_no_shares_gets_no_money(self, mock_transfer_money):
         self.setup_test_shares()
         self.bob.share_set.filter(company=self.company).update(shares=0)
-        utils.operate(self.company, 90, utils.OperateMethod.FULL)
-        mock_transfer_money.assert_any_call(None, self.bob, 0)
-
-    def test_paying_half_gives_the_company_half_of_the_money(self,
-            mock_transfer_money):
-        self.setup_test_shares()
-        utils.operate(self.company, 100, utils.OperateMethod.HALF)
-        mock_transfer_money.assert_any_call(None, self.company, 50)
+        affected = utils.operate(self.company, 90, utils.OperateMethod.FULL)
+        self.assertNotIn(self.bob, affected)
+        self.assertNotIn((None, self.bob, 0), mock_transfer_money.mock_calls)
 
     def test_paying_half_pays_half_dividends_to_the_shareholders(self,
             mock_transfer_money):
@@ -673,11 +668,11 @@ class OperateTests(TestCase):
         mock_transfer_money.assert_any_call(None, self.alice, 48)
         mock_transfer_money.assert_any_call(None, self.bob, 16)
 
-    def test_paying_half_gives_company_additional_money_if_it_owns_shares(self,
+    def test_paying_half_only_transfers_money_once_to_company(self,
             mock_transfer_money):
         self.setup_test_shares()
-        utils.operate(self.company, 300, utils.OperateMethod.HALF)
-        mock_transfer_money.assert_any_call(None, self.company, 15)
+        utils.operate(self.company, 340, utils.OperateMethod.HALF)
+        mock_transfer_money.assert_any_call(None, self.company, 187)
 
     def test_paying_half_rounds_in_favour_of_shareholders(self,
             mock_transfer_money):
@@ -686,7 +681,7 @@ class OperateTests(TestCase):
         utils.operate(self.company, 70, utils.OperateMethod.HALF)
         mock_transfer_money.assert_any_call(None, self.alice, 12)
         mock_transfer_money.assert_any_call(None, self.bob, 4)
-        mock_transfer_money.assert_any_call(None, self.company, 30)
+        mock_transfer_money.assert_any_call(None, self.company, 34)
 
     def test_players_with_shorted_shares_loose_money_when_paying_half(self,
             mock_transfer_money):
@@ -699,8 +694,9 @@ class OperateTests(TestCase):
             mock_transfer_money):
         self.setup_test_shares()
         self.bob.share_set.filter(company=self.company).update(shares=0)
-        utils.operate(self.company, 280, utils.OperateMethod.HALF)
-        mock_transfer_money.assert_any_call(None, self.bob, 0)
+        affected = utils.operate(self.company, 280, utils.OperateMethod.HALF)
+        self.assertNotIn(self.bob, affected)
+        self.assertNotIn((None, self.bob, 0), mock_transfer_money.mock_calls)
 
     def test_returns_dictionary_of_affected_entities(self,
             mock_transfer_money):
