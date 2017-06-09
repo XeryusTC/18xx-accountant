@@ -18,6 +18,16 @@ class GameTests(TestCase):
         game = Game()
         self.assertEqual(game.cash, 12000)
 
+    def test_has_cursor_to_current_log_entry_that_is_none_by_default(self):
+        game = Game.objects.create()
+        self.assertIsNone(game.log_cursor)
+
+    def test_log_cursor_can_point_to_log_entries(self):
+        game = Game.objects.create()
+        entry = LogEntry.objects.create(game=game)
+        game.log_cursor = entry
+        game.save()
+
     def test_string_representation(self):
         game = Game()
         self.assertIn('Game', str(game))
