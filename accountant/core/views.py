@@ -253,7 +253,7 @@ class OperateView(APIView):
                 'game': serializers.GameSerializer(company.game,
                     context=context).data
             }
-            for entity, _ in affected.items():
+            for entity, amount in affected.items():
                 if isinstance(entity, models.Player):
                     if 'players' not in response:
                         response['players'] = []

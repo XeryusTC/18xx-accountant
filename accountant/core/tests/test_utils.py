@@ -642,7 +642,7 @@ class OperateTests(TestCase):
 
     def test_payout_is_rounded_down_when_fraction(self, mock_transfer_money):
         self.setup_test_shares()
-        affected = utils.operate(self.company, 157, utils.OperateMethod.FULL)
+        utils.operate(self.company, 157, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.alice, 47)
         mock_transfer_money.assert_any_call(None, self.bob, 15)
         mock_transfer_money.assert_any_call(None, self.company, 15)
@@ -718,7 +718,7 @@ class OperateTests(TestCase):
 
     def test_returns_dictionary_of_affected_entities_when_paying_half(self,
             mock_transfer_money):
-        player = factories.PlayerFactory(game=self.game)
+        factories.PlayerFactory(game=self.game)
         c1, c2 = factories.CompanyFactory.create_batch(size=2, game=self.game)
         factories.CompanyShareFactory(owner=c1, company=self.company, shares=1)
         self.setup_test_shares()
