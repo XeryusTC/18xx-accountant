@@ -698,6 +698,12 @@ class OperateTests(TestCase):
         self.assertNotIn(self.bob, affected)
         self.assertNotIn((None, self.bob, 0), mock_transfer_money.mock_calls)
 
+    def test_paying_half_gives_company_exactly_half_when_not_owning_shares(
+            self, mock_transfer_money):
+        affected = utils.operate(self.company, 300, utils.OperateMethod.HALF)
+        self.assertEqual(affected[self.company], 150)
+        mock_transfer_money.assert_any_call(None, self.company, 150)
+
     def test_returns_dictionary_of_affected_entities(self,
             mock_transfer_money):
         self.setup_test_shares()
