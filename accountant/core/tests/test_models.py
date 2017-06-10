@@ -275,6 +275,10 @@ class LogEntryTests(TestCase):
         entry = LogEntry.objects.create(game=self.game)
         entry.time
 
+    def test_text_is_empty_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertEqual(entry.text, '')
+
     def test_time_field_is_set_to_current_time(self):
         entry = LogEntry.objects.create(game=self.game)
         time = timezone.now()

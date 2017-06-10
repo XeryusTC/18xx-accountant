@@ -109,6 +109,7 @@ class LogEntry(models.Model):
         editable=False)
     game = models.ForeignKey(Game, related_name='log')
     time = models.DateTimeField(default=timezone.now)
+    text = models.TextField(default='')
 
     class Meta:
         ordering = ['-time']
