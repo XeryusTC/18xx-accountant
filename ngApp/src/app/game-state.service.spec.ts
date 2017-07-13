@@ -4,11 +4,13 @@ import { Game }             from './models/game';
 import { Player }           from './models/player';
 import { Company }          from './models/company';
 import { Share }            from './models/share';
+import { LogEntry }         from './models/log-entry';
 
 import { CompanyService }   from './company.service';
 import { ErrorService }     from './error.service';
 import { GameService }      from './game.service';
 import { GameStateService, DIFFERENT_GAME_ERROR } from './game-state.service';
+import { LogService }       from './log.service';
 import { PlayerService }    from './player.service';
 
 describe('GameStateService', () => {
@@ -35,6 +37,14 @@ describe('GameStateService', () => {
 		new Share('share-uuid-3', 'company-uuid-0', 'company-uuid-0', 2),
 		new Share('share-uuid-4', 'company-uuid-1', 'company-uuid-1', 1),
 		new Share('share-uuid-5', 'company-uuid-2', 'company-uuid-2', 3)
+	];
+	let testLog = [
+		new LogEntry('log-uuid-0', 'game-uuid', '1970-01-01T01:01:01.0001Z',
+					 'First log entry'),
+		new LogEntry('log-uuid-1', 'game-uuid', '1971-02-02T02:02:02.0002Z',
+					 'Second log entry'),
+		new LogEntry('log-uuid-2', 'game-uuid', '1972-03-03T03:03:03.0003Z',
+					 'Third log entry'),
 	];
 
 
@@ -69,10 +79,16 @@ describe('GameStateService', () => {
 	shareService.getCompanyShareList
 		.and.callFake(() => Promise.resolve(testCompanyShares));
 
+	// Log service mock
+	let logService = jasmine
+		.createSpyObj('LogService', ['getLog']);
+	logService.getLog
+		.and.callFake(() => Promise.resolve(testLog));
+
 	beforeEach(() => {
 		service = new GameStateService(gameService, playerService,
 									   companyService, shareService,
-									   errorService);
+									   errorService, logService);
 	});
 
 	it('loading a game use game service', () => {
@@ -132,6 +148,19 @@ describe('GameStateService', () => {
 		expect(service.shares['share-uuid-3']).toEqual(testCompanyShares[0]);
 		expect(service.shares['share-uuid-4']).toEqual(testCompanyShares[1]);
 		expect(service.shares['share-uuid-5']).toEqual(testCompanyShares[2]);
+	}));
+
+	it('loading a game retrieves the log', () => {
+		service.loadGame('game-uuid');
+		expect(logService.getLog.calls.first().args[0]).toBe('game-uuid');
+	});
+
+	it('loading a game stores the log in an array', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.log[0]).toEqual(testLog[0]);
+		expect(service.log[1]).toEqual(testLog[1]);
+		expect(service.log[2]).toEqual(testLog[2]);
 	}));
 
 	it('updateGame() updates instance of game', fakeAsync(() => {

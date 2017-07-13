@@ -4,12 +4,14 @@ import { Game }           from './models/game';
 import { Player }         from './models/player';
 import { Company }        from './models/company';
 import { Share }          from './models/share';
+import { LogEntry }       from './models/log-entry';
 
 import { ErrorService }   from './error.service';
 import { GameService }    from './game.service';
 import { PlayerService }  from './player.service';
 import { CompanyService } from './company.service';
 import { ShareService }   from './share.service';
+import { LogService }     from './log.service';
 
 export const DIFFERENT_GAME_ERROR = 'This game is different from the old one';
 const GAME_NOT_FOUND_ERROR =
@@ -21,23 +23,27 @@ export class GameStateService {
 	players: {[uuid: string]: Player};
 	companies: {[uuid: string]: Company};
 	shares: {[uuid: string]: Share};
+	log: LogEntry[];
 
 	private gameLoaded: boolean = false;
 	private playersLoaded: boolean = false;
 	private companiesLoaded: boolean = false;
 	private playerSharesLoaded: boolean = false;
 	private companySharesLoaded: boolean = false;
+	private logLoaded: boolean = false;
 
 	constructor(private gameService: GameService,
 			    private playerService: PlayerService,
 			    private companyService: CompanyService,
 				private shareService: ShareService,
-				private errorService: ErrorService
+				private errorService: ErrorService,
+				private logService: LogService
 	) { }
 
 	isLoaded(): boolean {
 		return (this.gameLoaded && this.playersLoaded && this.companiesLoaded
-			&& this.playerSharesLoaded && this.companySharesLoaded);
+				&& this.playerSharesLoaded && this.companySharesLoaded
+				&& this.logLoaded);
 	}
 
 	loadGame(uuid: string): void {
@@ -46,6 +52,7 @@ export class GameStateService {
 		this.companiesLoaded = false;
 		this.playerSharesLoaded = false;
 		this.companySharesLoaded = false;
+		this.logLoaded = false;
 
 		this.gameService.getGame(uuid)
 			.then(game => {
@@ -83,6 +90,12 @@ export class GameStateService {
 							this.shares[share.uuid] = share;
 						}
 						this.companySharesLoaded = true;
+					});
+				// Get the log
+				this.logService.getLog(game.uuid)
+					.then(log => {
+						this.log = log;
+						this.logLoaded = true;
 					});
 			})
 			.catch((error: any) => {
