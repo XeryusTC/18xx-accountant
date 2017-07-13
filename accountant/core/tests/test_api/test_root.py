@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ... import models
+from ... import factories
 
 class ApiRootTests(APITestCase):
     def setUp(self):
@@ -47,6 +48,11 @@ class ApiRootTests(APITestCase):
         response = self.client.get(self.url, {}, format='json')
         self.assertTrue(response.data['operate'].endswith(reverse('operate')))
 
+    def test_LogEntry_viewwset_is_on_api_root(self):
+        response = self.client.get(self.url, {}, format='json')
+        self.assertTrue(response.data['logentry'].endswith(
+            reverse('logentry-list')))
+
 
 class GameTests(APITestCase):
     def test_create_game(self):
@@ -67,3 +73,28 @@ class ColorsTests(APITestCase):
     def test_returns_list_of_company_colors(self):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data, models.Company.COLOR_CODES)
+
+
+class LogEntryAPITests(APITestCase):
+    def test_retrieve_log_entries_within_a_single_game(self):
+        """Filter the log entries based on the game in the query url"""
+        game = factories.GameFactory.create()
+        entries = factories.LogEntryFactory.create_batch(game=game, size=4)
+        factories.LogEntryFactory.create_batch(size=7)
+        url = reverse('logentry-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([str(e.uuid) for e in entries],
+            [e['uuid'] for e in response.data])
+
+    def test_retrieve_all_log_entries_when_no_query_params_set(self):
+        factories.LogEntryFactory.create_batch(size=12)
+        url = reverse('logentry-list')
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual([str(e.uuid) for e in models.LogEntry.objects.all()],
+            [e['uuid'] for e in response.data])

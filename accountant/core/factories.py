@@ -38,3 +38,11 @@ class CompanyShareFactory(factory.django.DjangoModelFactory):
 
     owner = factory.SubFactory(CompanyFactory)
     company = factory.SubFactory(CompanyFactory)
+
+
+class LogEntryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.LogEntry
+
+    text = factory.Sequence(lambda n: 'Log entry %d' % n)
+    game = factory.SubFactory(GameFactory)
