@@ -82,6 +82,12 @@ class CompanyShareSerializer(serializers.ModelSerializer):
         fields = ('url', 'uuid', 'owner', 'company', 'shares')
 
 
+class LogEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.LogEntry
+        fields = ('url', 'uuid', 'game', 'time', 'text')
+
+
 class TransferMoneySerializer(serializers.Serializer):
     amount = serializers.IntegerField()
     to_player = serializers.ModelField(required=False,

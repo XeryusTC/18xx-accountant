@@ -12,6 +12,7 @@ router.register(r'playershare', views.PlayerShareViewSet,
     base_name='playershare')
 router.register(r'companyshare', views.CompanyShareViewSet,
     base_name='companyshare')
+router.register(r'logentry', views.LogEntryViewSet, base_name='logentry')
 
 router.add_api_view('transfer_money', url(r'^transfer_money/$',
     views.TransferMoneyView.as_view(), name='transfer_money'))

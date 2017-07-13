@@ -70,6 +70,18 @@ class CompanyShareViewSet(viewsets.ModelViewSet):
         return models.CompanyShare.objects.all()
 
 
+class LogEntryViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.LogEntrySerializer
+
+    def get_queryset(self):
+        game_uuid = self.request.query_params.get('game', None)
+        if game_uuid is not None:
+            queryset = models.LogEntry.objects.filter(game=game_uuid)
+        else:
+            queryset = models.LogEntry.objects.all()
+        return queryset
+
+
 class TransferMoneyView(APIView):
     serializer_class = serializers.TransferMoneySerializer
 
