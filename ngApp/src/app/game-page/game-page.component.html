@@ -1,17 +1,14 @@
 <div *ngIf="gameState.isLoaded()">
 	<menu></menu>
 	<div class="row nested">
-		<div class="tp-9">
+		<div class="tp-8">
 				<player-section *ngIf="gameState.players"></player-section>
+				<company-section *ngIf="gameState.companies"></company-section>
 		</div>
 
-		<div class="tp-3">
+		<div class="tp-4">
 			<bank-detail></bank-detail>
 		</div>
-	</div>
-
-	<div class="section">
-		<company-section *ngIf="gameState.companies"></company-section>
 	</div>
 </div>
 
