@@ -7,6 +7,7 @@ import { CompanyService }       from './company.service';
 import { ErrorService }         from './error.service';
 import { GameService }          from './game.service';
 import { GameStateService }     from './game-state.service';
+import { LogService }           from './log.service';
 import { OperateService }       from './operate.service';
 import { PlayerService }        from './player.service';
 import { ShareService }         from './share.service';
@@ -70,6 +71,7 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
 		ErrorService,
 		GameStateService,
 		GameService,
+		LogService,
 		OperateService,
 		PlayerService,
 		ShareService,
