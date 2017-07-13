@@ -16,6 +16,8 @@ class GamePage(PageObject):
 
     player_name_list = MultiPageElement(css="div.player div.name")
 
+    log = MultiPageElement(css="#log div.entry")
+
     _player_list = MultiPageElement(class_name="player")
     _company_list = MultiPageElement(class_name="company")
     _name = PageElement(css=".name", context=True)
