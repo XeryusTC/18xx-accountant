@@ -17,6 +17,20 @@ class CompanySerializerTests(TestCase):
         self.assertIn(serializers.DUPLICATE_COMPANY_ERROR,
             s.errors['non_field_errors'])
 
+    def test_creates_log_entry_on_company_creation(self):
+        game = factories.GameFactory()
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 1)
+        s = serializers.CompanySerializer(data={'game': game.pk, 'name': 'C&O',
+            'share_count': 20, 'cash': 300})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        game.refresh_from_db()
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 2)
+        self.assertEqual(game.log.last().text,
+            'Added 20-share company C&O with 300 starting cash')
+        self.assertEqual(game.log_cursor, game.log.last())
+
 
 class PlayerSerializerTests(TestCase):
     def test_returns_user_friendly_message_when_player_not_unique(self):

@@ -13,7 +13,8 @@ class CompanyTests(APITestCase):
     def test_create_company(self):
         """Ensure that we can create companies."""
         url = reverse('company-list')
-        data = {'name': 'B&O', 'game': self.game.pk}
+        data = {'name': 'B&O', 'game': self.game.pk, 'cash': 100,
+                'share_count': 100}
 
         response = self.client.post(url, data, format='json')
 
@@ -37,7 +38,8 @@ class CompanyTests(APITestCase):
         self.game.cash = 1000
         self.game.save()
         url = reverse('company-list')
-        data = {'name': 'PRR', 'game': self.game.pk, 'cash': 300}
+        data = {'name': 'PRR', 'game': self.game.pk, 'cash': 300,
+            'share_count': 10}
 
         response = self.client.post(url, data, format='json')
 
@@ -68,6 +70,21 @@ class CompanyTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([c.name for c in companies],
             [c['name'] for c in response.data])
+
+    def test_creating_company_adds_log_entry(self):
+        url = reverse('company-list')
+        data = {'name': 'Erie', 'game': self.game.pk, 'cash': 500,
+                'share_count': 5}
+
+        response = self.client.post(url, data, format='json')
+
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(2,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            'Added 5-share company Erie with 500 starting cash')
+        self.assertEqual(self.game.log_cursor, self.game.log.last())
 
 
 class CompanyShareTests(APITestCase):

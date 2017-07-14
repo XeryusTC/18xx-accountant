@@ -67,10 +67,14 @@ class CompanySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         company = models.Company.objects.create(**validated_data)
-        if 'cash' in validated_data:
-            game = company.game
-            game.cash -= validated_data['cash']
-            game.save()
+        game = company.game
+        game.cash -= validated_data['cash']
+        entry = models.LogEntry.objects.create(game=game,
+            text='Added {}-share company {} with {} starting cash'.format(
+                validated_data['share_count'], validated_data['name'],
+                validated_data['cash']))
+        game.log_cursor = entry
+        game.save()
         return company
 
 
