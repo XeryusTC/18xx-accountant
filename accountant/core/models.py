@@ -15,10 +15,19 @@ class Game(models.Model):
         editable=False)
     cash = models.IntegerField(default=12000)
     log_cursor = models.OneToOneField('LogEntry', related_name='+',
-        default=None, null=True)
+        default=None, null=True, on_delete=models.SET_DEFAULT)
 
     def __str__(self):
         return 'Game {}'.format(self.uuid)
+
+    def save(self, *args, **kwargs):
+        adding = self._state.adding
+        # Create initial log entry if this is a new game
+        super(Game, self).save(*args, **kwargs)
+        if adding:
+            entry = LogEntry.objects.create(game=self, text="New game started")
+            self.log_cursor = entry
+            self.save()
 
 
 class Player(models.Model):

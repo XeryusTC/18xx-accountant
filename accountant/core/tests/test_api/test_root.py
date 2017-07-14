@@ -79,6 +79,7 @@ class LogEntryAPITests(APITestCase):
     def test_retrieve_log_entries_within_a_single_game(self):
         """Filter the log entries based on the game in the query url"""
         game = factories.GameFactory.create()
+        game.log.first().delete()  # Remove auto-added log entry
         entries = factories.LogEntryFactory.create_batch(game=game, size=4)
         factories.LogEntryFactory.create_batch(size=7)
         url = reverse('logentry-list') + '?game=' + str(game.pk)

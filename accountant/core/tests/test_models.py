@@ -18,15 +18,27 @@ class GameTests(TestCase):
         game = Game()
         self.assertEqual(game.cash, 12000)
 
-    def test_has_cursor_to_current_log_entry_that_is_none_by_default(self):
-        game = Game.objects.create()
-        self.assertIsNone(game.log_cursor)
-
     def test_log_cursor_can_point_to_log_entries(self):
         game = Game.objects.create()
         entry = LogEntry.objects.create(game=game)
         game.log_cursor = entry
         game.save()
+
+    def test_initial_log_entry_created_when_creating_game(self):
+        self.assertFalse(LogEntry.objects.all())
+        game = Game.objects.create()
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 1)
+        entry = game.log.first()
+        self.assertEqual(entry.text, "New game started")
+        self.assertAlmostEqual(entry.time, timezone.now(),
+                               delta=timedelta(seconds=5))
+
+    def test_log_cursor_points_to_initial_log_entry_by_default(self):
+        game = Game.objects.create()
+        game.refresh_from_db()
+        self.assertEqual(game.log_cursor, game.log.first())
 
     def test_string_representation(self):
         game = Game()
@@ -261,6 +273,7 @@ class CompanyShareTests(TestCase):
 class LogEntryTests(TestCase):
     def setUp(self):
         self.game = factories.GameFactory.create()
+        self.game.log.first().delete()  # Remove auto-added log entry
 
     def test_pk_is_uuid(self):
         entry = LogEntry.objects.create(game=self.game)
