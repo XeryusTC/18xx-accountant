@@ -39,12 +39,12 @@ describe('GameStateService', () => {
 		new Share('share-uuid-5', 'company-uuid-2', 'company-uuid-2', 3)
 	];
 	let testLog = [
-		new LogEntry('log-uuid-0', 'game-uuid', '1970-01-01T01:01:01.0001Z',
-					 'First log entry'),
-		new LogEntry('log-uuid-1', 'game-uuid', '1971-02-02T02:02:02.0002Z',
-					 'Second log entry'),
-		new LogEntry('log-uuid-2', 'game-uuid', '1972-03-03T03:03:03.0003Z',
-					 'Third log entry'),
+		new LogEntry('log-uuid-0', 'game-uuid',
+					 new Date('1970-01-01T01:01:01.0001Z'), 'First log entry'),
+		new LogEntry('log-uuid-1', 'game-uuid',
+					 new Date('1971-02-02T02:02:02.0002Z'), 'Second entry'),
+		new LogEntry('log-uuid-2', 'game-uuid',
+					 new Date('1972-03-03T03:03:03.0003Z'), 'Third log entry'),
 	];
 
 

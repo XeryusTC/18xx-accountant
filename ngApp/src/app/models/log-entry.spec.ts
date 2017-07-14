@@ -6,14 +6,14 @@ describe('LogEntry model', () => {
 			url: 'this can be ignored',
 			uuid: 'fake-uuid',
 			game: 'fake-game-uuid',
-			time: '1970-01-01T00:00:00.00000Z',
+			time: '1970-01-02T03:04:05',
 			text: 'lorem ipsum'
 		};
 		let logEntry = LogEntry.fromJson(json);
 
 		expect(logEntry.uuid).toEqual(json.uuid);
 		expect(logEntry.game).toEqual(json.game);
-		expect(logEntry.time).toEqual(json.time);
+		expect(logEntry.time).toEqual(new Date(1970, 0, 2, 3, 4, 5, 0));
 		expect(logEntry.text).toEqual(json.text);
 	});
 });

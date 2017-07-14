@@ -13,9 +13,12 @@ describe('LogService', () => {
 	let conn;
 
 	let testLog: LogEntry[] = [
-		new LogEntry('uuid-0', 'game-uuid', '1970-01-01 00:00', 'First entry'),
-		new LogEntry('uuid-1', 'game-uuid', '1970-01-02 00:00', '2nd entry'),
-		new LogEntry('uuid-2', 'game-uuid', '1970-01-03 00:00', 'Third entry')
+		new LogEntry('uuid-0', 'game-uuid', new Date('1970-01-01T00:00'),
+					 'First entry'),
+		new LogEntry('uuid-1', 'game-uuid', new Date('1970-01-02T00:00'),
+					 '2nd entry'),
+		new LogEntry('uuid-2', 'game-uuid', new Date('1970-01-03T00:00'),
+					 'Third entry')
 	];
 
 	beforeEach(() => {
