@@ -2,7 +2,7 @@
 	<h4>Log</h4>
 	<div class="log-container">
 		<div class="entry" *ngFor="let entry of gameState.log">
-			[{{ entry.time | date:'y-M-d H:m' }}] {{ entry.text }}
+			[{{ entry.time | date:'M-d H:m' }}] {{ entry.text }}
 		</div>
 	</div>
 </div>

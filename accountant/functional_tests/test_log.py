@@ -2,7 +2,7 @@
 from .base import FunctionalTestCase
 from .pages import game
 
-DATE_REGEX = r'\[\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}\] '
+DATE_REGEX = r'\[\d{1,2}-\d{1,2} \d{2}:\d{2}\] '
 
 class LogTests(FunctionalTestCase):
     """Tests for logging events"""
