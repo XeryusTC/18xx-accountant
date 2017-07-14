@@ -33,7 +33,7 @@ env:
         - REVERSE=--reverse
 install:
     - pip install -r requirements/ci.txt
-    - npm install -g @angular/cli
+    - npm install -g @angular/cli@1.0.0
     - cd ngApp; npm install; cd ..
 before_script:
     - "export PATH=$PATH:/usr/lib/chromium-browser"
@@ -46,7 +46,7 @@ script:
     - cd accountant
     - coverage run -p manage.py test core $REVERSE -v2
     - coverage run -p manage.py test interface $REVERSE -v2
-    - coverage run -p manage.py test functional_tests $REVERSE -v2
+      #    - coverage run -p manage.py test functional_tests $REVERSE -v2
     - coverage combine
     - flake8
     - cd ../ngApp; ng test --single-run --browser Chromium --code-coverage
