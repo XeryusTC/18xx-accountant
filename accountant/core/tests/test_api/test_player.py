@@ -13,7 +13,7 @@ class PlayerTests(APITestCase):
     def test_create_player(self):
         """Ensure that we can create players."""
         url = reverse('player-list')
-        data = {'name': 'Alice', 'game': self.game.pk}
+        data = {'name': 'Alice', 'game': self.game.pk, 'cash': 0}
 
         response = self.client.post(url, data, format='json')
 
@@ -67,6 +67,20 @@ class PlayerTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([p.name for p in models.Player.objects.all()],
             [p['name'] for p in response.data])
+
+    def test_creating_player_adds_new_entry_to_log(self):
+        url = reverse('player-list')
+        data = {'name': 'Alice', 'game': self.game.pk, 'cash': 100}
+
+        response = self.client.post(url, data, format='json')
+
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(2,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            'Added player Alice with 100 starting cash')
+        self.assertEqual(self.game.log_cursor, self.game.log.last())
 
 
 class PlayerShareTests(APITestCase):

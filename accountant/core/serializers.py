@@ -39,10 +39,14 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         player = models.Player.objects.create(**validated_data)
-        if 'cash' in validated_data:
-            game = player.game
-            game.cash -= validated_data['cash']
-            game.save()
+        game = player.game
+        game.cash -= validated_data['cash']
+        # Create log entry
+        entry = models.LogEntry.objects.create(game=player.game,
+            text='Added player {name} with {cash} starting cash'.format(
+                name=validated_data['name'], cash=validated_data['cash']))
+        game.log_cursor = entry
+        game.save()
         return player
 
 

@@ -2,6 +2,7 @@
 from rest_framework import exceptions
 from unittest import TestCase
 
+from ..models import LogEntry
 from .. import factories
 from .. import serializers
 
@@ -27,6 +28,21 @@ class PlayerSerializerTests(TestCase):
             s.is_valid(raise_exception=True)
         self.assertIn(serializers.DUPLICATE_PLAYER_ERROR,
             s.errors['non_field_errors'])
+
+    def test_creates_log_entry_on_player_creation(self):
+        game = factories.GameFactory()
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 1)
+        s = serializers.PlayerSerializer(data={'game': game.pk,
+            'name': 'Alice', 'cash': 1})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        game.refresh_from_db()
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 2)
+        self.assertEqual(game.log.last().text,
+            'Added player Alice with 1 starting cash')
+        self.assertEqual(game.log_cursor, game.log.last())
+
 
 class TransferMoneySerializerTests(TestCase):
     def setUp(self):
