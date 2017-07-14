@@ -39,6 +39,7 @@ import { StartPageComponent }   from './start-page/start-page.component';
 import { TransferFormComponent }
 	from './transfer-form/transfer-form.component';
 import { ErrorDisplayComponent } from './error-display/error-display.component';
+import { LogSectionComponent } from './log-section/log-section.component';
 
 @NgModule({
 	declarations: [
@@ -59,6 +60,7 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
 		TransferFormComponent,
 		ValuesPipe,
 		ErrorDisplayComponent,
+		LogSectionComponent,
 	],
 	imports: [
 		BrowserModule,
