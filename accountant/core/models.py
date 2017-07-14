@@ -112,4 +112,4 @@ class LogEntry(models.Model):
     text = models.TextField(default='')
 
     class Meta:
-        ordering = ['-time']
+        ordering = ['time']

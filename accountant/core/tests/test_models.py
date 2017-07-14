@@ -284,11 +284,11 @@ class LogEntryTests(TestCase):
         time = timezone.now()
         self.assertAlmostEqual(entry.time, time, delta=timedelta(seconds=5))
 
-    def test_are_sorted_anti_chronological(self):
+    def test_are_sorted_chronological(self):
         entry1 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 1, 12, 0, 0)))
         entry2 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 2, 1, 0, 0)))
         entry3 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 1, 18, 0, 0)))
-        self.assertEqual(list(self.game.log.all()), [entry2, entry3, entry1])
+        self.assertEqual(list(self.game.log.all()), [entry1, entry3, entry2])
