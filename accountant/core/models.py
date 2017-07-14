@@ -122,3 +122,6 @@ class LogEntry(models.Model):
 
     class Meta:
         ordering = ['time']
+
+    def __str__(self):
+        return '[{}] {}'.format(self.time, self.text)

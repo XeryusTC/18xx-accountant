@@ -305,3 +305,8 @@ class LogEntryTests(TestCase):
         entry3 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 1, 18, 0, 0)))
         self.assertEqual(list(self.game.log.all()), [entry1, entry3, entry2])
+
+    def test_string_representation(self):
+        entry = LogEntry(game=self.game, text='Test log entry')
+        self.assertIn('Test log entry', str(entry))
+        self.assertIn(str(entry.time), str(entry))
