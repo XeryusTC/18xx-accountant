@@ -65,6 +65,17 @@ class GameTests(APITestCase):
         # We have 2 games since there is also a global game
         self.assertEqual(models.Game.objects.count(), 1)
 
+    def test_creating_game_adds_new_log_entry(self):
+        url = reverse('game-list')
+        data = {}
+        response = self.client.post(url, data, format='json')
+
+        game = models.Game.objects.first()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['uuid'], str(game.pk))
+        self.assertEqual(models.LogEntry.objects.filter(game=game).count(), 1)
+        self.assertEqual(game.log.first().text, 'New game started')
+
 
 class ColorsTests(APITestCase):
     def setUp(self):
@@ -79,7 +90,6 @@ class LogEntryAPITests(APITestCase):
     def test_retrieve_log_entries_within_a_single_game(self):
         """Filter the log entries based on the game in the query url"""
         game = factories.GameFactory.create()
-        game.log.first().delete()  # Remove auto-added log entry
         entries = factories.LogEntryFactory.create_batch(game=game, size=4)
         factories.LogEntryFactory.create_batch(size=7)
         url = reverse('logentry-list') + '?game=' + str(game.pk)

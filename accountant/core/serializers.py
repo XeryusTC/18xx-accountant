@@ -23,6 +23,14 @@ class GameSerializer(serializers.ModelSerializer):
         fields = ('url', 'uuid', 'players', 'companies', 'cash')
         read_only_fields = ('players', 'companies')
 
+    def create(self, validated_data):
+        game = models.Game.objects.create(**validated_data)
+        entry = models.LogEntry.objects.create(game=game,
+            text='New game started')
+        game.log_cursor = entry
+        game.save()
+        return game
+
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:

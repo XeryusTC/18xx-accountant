@@ -20,15 +20,6 @@ class Game(models.Model):
     def __str__(self):
         return 'Game {}'.format(self.uuid)
 
-    def save(self, *args, **kwargs):
-        adding = self._state.adding
-        # Create initial log entry if this is a new game
-        super(Game, self).save(*args, **kwargs)
-        if adding:
-            entry = LogEntry.objects.create(game=self, text="New game started")
-            self.log_cursor = entry
-            self.save()
-
 
 class Player(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,

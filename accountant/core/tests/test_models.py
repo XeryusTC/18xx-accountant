@@ -24,21 +24,13 @@ class GameTests(TestCase):
         game.log_cursor = entry
         game.save()
 
-    def test_initial_log_entry_created_when_creating_game(self):
-        self.assertFalse(LogEntry.objects.all())
+    def test_no_log_entry_when_creating_new_game(self):
         game = Game.objects.create()
+        self.assertEqual(LogEntry.objects.filter(game=game).count(), 0)
 
-        self.assertEqual(LogEntry.objects.count(), 1)
-        self.assertEqual(LogEntry.objects.filter(game=game).count(), 1)
-        entry = game.log.first()
-        self.assertEqual(entry.text, "New game started")
-        self.assertAlmostEqual(entry.time, timezone.now(),
-                               delta=timedelta(seconds=5))
-
-    def test_log_cursor_points_to_initial_log_entry_by_default(self):
+    def test_log_cursor_is_None_by_default(self):
         game = Game.objects.create()
-        game.refresh_from_db()
-        self.assertEqual(game.log_cursor, game.log.first())
+        self.assertIsNone(game.log_cursor)
 
     def test_string_representation(self):
         game = Game()
@@ -273,7 +265,6 @@ class CompanyShareTests(TestCase):
 class LogEntryTests(TestCase):
     def setUp(self):
         self.game = factories.GameFactory.create()
-        self.game.log.first().delete()  # Remove auto-added log entry
 
     def test_pk_is_uuid(self):
         entry = LogEntry.objects.create(game=self.game)

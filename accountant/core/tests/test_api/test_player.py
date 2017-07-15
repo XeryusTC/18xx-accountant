@@ -76,7 +76,7 @@ class PlayerTests(APITestCase):
 
         self.game.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(2,
+        self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
         self.assertEqual(self.game.log.last().text,
             'Added player Alice with 100 starting cash')
