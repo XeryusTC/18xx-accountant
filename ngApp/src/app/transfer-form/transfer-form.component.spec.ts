@@ -7,6 +7,7 @@ import { Company }               from '../models/company';
 import { Game }                  from '../models/game';
 import { Player }                from '../models/player';
 import { GameStateService }      from '../game-state.service';
+import { LogEntry }              from '../models/log-entry';
 import { TransferMoneyService }  from '../transfer-money.service';
 import { TransferFormComponent } from './transfer-form.component';
 import { ValuesPipe }            from '../values.pipe';
@@ -33,7 +34,7 @@ describe('TransferFormComponent', () => {
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService',
 						  ['updateGame', 'updatePlayer', 'updateCompany',
-						   'companies']);
+						   'companies', 'updateLog']);
 		gameStateStub.companies = {[company.uuid]: company};
 		gameStateStub.players   = {[player.uuid]:  player};
 
@@ -127,5 +128,16 @@ describe('TransferFormComponent', () => {
 		tick();
 		expect(gameStateStub.updateCompany.calls.first().args[0])
 			.toBe(newCompany)
+	}));
+
+	it('log should be updated', fakeAsync(() => {
+		let entry = new LogEntry('entry-uuid', 'game-uuid',
+								 new Date(2017, 7, 15), 'test entry');
+		transferMoneyStub.transferMoney
+			.and.callFake(() => Promise.resolve({log: entry}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updateLog.calls.first().args[0])
+			.toBe(entry);
 	}));
 });

@@ -248,6 +248,15 @@ describe('GameStateService', () => {
 		expect(service.shares.length).toEqual(shares.length);
 	}));
 
+	it('updateLog() adds log entry to log', fakeAsync(() => {
+		let entry = new LogEntry('new-entry-uuid', 'game-uuid',
+								 new Date(2017, 7, 15, 0, 0, 0), 'Test');
+		service.loadGame('game-uuid');
+		tick();
+		service.updateLog(entry);
+		expect(service.log[service.log.length - 1]).toBe(entry);
+	}));
+
 	it('shareInfo() gives info on share holdings of player', fakeAsync(() => {
 		testCompanies[0].text_color = 'color1';
 		testCompanies[0].background_color = 'color2';

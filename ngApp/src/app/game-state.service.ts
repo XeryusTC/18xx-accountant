@@ -130,6 +130,10 @@ export class GameStateService {
 		this.shares[share.uuid] = share;
 	}
 
+	updateLog(entry: LogEntry): void {
+		this.log.push(entry);
+	}
+
 	shareInfo(owner: Player | Company): Object[] {
 		let res = [], company;
 		for (let share of owner.share_set) {
