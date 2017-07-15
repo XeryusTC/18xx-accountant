@@ -102,6 +102,23 @@ class TransferMoneyView(APIView):
             # Do the transfering
             utils.transfer_money(serializer.source_instance,
                 serializer.dest_instance, serializer.validated_data['amount'])
+            # Create the log entry
+            if serializer.source_instance != None:
+                game = serializer.source_instance.game
+                source_name = serializer.source_instance.name
+            else:
+                game = serializer.dest_instance.game
+                source_name = 'The bank'
+            if serializer.dest_instance != None:
+                dest_name = serializer.dest_instance.name
+            else:
+                dest_name = 'the bank'
+            entry = models.LogEntry.objects.create(game=game,
+                text='{source} transfered {cash} to {dest}'.format(
+                    source=source_name, dest=dest_name,
+                    cash=serializer.validated_data['amount']))
+            game.log_cursor = entry
+            game.save()
 
             # Construct the response, starting with the game
             context = {'request': self.request}
