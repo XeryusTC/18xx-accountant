@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from unittest import mock
 
 from ... import factories
+from ... import models
 from ... import serializers
 from ... import utils
 
@@ -70,6 +71,112 @@ class TransferMoneyTests(APITestCase):
         data = {'from_player': self.player.pk, 'amount': 9}
         response = self.client.post(self.url, data, format='json')
         self.assertNotIn('companies', response.data)
+
+    def test_transfering_from_player_to_bank_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_player': self.player.pk, 'amount': 10}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 10 to the bank'.format(self.player.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_player_to_player_creates_log_entry(self):
+        other_player = factories.PlayerFactory(game=self.game)
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_player': self.player.pk, 'amount': 11,
+                'to_player': other_player.pk}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 11 to {}'.format(self.player.name,
+                other_player.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_player_to_company_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_player': self.player.pk, 'amount': 12,
+                'to_company': self.company.pk}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 12 to {}'.format(self.player.name,
+                self.company.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_company_to_bank_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_company': self.company.pk, 'amount': 13}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 13 to the bank'.format(self.company.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_company_to_player_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_company': self.company.pk, 'amount': 14,
+                'to_player': self.player.pk}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 14 to {}'.format(self.company.name,
+                self.player.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_company_to_company_creates_log_entry(self):
+        other_company = factories.CompanyFactory(game=self.game)
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'from_company': self.company.pk, 'amount': 15,
+                'to_company': other_company.pk}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            '{} transfered 15 to {}'.format(self.company.name,
+                other_company.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_bank_to_player_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'to_player': self.player.pk, 'amount': 16}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            'The bank transfered 16 to {}'.format(self.player.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_bank_to_company_creates_log_entry(self):
+        self.assertEqual(0,
+            models.LogEntry.objects.filter(game=self.game).count())
+        data = {'to_company': self.company.pk, 'amount': 17}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last().text,
+            'The bank transfered 17 to {}'.format(self.company.name))
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
 
 
 @mock.patch.object(utils, 'transfer_money')
