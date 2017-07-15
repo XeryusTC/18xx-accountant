@@ -46,7 +46,7 @@ script:
     - cd accountant
     - coverage run -p manage.py test core $REVERSE -v2
     - coverage run -p manage.py test interface $REVERSE -v2
-      #    - coverage run -p manage.py test functional_tests $REVERSE -v2
+    - coverage run -p manage.py test functional_tests $REVERSE -v2
     - coverage combine
     - flake8
     - cd ../ngApp; ng test --single-run --browser Chromium --code-coverage
