@@ -138,3 +138,77 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 70 to NNH')
+
+    def test_transfering_money_from_company_to_bank_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&M', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Alice opens the B&M and transfers money to the bank')
+        transfer_form = game.TransferForm(self.browser)
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+        transfer_form.amount(company['detail']).send_keys('80\n')
+
+        self.story('The page reloads and there is a new log entry')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'B&M transfered 80 to the bank')
+
+    def test_transfering_money_from_company_to_company_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NNH', cash=1000)
+        self.create_company(game_uuid, 'NYC', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Alice opens the NNH and transfers money to the bank')
+        transfer_form = game.TransferForm(self.browser)
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+        for radio in transfer_form.target(company['detail']):
+            if radio.get_attribute('id') == 'target-NYC':
+                radio.click()
+                break
+        else:  # pragma: no cover
+            self.fail('Could not find NYC in the transfer form')
+        transfer_form.amount(company['detail']).send_keys('90\n')
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'NNH transfered 90 to NYC')
+
+    def test_transfering_money_from_company_to_player_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice', cash=1000)
+        self.create_company(game_uuid, 'PRR', cash=0)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Alice opens PRR section and transfers money to herself')
+        transfer_form = game.TransferForm(self.browser)
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        company = game_page.get_companies()[0]
+        for radio in transfer_form.target(company['detail']):
+            if radio.get_attribute('id') == 'target-Alice':
+                radio.click()
+                break
+        else:  # pragma: no cover
+            self.fail('Could not find Alice in the transfer form')
+        transfer_form.amount(company['detail']).send_keys('100\n')
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'PRR transfered 100 to Alice')
