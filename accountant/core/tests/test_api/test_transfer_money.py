@@ -72,6 +72,13 @@ class TransferMoneyTests(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertNotIn('companies', response.data)
 
+    def test_transfering_includes_log_entry_in_response(self):
+        data = {'from_player': self.player.pk, 'amount': 1}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.data['log']['uuid'],
+            str(self.game.log.last().pk))
+
     def test_transfering_from_player_to_bank_creates_log_entry(self):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())

@@ -123,12 +123,13 @@ class TransferMoneyView(APIView):
             # Construct the response, starting with the game
             context = {'request': self.request}
             res = {}
-            if serializer.source_instance == None:
-                res['game'] = serializers.GameSerializer(
-                    serializer.dest_instance.game, context=context).data
-            if serializer.dest_instance == None:
-                res['game'] = serializers.GameSerializer(
-                    serializer.source_instance.game, context=context).data
+            if (serializer.source_instance == None
+                or serializer.dest_instance == None):
+                res['game'] = serializers.GameSerializer(game,
+                    context=context).data
+            # Add the log entry
+            res['log'] = serializers.LogEntrySerializer(entry,
+                context=context).data
             # Next do players
             players = []
             if isinstance(serializer.source_instance, models.Player):
