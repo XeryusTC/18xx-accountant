@@ -83,7 +83,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 10}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -97,7 +97,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 11,
                 'to_player': other_player.pk}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -111,7 +111,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 12,
                 'to_company': self.company.pk}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -124,7 +124,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 13}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -137,7 +137,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 14,
                 'to_player': self.player.pk}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -152,7 +152,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 15,
                 'to_company': other_company.pk}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -165,7 +165,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'to_player': self.player.pk, 'amount': 16}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -177,7 +177,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'to_company': self.company.pk, 'amount': 17}
-        response = self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data, format='json')
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
