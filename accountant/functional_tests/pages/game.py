@@ -20,45 +20,68 @@ class GamePage(PageObject):
 
     _player_list = MultiPageElement(class_name="player")
     _company_list = MultiPageElement(class_name="company")
-    _name = PageElement(css=".name", context=True)
-    _cash = PageElement(css=".cash", context=True)
-    _share_count = PageElement(css=".share_count", context=True)
-    _ipo_shares = PageElement(css=".ipo", context=True)
-    _bank_shares = PageElement(css=".bank", context=True)
-    _detail = PageElement(css=".detail", context=True)
-    _summary = PageElement(css=".row", context=True)
-    _shares = MultiPageElement(css=".share", context=True)
-    _value = PageElement(css=".value input", context=True)
 
     def get_players(self):
         res = []
         for row in self._player_list:
-            info = {
-                'row': row,
-                'name': self._name(row),
-                'cash': self._cash(row),
-                'shares': self._shares(row),
-                'detail': self._detail(row),
-            }
-            res.append(info)
+            res.append(Player(row, self.w))
         return res
 
     def get_companies(self):
         res = []
         for row in self._company_list:
-            info = {
-                'elem': self._summary(row),
-                'name': self._name(row),
-                'cash': self._cash(row),
-                'share_count': self._share_count(row),
-                'ipo_shares': self._ipo_shares(row),
-                'bank_shares': self._bank_shares(row),
-                'value': self._value(row),
-                'shares': self._shares(row),
-                'detail': self._detail(row),
-            }
-            res.append(info)
+            res.append(Company(row, self.w))
         return res
+
+
+class Entity(PageObject):
+    _name = PageElement(css=".name", context=True)
+    _cash = PageElement(css=".cash", context=True)
+    _detail = PageElement(css=".detail", context=True)
+    _shares = MultiPageElement(css=".share", context=True)
+    _summary = PageElement(css=".row", context=True)
+
+    def __init__(self, root, *args, **kwargs):
+        super(Entity, self).__init__(*args, **kwargs)
+        self.root = root
+
+    def __getitem__(self, key):
+        if key == 'row':
+            return self.root
+        elif key == 'elem' or key == 'summary':
+            return self._summary(self.root)
+        elif key == 'name':
+            return self._name(self.root)
+        elif key == 'cash':
+            return self._cash(self.root)
+        elif key == 'shares':
+            return self._shares(self.root)
+        elif key == 'detail':
+            return self._detail(self.root)
+        else:  # pragma: no cover
+            raise KeyError
+
+
+class Player(Entity):
+    pass
+
+
+class Company(Entity):
+    _value = PageElement(css=".value input", context=True)
+    _share_count = PageElement(css=".share_count", context=True)
+    _ipo_shares = PageElement(css=".ipo", context=True)
+    _bank_shares = PageElement(css=".bank", context=True)
+
+    def __getitem__(self, key):
+        if key == 'share_count':
+            return self._share_count(self.root)
+        elif key == 'ipo_shares':
+            return self._ipo_shares(self.root)
+        elif key == 'bank_shares':
+            return self._bank_shares(self.root)
+        elif key == 'value':
+            return self._value(self.root)
+        return super(Company, self).__getitem__(key)
 
 
 class AddPlayerPage(PageObject):
