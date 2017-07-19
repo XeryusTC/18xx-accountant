@@ -3,6 +3,7 @@ omit =
 	*site-packages*
 	manage.py
 	functional_tests/remote.py
+	*pytractor*
 
 [report]
 exclude_lines =
