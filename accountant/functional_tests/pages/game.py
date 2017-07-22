@@ -131,6 +131,22 @@ class ShareForm(PageObject):
     sell_share = PageElement(id_='action-sell', context=True)
     action = PageElement(id_='action-text', context=True)
 
+    def select_company(self, name, context):  # pragma: no cover
+        for label in self.company(context):
+            if label.get_attribute('for') == 'company-{}'.format(name):
+                label.click()
+                break
+        else:  # pragma: no cover
+            self.fail('No company called {} found in share list'.format(name))
+
+    def select_source(self, name, context):  # pragma: no cover
+        for label in self.source(context):
+            if label.get_attribute('for') == 'source-{}'.format(name):
+                label.click()
+                break
+        else:
+            self.fail('Could not select {}'.format(name))
+
 
 class OperateForm(PageObject):
     revenue  = PageElement(name='revenue',  context=True)

@@ -186,3 +186,88 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'PRR transfered 100 to Alice')
+
+    def test_player_buying_share_from_IPO_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice', cash=1000)
+        self.create_company(game_uuid, 'C&O', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Set the value of the C&O')
+        company = game_page.get_companies()[0]
+        company['value'].send_keys('10')
+
+        self.story('Open Alices detail section, buy a share C&O')
+        player = game_page.get_players()[0]
+        player['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('2')
+        share_form.select_company('C&O', player['detail'])
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Alice bought 2 shares C&O from the IPO for 10 each')
+
+    def test_company_buying_share_from_pool_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NYC', bank_shares=5)
+        self.create_company(game_uuid, 'PRR', cash=1000)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+
+        self.story('Set the value of the NYC')
+        nyc, prr = game_page.get_companies()
+        self.assertEqual(nyc['name'].text, 'NYC')
+        nyc['value'].send_keys('20')
+
+        self.story('Alice opens the PRRs detail section and buys NYC')
+        prr['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.shares(prr['detail']).clear()
+        share_form.shares(prr['detail']).send_keys('3')
+        share_form.select_company('NYC', prr['detail'])
+        share_form.select_source('bank', prr['detail'])
+        share_form.transfer_button(prr['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'PRR bought 3 shares NYC from the bank for 20 each')
+
+    def test_player_buying_share_from_company_treasury_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice', cash=1000)
+        company_uuid = self.create_company(game_uuid, 'B&O', ipo_shares=0)
+        self.create_company_share(company_uuid, company_uuid, shares=10)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Set the value of the B&O')
+        company = game_page.get_companies()[0]
+        company['value'].send_keys('30')
+
+        self.story('Open Alices detail section, buy a share B&O')
+        player = game_page.get_players()[0]
+        player['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('6')
+        share_form.select_company('B&O', player['detail'])
+        share_form.select_source('B&O', player['detail'])
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('The page updates and t here is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Alice bought 6 shares B&O from B&O for 30 each')
