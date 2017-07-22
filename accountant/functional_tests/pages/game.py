@@ -113,6 +113,15 @@ class TransferForm(PageObject):
     labels = MultiPageElement(css='label.transfer', context=True)
     transfer_button = PageElement(name='transfer', context=True)
 
+    def select_target(self, name, context):  # pragma: no cover
+        for radio in self.target(context):
+            if radio.get_attribute('id') == 'target-{}'.format(name):
+                radio.click()
+                break
+        else:
+            self.fail('Could not find {} in the transfer form'.format(name))
+
+
 class ShareForm(PageObject):
     shares = PageElement(name='shares', context=True)
     company = MultiPageElement(css='label.company-label', context=True)

@@ -72,7 +72,6 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         player = game_page.get_players()[0]
         player['row'].click()
-        player = game_page.get_players()[0]  # Get DOM updates
         transfer_form.amount(player['detail']).clear()
         transfer_form.amount(player['detail']).send_keys('50\n')
 
@@ -98,13 +97,7 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        alice = game_page.get_players()[0]
-        for radio in transfer_form.target(alice['detail']):
-            if radio.get_attribute('id') == 'target-Bob':
-                radio.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Could not find Bob in the transfer form')
+        transfer_form.select_target('Bob', alice['detail'])
         transfer_form.amount(alice['detail']).send_keys('60\n')
 
         self.story('There is an entry in the log')
@@ -125,13 +118,7 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        alice = game_page.get_players()[0]
-        for radio in transfer_form.target(alice['detail']):
-            if radio.get_attribute('id') == 'target-NNH':
-                radio.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Could not find NNH in the transfer form')
+        transfer_form.select_target('NNH', alice['detail'])
         transfer_form.amount(alice['detail']).send_keys('70\n')
 
         self.story('The page updates and there is an entry in the log')
@@ -151,7 +138,6 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        company = game_page.get_companies()[0]
         transfer_form.amount(company['detail']).send_keys('80\n')
 
         self.story('The page reloads and there is a new log entry')
@@ -172,13 +158,7 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        company = game_page.get_companies()[0]
-        for radio in transfer_form.target(company['detail']):
-            if radio.get_attribute('id') == 'target-NYC':
-                radio.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Could not find NYC in the transfer form')
+        transfer_form.select_target('NYC', company['detail'])
         transfer_form.amount(company['detail']).send_keys('90\n')
 
         self.story('The page updates and there is an entry in the log')
@@ -199,13 +179,7 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        company = game_page.get_companies()[0]
-        for radio in transfer_form.target(company['detail']):
-            if radio.get_attribute('id') == 'target-Alice':
-                radio.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Could not find Alice in the transfer form')
+        transfer_form.select_target('Alice', company['detail'])
         transfer_form.amount(company['detail']).send_keys('100\n')
 
         self.story('The page updates and there is an entry in the log')
