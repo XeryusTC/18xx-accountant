@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from unittest import mock
 
 from ... import factories
+from ... import models
 from ... import utils
 from ... import views
 
@@ -462,3 +463,116 @@ class ShareTransactionWithMockTests(APITestCase):
             'price': 31, 'amount': 1}
         with self.assertRaises(Exception):
             self.client.post(self.url, data, format='json')
+
+
+@mock.patch.object(utils, 'buy_share')
+class ShareTransactionLogTests(APITestCase):
+    def setUp(self):
+        self.game = factories.GameFactory(cash=10000)
+        self.url = reverse('transfer_share')
+        self.player = factories.PlayerFactory(game=self.game, cash=100)
+        self.share_company = factories.CompanyFactory(game=self.game, cash=0)
+        self.buy_company = factories.CompanyFactory(game=self.game, cash=0)
+        factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=0)
+        factories.CompanyShareFactory(owner=self.buy_company,
+            company=self.share_company, shares=0)
+        self.data = {'share': self.share_company.pk}
+
+    def make_request(self):
+        response = self.client.post(self.url, self.data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        return response
+
+    def test_transfering_includes_log_entry_in_response(self, mock):
+        data = {'buyer_type': 'player', 'player_buyer': self.player.pk,
+            'source_type': 'ipo', 'share': self.share_company.pk, 'price': 1}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.data['log']['uuid'],
+                         str(self.game.log.last().pk))
+        self.assertEqual(self.game.log_cursor, self.game.log.last())
+
+    def test_player_buying_share_from_ipo_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'player',
+            'player_buyer': self.player.pk, 'source_type': 'ipo', 'price': 2,
+            'amount': 3})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 3 shares {} from the IPO for 2 each'.format(
+                self.player.name, self.share_company.name))
+
+    def test_player_buying_share_from_bank_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'player', 'source_type': 'bank',
+            'player_buyer': self.player.pk, 'price': 3, 'amount': 2})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 2 shares {} from the bank for 3 each'.format(
+                self.player.name, self.share_company.name))
+
+    def test_player_buying_share_from_company_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'player', 'source_type': 'company',
+            'player_buyer': self.player.pk,
+            'company_source': self.buy_company.pk, 'price': 4})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 1 shares {} from {} for 4 each'.format(
+                self.player.name, self.share_company.name,
+                self.buy_company.name))
+
+    def test_player_buying_share_from_player_creates_log_entry(self, mock):
+        extra_player = factories.PlayerFactory(game=self.game)
+        factories.PlayerShareFactory(owner=extra_player,
+            company=self.share_company, shares=0)
+        self.data.update({'buyer_type': 'player', 'source_type': 'player',
+            'player_buyer': self.player.pk, 'player_source': extra_player.pk,
+            'price': 8, 'amount': 2})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 2 shares {} from {} for 8 each'.format(
+                self.player.name, self.share_company.name,
+                extra_player.name))
+
+    def test_company_buying_share_from_ipo_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'ipo',
+            'price': 5, 'amount': 4})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 4 shares {} from the IPO for 5 each'.format(
+                self.buy_company.name, self.share_company.name))
+
+    def test_company_buying_share_from_bank_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'bank',
+            'price': 6, 'amount': 7})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 7 shares {} from the bank for 6 each'.format(
+                self.buy_company.name, self.share_company.name))
+
+    def test_company_buying_share_from_company_creates_log_entry(self, mock):
+        extra_company = factories.CompanyFactory(game=self.game, cash=0)
+        factories.CompanyShareFactory(owner=extra_company,
+            company=self.share_company, shares=1)
+        self.data.update({'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'company',
+            'company_source': extra_company.pk, 'price': 7})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 1 shares {} from {} for 7 each'.format(
+                self.buy_company.name, self.share_company.name,
+                extra_company.name))
+
+    def test_company_buying_share_from_player_creates_log_entry(self, mock):
+        self.data.update({'buyer_type': 'company',
+            'company_buyer': self.buy_company.pk, 'source_type': 'player',
+            'player_source': self.player.pk, 'price': 9})
+        response = self.make_request()
+        self.assertEqual(self.game.log.last().text,
+            '{} bought 1 shares {} from {} for 9 each'.format(
+                self.buy_company.name, self.share_company.name,
+                self.player.name))
