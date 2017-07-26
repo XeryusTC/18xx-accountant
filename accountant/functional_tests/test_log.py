@@ -223,7 +223,6 @@ class LogTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
 
-
         self.story('Set the value of the NYC')
         nyc, prr = game_page.get_companies()
         self.assertEqual(nyc['name'].text, 'NYC')
@@ -271,3 +270,90 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice bought 6 shares B&O from B&O for 30 each')
+
+    def test_player_selling_shares_to_pool_adds_log_entry(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        player_uuid = self.create_player(game_uuid, 'Alice')
+        company_uuid = self.create_company(game_uuid, 'C&O')
+        self.create_player_share(player_uuid, company_uuid, shares=5)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Set the value of the C&O')
+        company = game_page.get_companies()[0]
+        company['value'].send_keys('40')
+
+        self.story('Alice opens her detail section and sells some shares')
+        player = game_page.get_players()[0]
+        player['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('4')
+        share_form.sell_share(player['detail']).click()
+        share_form.select_company('C&O', player['detail'])
+        share_form.select_source('bank', player['detail'])
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Alice sold 4 shares C&O to the bank for 40 each')
+
+    def test_company_selling_shares_to_IPO_adds_log_entry(self):
+        self.story('Alice is a user who starts a game')
+        game_uuid = self.create_game()
+        company_uuid = self.create_company(game_uuid, 'CPR')
+        self.create_company_share(company_uuid, company_uuid, shares=10)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Set the value of the CPR')
+        company = game_page.get_companies()[0]
+        company['value'].send_keys('50')
+
+        self.story('Alice opens the CPRs detail section and sells shares')
+        company['elem'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.sell_share(company['detail']).click()
+        share_form.select_company('CPR', company['detail'])
+        share_form.shares(company['detail']).clear()
+        share_form.shares(company['detail']).send_keys('2\n')
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'CPR sold 2 shares CPR to the IPO for 50 each')
+
+    def test_player_selling_shares_to_company_adds_log_entry(self):
+        self.story('Alice is a user who starts a game')
+        game_uuid = self.create_game()
+        player_uuid = self.create_player(game_uuid, 'Alice')
+        company_uuid = self.create_company(game_uuid, 'B&M', cash=1000)
+        self.create_player_share(player_uuid, company_uuid, shares=5)
+        # Workaround for Issue #4
+        self.create_company_share(company_uuid, company_uuid, shares=0)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Set the value of the B&M')
+        company = game_page.get_companies()[0]
+        company['value'].send_keys('60')
+
+        self.story('Alice opens her detail section and sells the shares')
+        player = game_page.get_players()[0]
+        player['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.sell_share(player['detail']).click()
+        share_form.select_company('B&M', player['detail'])
+        share_form.select_source('B&M', player['detail'])
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys('3\n')
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Alice sold 3 shares B&M to B&M for 60 each')
