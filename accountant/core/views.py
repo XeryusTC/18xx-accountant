@@ -165,6 +165,7 @@ class TransferShareView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             # determine buyer
+            buyer_name = None
             if serializer.validated_data['buyer_type'] == 'ipo':
                 buyer = utils.Share.IPO
             elif serializer.validated_data['buyer_type'] == 'bank':
@@ -172,21 +173,27 @@ class TransferShareView(APIView):
             elif serializer.validated_data['buyer_type'] == 'player':
                 buyer = models.Player.objects.get(
                     pk=serializer.validated_data['player_buyer'])
+                buyer_name = buyer.name
             elif serializer.validated_data['buyer_type'] == 'company':
                 buyer = models.Company.objects.get(
                     pk=serializer.validated_data['company_buyer'])
+                buyer_name = buyer.name
 
             # determine source
             if serializer.validated_data['source_type'] == 'ipo':
                 source = utils.Share.IPO
+                source_name = 'the IPO'
             elif serializer.validated_data['source_type'] == 'bank':
                 source = utils.Share.BANK
+                source_name = 'the bank'
             elif serializer.validated_data['source_type'] == 'player':
                 source = models.Player.objects.get(
                     pk=serializer.validated_data['player_source'])
+                source_name = source.name
             elif serializer.validated_data['source_type'] == 'company':
                 source = models.Company.objects.get(
                     pk=serializer.validated_data['company_source'])
+                source_name = source.name
 
             # determine which company is being bought/sold
             share = models.Company.objects.get(
@@ -194,9 +201,9 @@ class TransferShareView(APIView):
             # Get amount of shares being bought/sold
             amount = serializer.validated_data['amount']
             # buy/sell the share
+            price = serializer.validated_data['price']
             try:
-                utils.buy_share(buyer, share, source,
-                    serializer.validated_data['price'], amount)
+                utils.buy_share(buyer, share, source, price, amount)
             except utils.DifferentGameException:
                 return Response({'non_field_errors': [DIFFERENT_GAME_ERROR]},
                     status=status.HTTP_400_BAD_REQUEST)
@@ -205,14 +212,27 @@ class TransferShareView(APIView):
                     {'non_field_errors': [NO_AVAILABLE_SHARES_ERROR]},
                     status=status.HTTP_400_BAD_REQUEST)
 
+            # create log entry
+            log_string = '{buyer} bought {amount} shares {company} from ' + \
+                         '{source} for {price} each'
+            entry = models.LogEntry.objects.create(game=share.game,
+                text=log_string.format(buyer=buyer_name, amount=amount,
+                                       company=share.name, source=source_name,
+                                       price=price))
+            share.game.refresh_from_db()
+            share.game.log_cursor = entry
+            share.game.save()
+
             # Construct the response, starting with the game
             context = {'request': request}
             response = {}
             if (buyer == utils.Share.IPO or buyer == utils.Share.BANK or
                     source == utils.Share.IPO or source == utils.Share.BANK):
-                share.game.refresh_from_db()
                 response['game'] = serializers.GameSerializer(
                     share.game, context=context).data
+            # Add the log entry
+            response['log'] = serializers.LogEntrySerializer(entry,
+                context=context).data
             # Add players next
             players = []
             if isinstance(buyer, models.Player):
