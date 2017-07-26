@@ -66,6 +66,7 @@ export class ShareFormComponent implements OnInit {
 							this.gameState.updateShare(share);
 						}
 					}
+					this.gameState.updateLog(result['log']);
 				})
 				.catch(error => {
 					this.errors = [];

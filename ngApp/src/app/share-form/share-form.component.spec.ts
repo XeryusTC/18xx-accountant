@@ -5,6 +5,7 @@ import { FormsModule }                      from '@angular/forms';
 
 import { Company }              from '../models/company';
 import { Game }                 from '../models/game';
+import { LogEntry }             from '../models/log-entry';
 import { Player }               from '../models/player';
 import { Share }                from '../models/share';
 import { GameService }          from '../game.service';
@@ -33,7 +34,8 @@ describe('ShareFormComponent', () => {
 	beforeEach(async(() => {
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
-						  'updateCompany', 'updateShare', 'companies']);
+						  'updateCompany', 'updateShare', 'companies',
+						  'updateLog']);
 		gameStateStub.players = {
 			[buyPlayer.uuid]: buyPlayer,
 			[sourcePlayer.uuid]: sourcePlayer
@@ -217,5 +219,15 @@ describe('ShareFormComponent', () => {
 		submitForm();
 		tick();
 		expect(component.errors).toEqual(['This is a non-field error']);
+	}));
+
+	it('log should be updated', fakeAsync(() => {
+		let entry = new LogEntry('entry-uuid', 'game-uuid',
+								 new Date(2017, 7, 23), 'test entry')
+		transferShareStub.transferShare
+			.and.callFake(() => Promise.resolve({log: entry}));
+		submitForm();
+		tick();
+		expect(gameStateStub.updateLog.calls.first().args[0]).toBe(entry);
 	}));
 });
