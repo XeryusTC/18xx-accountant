@@ -213,10 +213,14 @@ class TransferShareView(APIView):
                     status=status.HTTP_400_BAD_REQUEST)
 
             # create log entry
-            log_string = '{buyer} bought {amount} shares {company} from ' + \
-                         '{source} for {price} each'
+            if amount > 0:
+                log_string = '{buyer} bought {amount} shares {company} ' + \
+                             'from {source} for {price} each'
+            else:
+                log_string = '{buyer} sold {amount} shares {company} ' + \
+                             'to {source} for {price} each'
             entry = models.LogEntry.objects.create(game=share.game,
-                text=log_string.format(buyer=buyer_name, amount=amount,
+                text=log_string.format(buyer=buyer_name, amount=abs(amount),
                                        company=share.name, source=source_name,
                                        price=price))
             share.game.refresh_from_db()
