@@ -588,6 +588,15 @@ class CompanyShareTransactionTests(TestCase):
         self.assertEqual(company.bank_shares, 1)
         self.assertEqual(source.bank_shares, 1)
 
+    def test_create_share_when_being_sold_to(self):
+        with self.assertRaises(models.CompanyShare.DoesNotExist):
+            self.company1.share_set.get(company=self.company2)
+        factories.CompanyShareFactory(owner=self.company2,
+            company=self.company2, shares=5)
+        utils.buy_share(self.company2, self.company2, self.company1, 19, -2)
+        share = self.company1.share_set.get(company=self.company2)
+
+
 @mock.patch.object(utils, 'transfer_money')
 class OperateTests(TestCase):
     def setUp(self):

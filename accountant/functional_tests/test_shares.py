@@ -716,6 +716,50 @@ class SellShareTests(FunctionalTestCase):
         self.verify_company(share, cash=0, ipo_shares=4, bank_shares=0,
             shares=[])
 
+    def test_player_can_sell_shares_to_company(self):
+        self.story('Create game with a player owning shares and two companies')
+        game_uuid = self.create_game(cash=10000)
+        player_uuid = self.create_player(game_uuid, 'Alice', cash=1000)
+        sell_uuid = self.create_company(game_uuid, 'sell', cash=100)
+        share_uuid = self.create_company(game_uuid, 'share', cash=0,
+            ipo_shares=5, bank_shares=0)
+        self.create_player_share(player_uuid, share_uuid, shares=5)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('The sell company should be the only one owning shares')
+        game_page = game.GamePage(self.browser)
+        player = game_page.get_players()[0]
+        sell, share = game_page.get_companies()
+        self.verify_player(player, shares=['share 50%'])
+        self.verify_company(sell, shares=[])
+        self.verify_company(share, shares=[], ipo_shares=5, bank_shares=0)
+
+        self.story('Set the value of the share company')
+        share['value'].clear()
+        share['value'].send_keys('50')
+
+        self.story('The sell company sells shares to the player')
+        player['row'].click()
+        share_form = game.ShareForm(self.browser)
+        share_form.sell_share(player['detail']).click()
+        share_form.shares(player['detail']).clear()
+        share_form.shares(player['detail']).send_keys(2)
+        share_form.select_company('share', player['detail'])
+        share_form.select_source('sell', player['detail'])
+        share_form.transfer_button(player['detail']).click()
+
+        self.story('There should be no error')
+        errors = game.ErrorPage(self.browser)
+        self.assertEqual(len(errors.errors), 0,
+            'Error(s) occurred: {}'.format([e.text for e in errors.errors]))
+
+        self.story('The page updates and shares and money have changed hands')
+        self.assertEqual(game_page.bank_cash.text, '10000')
+        self.verify_player(player, cash=1080, shares=['share 30%'])
+        self.verify_company(sell, cash=20, shares=['share 20%'])
+        self.verify_company(share, shares=[], ipo_shares=5, bank_shares=0,
+            cash=0)
+
 
 class MiscellaneousShareTests(FunctionalTestCase):
     def test_shares_in_pool_appear_in_bank_section(self):

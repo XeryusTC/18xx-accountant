@@ -333,8 +333,6 @@ class LogTests(FunctionalTestCase):
         player_uuid = self.create_player(game_uuid, 'Alice')
         company_uuid = self.create_company(game_uuid, 'B&M', cash=1000)
         self.create_player_share(player_uuid, company_uuid, shares=5)
-        # Workaround for Issue #4
-        self.create_company_share(company_uuid, company_uuid, shares=0)
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)

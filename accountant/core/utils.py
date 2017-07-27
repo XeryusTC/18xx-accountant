@@ -50,7 +50,11 @@ def buy_share(buyer, company, source, price, amount=1):
             source_share = models.CompanyShare.objects.get(owner=source,
                 company=company)
         except models.CompanyShare.DoesNotExist:
-            raise InvalidShareTransaction()
+            if amount < 0:
+                source_share = models.CompanyShare.objects.create(
+                    owner=source, company=company, shares=0)
+            else:
+                raise InvalidShareTransaction()
         if source_share.shares < amount:
             raise InvalidShareTransaction()
     elif isinstance(source, models.Player):  # Share comes from a player
