@@ -137,7 +137,8 @@ class ShareForm(PageObject):
                 label.click()
                 break
         else:  # pragma: no cover
-            self.fail('No company called {} found in share list'.format(name))
+            raise AssertionError(
+                'No company called {} found in share list'.format(name))
 
     def select_source(self, name, context):  # pragma: no cover
         for label in self.source(context):
@@ -145,7 +146,7 @@ class ShareForm(PageObject):
                 label.click()
                 break
         else:
-            self.fail('Could not select {}'.format(name))
+            raise AssertionError('Could not select {}'.format(name))
 
 
 class OperateForm(PageObject):
