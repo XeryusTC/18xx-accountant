@@ -755,8 +755,10 @@ class SellShareTests(FunctionalTestCase):
 
         self.story('The page updates and shares and money have changed hands')
         self.assertEqual(game_page.bank_cash.text, '10000')
-        self.verify_player(player, cash=1080, shares=['share 30%'])
-        self.verify_company(sell, cash=20, shares=['share 20%'])
+        player = game_page.get_players()[0]
+        sell, share = game_page.get_companies()
+        self.verify_player(player, cash=1100, shares=['share 30%'])
+        self.verify_company(sell, cash=0, shares=['share 20%'])
         self.verify_company(share, shares=[], ipo_shares=5, bank_shares=0,
             cash=0)
 
