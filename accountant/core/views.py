@@ -286,25 +286,39 @@ class OperateView(APIView):
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            amount = serializer.validated_data['amount']
             if serializer.validated_data['method'] == 'full':
                 method = utils.OperateMethod.FULL
+                log_text = '{company} operates for {amount} which is paid ' + \
+                        'as dividends'
             elif serializer.validated_data['method'] == 'half':
                 method = utils.OperateMethod.HALF
+                log_text = '{company} operates for {amount} of which it ' + \
+                        'retains half'
             elif serializer.validated_data['method'] == 'withhold':
                 method = utils.OperateMethod.WITHHOLD
+                log_text = '{company} withholds {amount}'
 
             company = models.Company.objects.get(
                 pk=serializer.validated_data['company'])
-            affected = utils.operate(company,
-                serializer.validated_data['amount'], method)
+            affected = utils.operate(company, amount, method)
 
-            # Construct response
             company.refresh_from_db()
             company.game.refresh_from_db()
+
+            # Create log entry
+            entry = models.LogEntry.objects.create(game=company.game,
+                text=log_text.format(company=company.name, amount=amount))
+            company.game.log_cursor = entry
+            company.game.save()
+
+            # Construct response
             context = {'request': request}
             response = {
                 'companies': [],
                 'game': serializers.GameSerializer(company.game,
+                    context=context).data,
+                'log': serializers.LogEntrySerializer(entry,
                     context=context).data
             }
             for entity, amount in affected.items():

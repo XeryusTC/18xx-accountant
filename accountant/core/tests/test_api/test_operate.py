@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from unittest import mock
 
 from ... import factories
+from ... import models
 from ... import utils
 
 @mock.patch.object(utils, 'operate')
@@ -106,3 +107,47 @@ class OperateTests(APITestCase):
         mock_operate.return_value = {self.company: 100}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(str(self.game.pk), response.data['game']['uuid'])
+
+    def test_operating_includes_log_entry_in_response(self, mock):
+        data = {'company': self.company.pk, 'amount': 110, 'method': 'full'}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.data['log']['uuid'],
+            str(self.game.log.last().pk))
+
+    def test_paying_full_dividends_creates_log_entry(self, mock):
+        data = {'company': self.company.pk, 'amount': 120, 'method': 'full'}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().text,
+            '{} operates for 120 which is paid as dividends'.format(
+                self.company.name))
+
+    def test_paying_half_dividends_creates_log_entry(self, mock):
+        data = {'company': self.company.pk, 'amount': 130, 'method': 'half'}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().text,
+            '{} operates for 130 of which it retains half'.format(
+                self.company.name))
+
+    def test_withholding_creates_log_entry(self, mock):
+        data = {'company': self.company.pk, 'amount': 140,
+            'method': 'withhold'}
+        response = self.client.post(self.url, data, format='json')
+        self.game.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1,
+            models.LogEntry.objects.filter(game=self.game).count())
+        self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().text,
+            '{} withholds 140'.format(
+                self.company.name))
