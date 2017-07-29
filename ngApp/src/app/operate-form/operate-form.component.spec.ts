@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Company }              from '../models/company';
 import { Game }                 from '../models/game';
+import { LogEntry }             from '../models/log-entry';
 import { Player }               from '../models/player';
 import { GameStateService }     from '../game-state.service';
 import { OperateFormComponent } from './operate-form.component';
@@ -22,7 +23,7 @@ describe('OperateFormComponent', () => {
 		operateServiceStub.operate.and.callFake(() => Promise.resolve(null));
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
-						  'updateCompany']);
+						  'updateCompany', 'updateLog']);
 
 		TestBed.configureTestingModule({
 			imports: [FormsModule],
@@ -124,5 +125,16 @@ describe('OperateFormComponent', () => {
 			.toBe(newCompanies[1]);
 		expect(gameStateStub.updateCompany.calls.argsFor(2)[0])
 			.toBe(newCompanies[2]);
+	}));
+
+	it('log should be updated', fakeAsync(() => {
+		let entry = new LogEntry('entry-uuid', 'game-uuid',
+								 new Date(2017, 7, 29), 'test entry');
+		operateServiceStub.operate
+			.and.callFake(() => Promise.resolve({log: entry}));
+			component.operate('any');
+		tick();
+
+		expect(gameStateStub.updateLog.calls.first().args[0]).toBe(entry);
 	}));
 });
