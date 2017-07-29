@@ -355,3 +355,66 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice sold 3 shares B&M to B&M for 60 each')
+
+    def test_company_operating_adds_log_entry(self):
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'CPR')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Open the CPR detail section, operate for some money')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        operate_form = game.OperateForm(self.browser)
+        operate_form.revenue(company['detail']).clear()
+        operate_form.revenue(company['detail']).send_keys('70')
+        operate_form.full(company['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'CPR operates for 70 which is paid as dividends')
+
+    def test_company_withholding_adds_log_entry(self):
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'Erie')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Open the Erie detail section, operate for some money')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        operate_form = game.OperateForm(self.browser)
+        operate_form.revenue(company['detail']).clear()
+        operate_form.revenue(company['detail']).send_keys('80')
+        operate_form.withhold(company['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Erie withholds 80')
+
+    def test_company_paying_half_adds_log_entry(self):
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NNH')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Open the NNH detail section, operate for some money')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        operate_form = game.OperateForm(self.browser)
+        operate_form.revenue(company['detail']).clear()
+        operate_form.revenue(company['detail']).send_keys('90')
+        operate_form.half(company['detail']).click()
+
+        self.story('The page updates and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'NNH operates for 90 of which it retains half')
