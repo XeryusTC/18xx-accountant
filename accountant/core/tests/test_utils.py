@@ -594,7 +594,8 @@ class CompanyShareTransactionTests(TestCase):
         factories.CompanyShareFactory(owner=self.company2,
             company=self.company2, shares=5)
         utils.buy_share(self.company2, self.company2, self.company1, 19, -2)
-        share = self.company1.share_set.get(company=self.company2)
+        # Should not raise a DoesNotExist error
+        self.company1.share_set.get(company=self.company2)
 
 
 @mock.patch.object(utils, 'transfer_money')

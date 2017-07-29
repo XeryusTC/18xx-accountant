@@ -15,7 +15,7 @@ class PlayerTests(APITestCase):
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': self.game.pk, 'cash': 0}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create a player: " + str(response.data))
@@ -27,7 +27,7 @@ class PlayerTests(APITestCase):
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': self.game.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
             "Created duplicate player: " + str(response.data))
@@ -39,7 +39,7 @@ class PlayerTests(APITestCase):
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': self.game.pk, 'cash': 500}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.game.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -52,7 +52,7 @@ class PlayerTests(APITestCase):
         factories.PlayerFactory.create_batch(size=2)
         url = reverse('player-list') + '?game=' + str(self.game.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([p.name for p in players],
@@ -62,7 +62,7 @@ class PlayerTests(APITestCase):
         factories.PlayerFactory.create_batch(size=5)
         url = reverse('player-list')
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([p.name for p in models.Player.objects.all()],
@@ -72,7 +72,7 @@ class PlayerTests(APITestCase):
         url = reverse('player-list')
         data = {'name': 'Alice', 'game': self.game.pk, 'cash': 100}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.game.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -95,7 +95,7 @@ class PlayerShareTests(APITestCase):
         data = {'game': self.game.pk, 'owner': player.pk,
             'company': company.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create a share: " + str(response.data))
@@ -113,7 +113,7 @@ class PlayerShareTests(APITestCase):
         url = reverse('playershare-list')
         data = {'owner': player.pk, 'company': company.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
             "Created duplicate share holdings: " + str(response.data))
@@ -124,7 +124,7 @@ class PlayerShareTests(APITestCase):
         factories.PlayerShareFactory.create_batch(size=5)
         url = reverse('playershare-list')
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
@@ -138,7 +138,7 @@ class PlayerShareTests(APITestCase):
         factories.PlayerShareFactory.create_batch(size=3)
         url = reverse('playershare-list') + '?owner=' + str(player.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
@@ -153,7 +153,7 @@ class PlayerShareTests(APITestCase):
         factories.PlayerShareFactory.create_batch(size=17)
         url = reverse('playershare-list') + '?game=' + str(self.game.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.maxDiff = None

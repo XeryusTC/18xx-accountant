@@ -11,45 +11,45 @@ class ApiRootTests(APITestCase):
         self.url = reverse('api-root')
 
     def test_Game_viewset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['game'].endswith(reverse('game-list')))
 
     def test_Player_viewset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['player'].endswith(
             reverse('player-list')))
 
     def test_Company_viewset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['company'].endswith(
             reverse('company-list')))
 
     def test_PlayerShare_viewset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['playershare'].endswith(
             reverse('playershare-list')))
 
     def test_CompanyShare_viewset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['companyshare'].endswith(
             reverse('companyshare-list')))
 
     def test_transfer_money_view_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['transfer_money'].endswith(
             reverse('transfer_money')))
 
     def test_transfer_share_view_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['transfer_share'].endswith(
             reverse('transfer_share')))
 
     def test_operate_view_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['operate'].endswith(reverse('operate')))
 
     def test_LogEntry_viewwset_is_on_api_root(self):
-        response = self.client.get(self.url, {}, format='json')
+        response = self.client.get(self.url, {})
         self.assertTrue(response.data['logentry'].endswith(
             reverse('logentry-list')))
 
@@ -59,7 +59,7 @@ class GameTests(APITestCase):
         """Ensure that we can create a game."""
         url = reverse('game-list')
         data = {'players': [], 'companies': []}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create game: " + str(response.data))
         # We have 2 games since there is also a global game
@@ -68,7 +68,7 @@ class GameTests(APITestCase):
     def test_creating_game_adds_new_log_entry(self):
         url = reverse('game-list')
         data = {}
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         game = models.Game.objects.first()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -82,7 +82,7 @@ class ColorsTests(APITestCase):
         self.url = reverse('colors')
 
     def test_returns_list_of_company_colors(self):
-        response = self.client.get(self.url, format='json')
+        response = self.client.get(self.url)
         self.assertEqual(response.data, models.Company.COLOR_CODES)
 
 
@@ -94,7 +94,7 @@ class LogEntryAPITests(APITestCase):
         factories.LogEntryFactory.create_batch(size=7)
         url = reverse('logentry-list') + '?game=' + str(game.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([str(e.uuid) for e in entries],
@@ -104,7 +104,7 @@ class LogEntryAPITests(APITestCase):
         factories.LogEntryFactory.create_batch(size=12)
         url = reverse('logentry-list')
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual([str(e.uuid) for e in models.LogEntry.objects.all()],

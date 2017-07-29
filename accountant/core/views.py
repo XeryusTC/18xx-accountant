@@ -290,11 +290,11 @@ class OperateView(APIView):
             if serializer.validated_data['method'] == 'full':
                 method = utils.OperateMethod.FULL
                 log_text = '{company} operates for {amount} which is paid ' + \
-                        'as dividends'
+                           'as dividends'
             elif serializer.validated_data['method'] == 'half':
                 method = utils.OperateMethod.HALF
                 log_text = '{company} operates for {amount} of which it ' + \
-                        'retains half'
+                           'retains half'
             elif serializer.validated_data['method'] == 'withhold':
                 method = utils.OperateMethod.WITHHOLD
                 log_text = '{company} withholds {amount}'

@@ -720,7 +720,7 @@ class SellShareTests(FunctionalTestCase):
         self.story('Create game with a player owning shares and two companies')
         game_uuid = self.create_game(cash=10000)
         player_uuid = self.create_player(game_uuid, 'Alice', cash=1000)
-        sell_uuid = self.create_company(game_uuid, 'sell', cash=100)
+        self.create_company(game_uuid, 'sell', cash=100)
         share_uuid = self.create_company(game_uuid, 'share', cash=0,
             ipo_shares=5, bank_shares=0)
         self.create_player_share(player_uuid, share_uuid, shares=5)

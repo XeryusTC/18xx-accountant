@@ -18,40 +18,40 @@ class TransferMoneyTests(APITestCase):
 
     def test_transfering_from_bank_includes_game_instance_in_response(self):
         data = {'to_player': self.player.pk, 'amount': 1}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['game']['cash'], 11999)
 
     def test_transfering_to_bank_includes_game_instance_in_response(self):
         data = {'from_player': self.player.pk, 'amount': 2}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['game']['cash'], 12002)
 
     def test_transfering_from_player_includes_instance_in_response(self):
         data = {'from_player': self.player.pk, 'amount': 3}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['players'][0]['uuid'],
             str(self.player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 97)
 
     def test_transfering_to_player_includes_instance_in_response(self):
         data = {'to_player': self.player.pk, 'amount': 4}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['players'][0]['uuid'],
             str(self.player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 104)
 
     def test_transfering_from_company_includes_instance_in_response(self):
         data = {'from_company': self.company.pk, 'amount': 5}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
         self.assertEqual(response.data['companies'][0]['cash'], 95)
 
     def test_transfering_to_company_includes_instance_in_response(self):
         data = {'to_company': self.company.pk, 'amount': 6}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
         self.assertEqual(response.data['companies'][0]['cash'], 106)
@@ -59,22 +59,22 @@ class TransferMoneyTests(APITestCase):
     def test_game_should_not_be_in_response_if_no_transfer_with_bank(self):
         data = {'from_player': self.player.pk, 'to_company': self.company.pk,
             'amount': 7}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertNotIn('game', response.data)
 
     def test_players_should_not_be_in_response_if_no_player_involved(self):
         data = {'from_company': self.company.pk, 'amount': 8}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertNotIn('players', response.data)
 
     def test_companies_should_not_be_in_response_if_no_company_involved(self):
         data = {'from_player': self.player.pk, 'amount': 9}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertNotIn('companies', response.data)
 
     def test_transfering_includes_log_entry_in_response(self):
         data = {'from_player': self.player.pk, 'amount': 1}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(response.data['log']['uuid'],
             str(self.game.log.last().pk))
@@ -83,7 +83,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 10}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -97,7 +97,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 11,
                 'to_player': other_player.pk}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -111,7 +111,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_player': self.player.pk, 'amount': 12,
                 'to_company': self.company.pk}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -124,7 +124,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 13}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -137,7 +137,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 14,
                 'to_player': self.player.pk}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -152,7 +152,7 @@ class TransferMoneyTests(APITestCase):
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'from_company': self.company.pk, 'amount': 15,
                 'to_company': other_company.pk}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -165,7 +165,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'to_player': self.player.pk, 'amount': 16}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -177,7 +177,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(0,
             models.LogEntry.objects.filter(game=self.game).count())
         data = {'to_company': self.company.pk, 'amount': 17}
-        self.client.post(self.url, data, format='json')
+        self.client.post(self.url, data)
         self.game.refresh_from_db()
         self.assertEqual(1,
             models.LogEntry.objects.filter(game=self.game).count())
@@ -196,33 +196,33 @@ class TransferMoneyWithTransferMockTests(APITestCase):
 
     def test_GET_request_is_empty(self, mock):
         """GET is for debug (and doc) purposes only"""
-        response = self.client.get(self.url, format='json')
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data)
 
     def test_can_transfer_money_from_player_to_bank(self, mock_transfer_money):
         data = {'from_player': self.player.pk, 'amount': 99}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(self.player, None, 99)
 
     def test_can_transfer_money_from_bank_to_player(self, mock_transfer_money):
         data = {'to_player': self.player.pk, 'amount': 98}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(None, self.player, 98)
 
     def test_can_transfer_money_from_company_to_bank(self,
             mock_transfer_money):
         data = {'from_company': self.company.pk, 'amount': 97}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(self.company, None, 97)
 
     def test_can_transfer_money_from_bank_to_company(self,
             mock_transfer_money):
         data = {'to_company': self.company.pk, 'amount': 96}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(None, self.company, 96)
 
@@ -230,7 +230,7 @@ class TransferMoneyWithTransferMockTests(APITestCase):
             mock_transfer_money):
         data = {'from_player': self.player.pk, 'to_company': self.company.pk,
             'amount': 95}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(self.player, self.company,
             95)
@@ -239,14 +239,14 @@ class TransferMoneyWithTransferMockTests(APITestCase):
             mock_transfer_money):
         data = {'to_player': self.player.pk, 'from_company': self.company.pk,
             'amount': 94}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_transfer_money.assert_called_once_with(self.company, self.player,
             94)
 
     def test_transfering_from_bank_to_bank_raises_error(self, mock):
         data = {'amount': 93}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.SOURCE_OR_DEST_REQUIRED_ERROR,
             response.data['non_field_errors'])
@@ -256,7 +256,7 @@ class TransferMoneyWithTransferMockTests(APITestCase):
         company = factories.CompanyFactory(cash=100)
         data = {'from_player': self.player.pk, 'to_company': company.pk,
             'amount': 92}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.DIFFERENT_GAME_ERROR,
             response.data['non_field_errors'])
@@ -266,7 +266,7 @@ class TransferMoneyWithTransferMockTests(APITestCase):
         company = factories.CompanyFactory(cash=100)
         data = {'to_player': self.player.pk, 'from_company': company.pk,
             'amount': 91}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.DIFFERENT_GAME_ERROR,
             response.data['non_field_errors'])
@@ -276,7 +276,7 @@ class TransferMoneyWithTransferMockTests(APITestCase):
         player2 = factories.PlayerFactory(cash=100)
         data = {'from_player': self.player.pk, 'to_player': player2.pk,
             'amount': 90}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.DIFFERENT_GAME_ERROR,
             response.data['non_field_errors'])
@@ -286,7 +286,7 @@ class TransferMoneyWithTransferMockTests(APITestCase):
         company2 = factories.CompanyFactory(cash=100)
         data = {'from_company': self.company.pk, 'to_company': company2.pk,
             'amount': 89}
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(serializers.DIFFERENT_GAME_ERROR,
             response.data['non_field_errors'])

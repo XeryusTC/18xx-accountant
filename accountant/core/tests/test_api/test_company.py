@@ -16,7 +16,7 @@ class CompanyTests(APITestCase):
         data = {'name': 'B&O', 'game': self.game.pk, 'cash': 100,
                 'share_count': 100}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create a company: " + str(response.data))
@@ -28,7 +28,7 @@ class CompanyTests(APITestCase):
         url = reverse('company-list')
         data = {'name': 'B&O', 'game': self.game.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
             "Created duplicate company: " + str(response.data))
@@ -41,7 +41,7 @@ class CompanyTests(APITestCase):
         data = {'name': 'PRR', 'game': self.game.pk, 'cash': 300,
             'share_count': 10}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.game.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -52,7 +52,7 @@ class CompanyTests(APITestCase):
         factories.CompanyFactory.create_batch(size=5)
         url = reverse('company-list')
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([c.name for c in models.Company.objects.all()],
@@ -65,7 +65,7 @@ class CompanyTests(APITestCase):
         factories.CompanyFactory.create_batch(size=2)
         url = reverse('company-list') + '?game=' + str(self.game.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([c.name for c in companies],
@@ -76,7 +76,7 @@ class CompanyTests(APITestCase):
         data = {'name': 'Erie', 'game': self.game.pk, 'cash': 500,
                 'share_count': 5}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.game.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -97,7 +97,7 @@ class CompanyShareTests(APITestCase):
         url = reverse('companyshare-list')
         data = {'owner': company.pk, 'company': company.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
             "Could not create a self owning share: " + str(response.data))
@@ -110,7 +110,7 @@ class CompanyShareTests(APITestCase):
         url = reverse('companyshare-list')
         data = {'owner': company1.pk, 'company': company2.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         share = models.CompanyShare.objects.first()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED,
@@ -131,7 +131,7 @@ class CompanyShareTests(APITestCase):
         url = reverse('companyshare-list')
         data = {'owner': company1.pk, 'company': company2.pk}
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
             "Created duplicate share holdings: " + str(response.data))
@@ -142,7 +142,7 @@ class CompanyShareTests(APITestCase):
         factories.CompanyShareFactory.create_batch(size=7)
         url = reverse('companyshare-list')
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
@@ -155,7 +155,7 @@ class CompanyShareTests(APITestCase):
         factories.CompanyShareFactory.create_batch(size=5)
         url = reverse('companyshare-list') + '?owner=' + str(company.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
@@ -170,7 +170,7 @@ class CompanyShareTests(APITestCase):
         factories.CompanyShareFactory.create_batch(size=5)
         url = reverse('companyshare-list') + '?game=' + str(self.game.pk)
 
-        response = self.client.get(url, format='json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([s['uuid'] for s in response.data],
