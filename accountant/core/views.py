@@ -117,6 +117,9 @@ class TransferMoneyView(APIView):
                 text='{source} transfered {cash} to {dest}'.format(
                     source=source_name, dest=dest_name,
                     cash=serializer.validated_data['amount']))
+            if isinstance(serializer.source_instance, models.Company):
+                entry.acting_company = serializer.source_instance
+                entry.save()
             game.log_cursor = entry
             game.save()
 
@@ -223,6 +226,9 @@ class TransferShareView(APIView):
                 text=log_string.format(buyer=buyer_name, amount=abs(amount),
                                        company=share.name, source=source_name,
                                        price=price))
+            if isinstance(buyer, models.Company):
+                entry.acting_company = buyer
+                entry.save()
             share.game.refresh_from_db()
             share.game.log_cursor = entry
             share.game.save()
@@ -308,7 +314,8 @@ class OperateView(APIView):
 
             # Create log entry
             entry = models.LogEntry.objects.create(game=company.game,
-                text=log_text.format(company=company.name, amount=amount))
+                text=log_text.format(company=company.name, amount=amount),
+                acting_company=company)
             company.game.log_cursor = entry
             company.game.save()
 

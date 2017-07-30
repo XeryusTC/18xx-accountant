@@ -85,6 +85,8 @@ class CompanyTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             'Added 5-share company Erie with 500 starting cash')
         self.assertEqual(self.game.log_cursor, self.game.log.last())
+        self.assertEqual(str(self.game.log.last().acting_company.pk),
+            response.data['uuid'])
 
 
 class CompanyShareTests(APITestCase):

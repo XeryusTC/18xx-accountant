@@ -126,6 +126,7 @@ class OperateTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             '{} operates for 120 which is paid as dividends'.format(
                 self.company.name))
+        self.assertEqual(self.game.log.last().acting_company, self.company)
 
     def test_paying_half_dividends_creates_log_entry(self, mock):
         data = {'company': self.company.pk, 'amount': 130, 'method': 'half'}
@@ -138,6 +139,7 @@ class OperateTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             '{} operates for 130 of which it retains half'.format(
                 self.company.name))
+        self.assertEqual(self.game.log.last().acting_company, self.company)
 
     def test_withholding_creates_log_entry(self, mock):
         data = {'company': self.company.pk, 'amount': 140,
@@ -151,3 +153,4 @@ class OperateTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             '{} withholds 140'.format(
                 self.company.name))
+        self.assertEqual(self.game.log.last().acting_company, self.company)

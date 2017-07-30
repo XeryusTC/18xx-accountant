@@ -80,7 +80,8 @@ class CompanySerializer(serializers.ModelSerializer):
         entry = models.LogEntry.objects.create(game=game,
             text='Added {}-share company {} with {} starting cash'.format(
                 validated_data['share_count'], validated_data['name'],
-                validated_data['cash']))
+                validated_data['cash']),
+            acting_company=company)
         game.log_cursor = entry
         game.save()
         return company

@@ -131,6 +131,7 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             '{} transfered 13 to the bank'.format(self.company.name))
         self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().acting_company, self.company)
 
     def test_transfering_from_company_to_player_creates_log_entry(self):
         self.assertEqual(0,
@@ -145,6 +146,7 @@ class TransferMoneyTests(APITestCase):
             '{} transfered 14 to {}'.format(self.company.name,
                 self.player.name))
         self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().acting_company, self.company)
 
     def test_transfering_from_company_to_company_creates_log_entry(self):
         other_company = factories.CompanyFactory(game=self.game)
@@ -160,6 +162,7 @@ class TransferMoneyTests(APITestCase):
             '{} transfered 15 to {}'.format(self.company.name,
                 other_company.name))
         self.assertEqual(self.game.log.last(), self.game.log_cursor)
+        self.assertEqual(self.game.log.last().acting_company, self.company)
 
     def test_transfering_from_bank_to_player_creates_log_entry(self):
         self.assertEqual(0,
