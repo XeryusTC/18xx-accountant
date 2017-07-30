@@ -109,3 +109,9 @@ class LogEntryAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual([str(e.uuid) for e in models.LogEntry.objects.all()],
             [e['uuid'] for e in response.data])
+
+    def test_cannot_write_to_view(self):
+        url = reverse('logentry-list')
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED)

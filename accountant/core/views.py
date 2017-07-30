@@ -70,7 +70,7 @@ class CompanyShareViewSet(viewsets.ModelViewSet):
         return models.CompanyShare.objects.all()
 
 
-class LogEntryViewSet(viewsets.ModelViewSet):
+class LogEntryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.LogEntrySerializer
 
     def get_queryset(self):
