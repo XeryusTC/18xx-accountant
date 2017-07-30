@@ -7,7 +7,8 @@ describe('LogEntry model', () => {
 			uuid: 'fake-uuid',
 			game: 'fake-game-uuid',
 			time: '1970-01-02T03:04:05',
-			text: 'lorem ipsum'
+			text: 'lorem ipsum',
+			acting_company: 'company-uuid'
 		};
 		let logEntry = LogEntry.fromJson(json);
 
@@ -15,5 +16,6 @@ describe('LogEntry model', () => {
 		expect(logEntry.game).toEqual(json.game);
 		expect(logEntry.time).toEqual(new Date(1970, 0, 2, 3, 4, 5, 0));
 		expect(logEntry.text).toEqual(json.text);
+		expect(logEntry.acting_company).toEqual(json.acting_company);
 	});
 });
