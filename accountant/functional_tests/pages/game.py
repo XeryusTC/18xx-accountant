@@ -107,6 +107,19 @@ class AddCompanyPage(PageObject):
     background_color = MultiPageElement(name='background-color-select')
     preview = PageElement(id_='preview')
 
+    def select_text_color(self, color):
+        for radio in self.text_color:
+            if radio.get_attribute('value') == color:
+                radio.click()
+                break
+
+    def select_background_color(self, color):
+        for radio in self.background_color:
+            if radio.get_attribute('value') == color:
+                radio.click()
+                break
+
+
 class TransferForm(PageObject):
     amount = PageElement(name='amount', context=True)
     target = MultiPageElement(name='target', context=True)

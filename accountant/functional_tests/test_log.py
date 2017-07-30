@@ -50,6 +50,8 @@ class LogTests(FunctionalTestCase):
         add_company = game.AddCompanyPage(self.browser)
         add_company.name.send_keys('B&O')
         add_company.cash.send_keys('820')
+        add_company.select_text_color('yellow-600')
+        add_company.select_background_color('blue-700')
         add_company.shares.clear()
         add_company.shares.send_keys('4\n')
 
@@ -58,6 +60,10 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 2)
         self.assertRegex(game_page.log[-1].text,
             DATE_REGEX + 'Added 4-share company B&O with 820 starting cash')
+        self.assertIn('fg-yellow-600',
+            game_page.log[-1].get_attribute('class'))
+        self.assertIn('bg-blue-700',
+            game_page.log[-1].get_attribute('class'))
 
     def test_transfering_money_from_player_to_bank_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -129,7 +135,8 @@ class LogTests(FunctionalTestCase):
     def test_transfering_money_from_company_to_bank_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'B&M', cash=1000)
+        self.create_company(game_uuid, 'B&M', cash=1000, text='amber-500',
+            background='red-900')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -144,12 +151,16 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'B&M transfered 80 to the bank')
+        self.assertIn('fg-amber-500',
+            game_page.log[-1].get_attribute('class'))
+        self.assertIn('bg-red-900',
+            game_page.log[-1].get_attribute('class'))
 
     def test_transfering_money_from_company_to_company_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'NNH', cash=1000)
-        self.create_company(game_uuid, 'NYC', cash=1000)
+        self.create_company(game_uuid, 'NNH', cash=1000, text='orange-500')
+        self.create_company(game_uuid, 'NYC', cash=1000, text='black')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -165,12 +176,14 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'NNH transfered 90 to NYC')
+        self.assertIn('fg-orange-500',
+            game_page.log[-1].get_attribute('class'))
 
     def test_transfering_money_from_company_to_player_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game()
         self.create_player(game_uuid, 'Alice', cash=1000)
-        self.create_company(game_uuid, 'PRR', cash=0)
+        self.create_company(game_uuid, 'PRR', cash=0, text='green-500')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -186,6 +199,8 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'PRR transfered 100 to Alice')
+        self.assertIn('fg-green-500',
+            game_page.log[-1].get_attribute('class'))
 
     def test_player_buying_share_from_IPO_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -217,8 +232,8 @@ class LogTests(FunctionalTestCase):
     def test_company_buying_share_from_pool_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'NYC', bank_shares=5)
-        self.create_company(game_uuid, 'PRR', cash=1000)
+        self.create_company(game_uuid, 'NYC', bank_shares=5, text='black')
+        self.create_company(game_uuid, 'PRR', cash=1000, text='green-500')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -241,6 +256,8 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'PRR bought 3 shares NYC from the bank for 20 each')
+        self.assertIn('fg-green-500',
+            game_page.log[-1].get_attribute('class'))
 
     def test_player_buying_share_from_company_treasury_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -304,7 +321,7 @@ class LogTests(FunctionalTestCase):
     def test_company_selling_shares_to_IPO_adds_log_entry(self):
         self.story('Alice is a user who starts a game')
         game_uuid = self.create_game()
-        company_uuid = self.create_company(game_uuid, 'CPR')
+        company_uuid = self.create_company(game_uuid, 'CPR', text='red-500')
         self.create_company_share(company_uuid, company_uuid, shares=10)
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
@@ -326,6 +343,8 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'CPR sold 2 shares CPR to the IPO for 50 each')
+        self.assertIn('fg-red-500',
+            game_page.log[-1].get_attribute('class'))
 
     def test_player_selling_shares_to_company_adds_log_entry(self):
         self.story('Alice is a user who starts a game')
@@ -359,7 +378,8 @@ class LogTests(FunctionalTestCase):
     def test_company_operating_adds_log_entry(self):
         self.story('Create a game with a company')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'CPR')
+        self.create_company(game_uuid, 'CPR', text='red-500',
+            background='black')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -376,11 +396,15 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'CPR operates for 70 which is paid as dividends')
+        self.assertIn('fg-red-500',
+            game_page.log[-1].get_attribute('class'))
+        self.assertIn('bg-black',
+            game_page.log[-1].get_attribute('class'))
 
     def test_company_withholding_adds_log_entry(self):
         self.story('Create a game with a company')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'Erie')
+        self.create_company(game_uuid, 'Erie', background='amber-300')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -397,11 +421,13 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Erie withholds 80')
+        self.assertIn('bg-amber-300',
+            game_page.log[-1].get_attribute('class'))
 
     def test_company_paying_half_adds_log_entry(self):
         self.story('Create a game with a company')
         game_uuid = self.create_game()
-        self.create_company(game_uuid, 'NNH')
+        self.create_company(game_uuid, 'NNH', background='orange-500')
         self.browser.get(self.server_url + '/game/' + game_uuid)
         game_page = game.GamePage(self.browser)
         self.assertEqual(len(game_page.log), 0)
@@ -418,3 +444,5 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'NNH operates for 90 of which it retains half')
+        self.assertIn('bg-orange-500',
+            game_page.log[-1].get_attribute('class'))
