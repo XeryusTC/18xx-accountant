@@ -110,6 +110,8 @@ class LogEntry(models.Model):
     game = models.ForeignKey(Game, related_name='log')
     time = models.DateTimeField(default=timezone.now)
     text = models.TextField(default='')
+    acting_company = models.ForeignKey(Company, related_name='+', null=True,
+        default=None)
 
     class Meta:
         ordering = ['time']

@@ -101,7 +101,7 @@ class CompanyShareSerializer(serializers.ModelSerializer):
 class LogEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.LogEntry
-        fields = ('url', 'uuid', 'game', 'time', 'text')
+        fields = ('url', 'uuid', 'game', 'time', 'text', 'acting_company')
 
 
 class TransferMoneySerializer(serializers.Serializer):

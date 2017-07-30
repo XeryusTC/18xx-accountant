@@ -288,6 +288,14 @@ class LogEntryTests(TestCase):
         time = timezone.now()
         self.assertAlmostEqual(entry.time, time, delta=timedelta(seconds=5))
 
+    def test_acting_company_field_is_None_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsNone(entry.acting_company)
+
+    def test_acting_company_field_points_to_company(self):
+        company = factories.CompanyFactory.create(game=self.game)
+        entry = LogEntry.objects.create(game=self.game, acting_company=company)
+
     def test_are_sorted_chronological(self):
         entry1 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 1, 12, 0, 0)))
