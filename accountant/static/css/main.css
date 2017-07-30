@@ -97,6 +97,15 @@ h6 {
 	font-size: 1.4rem;
 }
 
+div.log-container {
+	overflow-y: auto;
+	max-height: 30rem;
+}
+
+div.log-container div.entry {
+	padding: 0.15rem;
+}
+
 /*****************
  * Error display *
  *****************/

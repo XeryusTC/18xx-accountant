@@ -1,6 +1,7 @@
 <div class="section" id="log">
 	<h4>Log</h4>
-	<div class="log-container">
+	<div class="log-container"
+		#logScroll [scrollTop]="logScroll.scrollHeight">
 		<div class="entry {{ entryColorClass(entry) }}"
 			*ngFor="let entry of gameState.log">
 			[{{ entry.time | date:'d-M H:mm' }}] {{ entry.text }}
