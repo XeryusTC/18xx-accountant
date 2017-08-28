@@ -14,6 +14,7 @@ class Game(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     cash = models.IntegerField(default=12000)
+    pool_shares_pay = models.BooleanField(default=False)
     log_cursor = models.OneToOneField('LogEntry', related_name='+',
         default=None, null=True, on_delete=models.SET_DEFAULT)
 
