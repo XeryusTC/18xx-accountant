@@ -7,12 +7,14 @@ class Homepage(PageObject):
     start_button = PageElement(name='new_game')
     bank_cash = PageElement(name='cash')
     app_root = PageElement(tag_name='app-root')
+    pool_shares_pay = PageElement(name='pool-shares-pay')
 
 class GamePage(PageObject):
     add_player_link = PageElement(id_='add_player')
     add_company_link = PageElement(id_='add_company')
     bank_cash = PageElement(css="#bank #cash")
     bank_pool = MultiPageElement(css="#bank .pool")
+    pool_shares_pay = PageElement(name='pool-shares-pay')
 
     player_name_list = MultiPageElement(css="div.player div.name")
 
