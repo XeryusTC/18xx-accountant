@@ -174,4 +174,12 @@ def _distribute_dividends(company, amount):
                 result[company] += dividend
             except KeyError:
                 result[company] = dividend
+    # Calculate dividends paid by IPO shares to the company
+    if company.game.ipo_shares_pay and company.ipo_shares != 0:
+        dividend = dividends_per_share * company.ipo_shares
+        if dividend != 0:
+            try:
+                result[company] += dividend
+            except KeyError:
+                result[company] = dividend
     return result
