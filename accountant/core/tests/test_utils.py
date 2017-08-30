@@ -628,6 +628,23 @@ class OperateTests(TestCase):
         utils.operate(self.company, 140, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, self.company, 14)
 
+    def test_operating_gives_money_to_company_when_pool_shares_pay_dividend(
+            self, mock_transfer_money):
+        self.game.pool_shares_pay = True
+        self.game.save()
+        self.setup_test_shares()
+        utils.operate(self.company, 150, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.company, 30)
+
+    def test_operating_gives_money_to_company_when_pool_shares_pay_dividend2(
+        self, mock_transfer_money):
+        self.game.pool_shares_pay = True
+        self.game.save()
+        self.company.bank_shares = 3
+        self.company.save()
+        utils.operate(self.company, 160, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.company, 48)
+
     def test_operating_gives_money_to_share_holders(self, mock_transfer_money):
         self.setup_test_shares()
         utils.operate(self.company, 520, utils.OperateMethod.FULL)
