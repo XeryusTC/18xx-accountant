@@ -15,6 +15,7 @@ class Game(models.Model):
         editable=False)
     cash = models.IntegerField(default=12000)
     pool_shares_pay = models.BooleanField(default=False)
+    ipo_shares_pay = models.BooleanField(default=False)
     log_cursor = models.OneToOneField('LogEntry', related_name='+',
         default=None, null=True, on_delete=models.SET_DEFAULT)
 
