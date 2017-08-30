@@ -3,11 +3,12 @@ export class Game {
 	players = [];
 	constructor(
 		public uuid: string,
-		public cash: number
+		public cash: number,
+		public pool_shares_pay: boolean = false
 	) { }
 
 	static fromJson(obj) {
-		let game = new Game(obj.uuid, obj.cash);
+		let game = new Game(obj.uuid, obj.cash, obj.pool_shares_pay);
 		game.companies = obj.companies;
 		game.players = obj.players;
 		return game;
