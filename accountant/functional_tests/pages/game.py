@@ -14,6 +14,7 @@ class Homepage(PageObject):
 class GamePage(PageObject):
     add_player_link = PageElement(id_='add_player')
     add_company_link = PageElement(id_='add_company')
+    display_net_worth_link = PageElement(id_='display-net-worth')
     bank_cash = PageElement(css="#bank #cash")
     bank_pool = MultiPageElement(css="#bank .pool")
     pool_shares_pay = PageElement(name='pool-shares-pay')
@@ -178,3 +179,11 @@ class OperateForm(PageObject):
 class ErrorPage(PageObject):
     errors = MultiPageElement(css=".error")
     close = PageElement(css='.close')
+
+
+class NetWorthPopup(PageObject):
+    popup = PageElement(id_='net-worth')
+
+    def value(self, player, row):
+        field_name = 'value-{}-{}'.format(player, row)
+        return self.popup.find_element_by_id(field_name)

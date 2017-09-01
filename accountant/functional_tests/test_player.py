@@ -373,3 +373,58 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('The detail section is still visible')
         self.assertIsNotNone(player['detail'])
+
+
+class NetWorthTests(FunctionalTestCase):
+    def test_can_calculate_player_net_worth(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        alice_uuid   = self.create_player(game_uuid, 'Alice',   cash=1000)
+        bob_uuid     = self.create_player(game_uuid, 'Bob',     cash=800)
+        charlie_uuid = self.create_player(game_uuid, 'Charlie', cash=1400)
+        bo_uuid = self.create_company(game_uuid, 'B&O')
+        co_uuid = self.create_company(game_uuid, 'C&O')
+        bm_uuid = self.create_company(game_uuid, 'B&M')
+        self.create_player_share(alice_uuid,   bo_uuid, shares=5)
+        self.create_player_share(bob_uuid,     bo_uuid, shares=2)
+        self.create_player_share(charlie_uuid, bo_uuid, shares=3)
+        self.create_player_share(alice_uuid,   co_uuid, shares=1)
+        self.create_player_share(bob_uuid,     co_uuid, shares=4)
+        self.create_player_share(alice_uuid,   bm_uuid, shares=2)
+        self.create_player_share(charlie_uuid, bm_uuid, shares=8)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('She sets the values of the companies')
+        for company in game_page.get_companies():
+            company['value'].clear()
+            if company['name'].text == 'B&O':
+                company['value'].send_keys('120')
+            elif company['name'].text == 'C&O':
+                company['value'].send_keys('67')
+            elif company['name'].text == 'B&M':
+                company['value'].send_keys('40')
+
+        self.story('There is a button on the top to display net worth')
+        net_worth = game.NetWorthPopup(self.browser)
+        self.assertIsNone(net_worth.popup)
+        game_page.display_net_worth_link.click()
+
+        self.story('A popup appears with the net worth of all players')
+        self.assertIsNotNone(net_worth.popup)
+        self.story("Each player's total net worth is listed")
+        self.assertEqual(net_worth.value('Alice',   'net-worth').text, '1747')
+        self.assertEqual(net_worth.value('Bob',     'net-worth').text, '1308')
+        self.assertEqual(net_worth.value('Charlie', 'net-worth').text, '2080')
+        self.story("Each player's amount of cash is listed")
+        self.assertEqual(net_worth.value('Alice',   'cash').text, '1000')
+        self.assertEqual(net_worth.value('Bob',     'cash').text, '800')
+        self.assertEqual(net_worth.value('Charlie', 'cash').text, '1400')
+        self.story("There is also a breakdown per company")
+        self.assertEqual(net_worth.value('Alice',   'B&O').text, '600')
+        self.assertEqual(net_worth.value('Alice',   'C&O').text, '67')
+        self.assertEqual(net_worth.value('Alice',   'B&M').text, '80')
+        self.assertEqual(net_worth.value('Bob',     'B&O').text, '240')
+        self.assertEqual(net_worth.value('Bob',     'C&O').text, '268')
+        self.assertEqual(net_worth.value('Charlie', 'B&O').text, '360')
+        self.assertEqual(net_worth.value('Charlie', 'B&M').text, '320')
