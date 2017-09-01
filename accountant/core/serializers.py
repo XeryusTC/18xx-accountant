@@ -21,7 +21,7 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
         fields = ('url', 'uuid', 'players', 'companies', 'cash',
-            'pool_shares_pay', 'ipo_shares_pay')
+            'pool_shares_pay', 'ipo_shares_pay', 'treasury_shares_pay')
         read_only_fields = ('players', 'companies')
 
     def create(self, validated_data):

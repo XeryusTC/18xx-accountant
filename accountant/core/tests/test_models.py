@@ -26,6 +26,10 @@ class GameTests(TestCase):
         game = Game()
         self.assertFalse(game.ipo_shares_pay)
 
+    def test_treasury_shares_pay_to_company_by_default(self):
+        game = Game()
+        self.assertTrue(game.treasury_shares_pay)
+
     def test_log_cursor_can_point_to_log_entries(self):
         game = Game.objects.create()
         entry = LogEntry.objects.create(game=game)
