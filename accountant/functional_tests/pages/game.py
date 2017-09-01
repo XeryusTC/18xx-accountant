@@ -9,6 +9,7 @@ class Homepage(PageObject):
     app_root = PageElement(tag_name='app-root')
     pool_shares_pay = PageElement(name='pool-shares-pay')
     ipo_shares_pay = PageElement(name='ipo-shares-pay')
+    treasury_shares_pay = PageElement(name='treasury-shares-pay')
 
 class GamePage(PageObject):
     add_player_link = PageElement(id_='add_player')
@@ -17,6 +18,7 @@ class GamePage(PageObject):
     bank_pool = MultiPageElement(css="#bank .pool")
     pool_shares_pay = PageElement(name='pool-shares-pay')
     ipo_shares_pay = PageElement(name='ipo-shares-pay')
+    treasury_shares_pay = PageElement(name='treasury-shares-pay')
 
     player_name_list = MultiPageElement(css="div.player div.name")
 

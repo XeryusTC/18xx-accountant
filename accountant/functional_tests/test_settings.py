@@ -13,6 +13,7 @@ class SettingsTests(FunctionalTestCase):
         game_page = game.GamePage(self.browser)
         self.assertFalse(game_page.pool_shares_pay.is_selected())
         self.assertFalse(game_page.ipo_shares_pay.is_selected())
+        self.assertTrue(game_page.treasury_shares_pay.is_selected())
 
     def test_create_game_with_pool_shares_paying_to_company(self):
         self.story('Alice is a user who visits the homepage')
@@ -81,3 +82,39 @@ class SettingsTests(FunctionalTestCase):
 
         self.story('The page updates and the company has received some money')
         self.verify_company(game_page.get_companies()[0], cash=14)
+
+    def test_create_game_where_treasury_shares_dont_pay_to_company(self):
+        self.story('Alice is a user who visits the homepage')
+        self.browser.get(self.server_url)
+
+        self.story('She sees a checkbox for treasury shares paying to the'
+            'company and disables it (it is enabled by default)')
+        homepage = game.Homepage(self.browser)
+        self.assertTrue(homepage.treasury_shares_pay.is_selected())
+        homepage.treasury_shares_pay.click()
+        self.assertFalse(homepage.treasury_shares_pay.is_selected())
+
+        self.story('She starts the game')
+        homepage.start_button.click()
+
+        self.story('She lands on the gamee page')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
+        game_page = game.GamePage(self.browser)
+        self.assertFalse(game_page.treasury_shares_pay.is_selected())
+
+        self.story('Create a company for the game')
+        game_uuid = self.browser.current_url[-36:]
+        company_uuid = self.create_company(game_uuid, 'C&O', cash=0)
+        self.create_company_share(company_uuid, company_uuid, shares=5)
+        self.browser.refresh()
+
+        self.story('The company operates, and does not receive money')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        operate_form = game.OperateForm(self.browser)
+        operate_form.revenue(company['detail']).clear()
+        operate_form.revenue(company['detail']).send_keys('30')
+        operate_form.full(company['detail']).click()
+
+        self.story('The page updates and the company has not received money')
+        self.verify_company(game_page.get_companies()[0], cash=0)
