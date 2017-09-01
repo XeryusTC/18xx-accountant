@@ -330,6 +330,36 @@ describe('GameStateService', () => {
 		expect(service.isLoaded()).toBe(false);
 	}));
 
+	it('netWorth() returns net worth of a player', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.players['player-uuid-0'].share_set = [
+			'share-uuid-0',
+			'share-uuid-1',
+			'share-uuid-6'
+		];
+		service.companies['company-uuid-0'].value = 50;
+		service.companies['company-uuid-1'].value = 90;
+		expect(service.netWorth(service.players['player-uuid-0'])['netWorth'])
+			.toBe(100 + 2*50 + 3*90);
+	}));
+
+	it('netWorth() returns value of shares in each company', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.players['player-uuid-0'].share_set = [
+			'share-uuid-0',
+			'share-uuid-1',
+			'share-uuid-6'
+		];
+		service.companies['company-uuid-0'].value = 50;
+		service.companies['company-uuid-1'].value = 90;
+		let netWorth = service.netWorth(service.players['player-uuid-0']);
+		expect(netWorth['company-uuid-0']).toBe(2 * 50);
+		expect(netWorth['company-uuid-1']).toBe(3 * 90);
+		expect(netWorth['company-uuid-3']).toBe(2 * 0);
+	}));
+
 	it('adds error when game does not exist', fakeAsync(() => {
 		gameService.getGame.and.callFake(() => Promise.reject({
 			_body: {detail: 'Not found.'},

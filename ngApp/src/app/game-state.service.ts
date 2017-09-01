@@ -159,4 +159,15 @@ export class GameStateService {
 			}
 		});
 	}
+
+	netWorth(player: Player): {[name: string]: number} {
+		let worth = {netWorth: player.cash}
+		for (let share_uuid of player.share_set) {
+			let share: Share = this.shares[share_uuid];
+			let value = share.shares * this.companies[share.company].value;
+			worth['netWorth'] += value;
+			worth[share.company] = value;
+		}
+		return worth;
+	}
 }
