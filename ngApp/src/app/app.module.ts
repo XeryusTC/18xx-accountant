@@ -42,6 +42,7 @@ import { TransferFormComponent }
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { LogSectionComponent } from './log-section/log-section.component';
 import { SettingsSectionComponent } from './settings-section/settings-section.component';
+import { NetWorthComponent } from './net-worth/net-worth.component';
 
 @NgModule({
 	declarations: [
@@ -64,6 +65,7 @@ import { SettingsSectionComponent } from './settings-section/settings-section.co
 		ErrorDisplayComponent,
 		LogSectionComponent,
 		SettingsSectionComponent,
+		NetWorthComponent,
 	],
 	imports: [
 		BrowserModule,

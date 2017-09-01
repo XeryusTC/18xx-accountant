@@ -1,0 +1,37 @@
+<div *ngIf="netWorthService.displayNetWorth" class="background">
+	<div id="net-worth">
+		<table>
+			<thead>
+				<tr>
+					<th></th>
+					<th *ngFor="let player of gameState.players|values:'name'">
+						{{ player.name }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>Net Worth</th>
+					<td *ngFor="let player of gameState.players|values:'name'"
+						id="value-{{ player.name }}-net-worth">
+						{{ gameState.netWorth(player)['netWorth'] }}
+					</td>
+				</tr>
+				<tr>
+					<th>Cash</th>
+					<td *ngFor="let player of gameState.players|values:'name'"
+						id="value-{{ player.name }}-cash">
+						{{ player.cash }}
+					</td>
+				</tr>
+				<tr *ngFor="let company of gameState.companies|values:'name'">
+					<th>{{ company.name }}</th>
+					<td *ngFor="let player of gameState.players|values:'name'"
+						id="value-{{ player.name }}-{{ company.name }}">
+						{{ gameState.netWorth(player)[company.uuid] }}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
