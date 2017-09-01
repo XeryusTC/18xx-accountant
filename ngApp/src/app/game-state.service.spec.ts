@@ -15,77 +15,102 @@ import { PlayerService }    from './player.service';
 
 describe('GameStateService', () => {
 	let service: GameStateService;
-	let testGame = new Game('game-uuid', 12000);
-	let testPlayers = [
-		new Player('player-uuid-0', 'game-uuid', 'Alice', 100),
-		new Player('player-uuid-1', 'game-uuid', 'Bob', 200),
-		new Player('player-uuid-2', 'game-uuid', 'Charlie', 300)
-	];
-	let testCompanies = [
-		new Company('company-uuid-0', 'game-uuid', 'B&O', 100, 10),
-		new Company('company-uuid-1', 'game-uuid', 'PMQ', 200, 10),
-		new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10),
-		new Company('company-uuid-3', 'game-uuid', 'C&O', 400, 5)
-	];
-	let testPlayerShares = [
-		new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-1', 3),
-		new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-0', 2),
-		new Share('share-uuid-2', 'player-uuid-1', 'company-uuid-0', 5),
-		new Share('share-uuid-6', 'player-uuid-0', 'company-uuid-3', 2),
-	];
-	let testCompanyShares= [
-		new Share('share-uuid-3', 'company-uuid-0', 'company-uuid-0', 2),
-		new Share('share-uuid-4', 'company-uuid-1', 'company-uuid-1', 1),
-		new Share('share-uuid-5', 'company-uuid-2', 'company-uuid-2', 3)
-	];
-	let testLog = [
-		new LogEntry('log-uuid-0', 'game-uuid',
-					 new Date('1970-01-01T01:01:01.0001Z'), 'First log entry'),
-		new LogEntry('log-uuid-1', 'game-uuid',
-					 new Date('1971-02-02T02:02:02.0002Z'), 'Second entry'),
-		new LogEntry('log-uuid-2', 'game-uuid',
-					 new Date('1972-03-03T03:03:03.0003Z'), 'Third log entry'),
-	];
 
+	// Data
+	let testGame: Game;
+	let testPlayers: Player[];
+	let testCompanies: Company[];
+	let testPlayerShares: Share[];
+	let testCompanyShares: Share[];
+	let testLog: LogEntry[];
 
-	// Game service mock
-	let gameService    = jasmine.createSpyObj('gameService',
-												 ['getGame', 'create']);
-	gameService.getGame.and.callFake(() => Promise.resolve(testGame));
-
-	// Player service mock
-	let playerService  = jasmine.createSpyObj('playerService', ['getPlayer',
-											  'getPlayerList', 'create']);
-	playerService.getPlayerList
-		.and.callFake(() => Promise.resolve(testPlayers));
-
-	// Company service mock
-	let companyService = jasmine.createSpyObj('companyService', ['getCompany',
-											  'getCompanyList', 'create']);
-	companyService.getCompanyList
-		.and.callFake(() => Promise.resolve(testCompanies));
-
-	// Share service mock
-	let shareService = jasmine
-		.createSpyObj('ShareService', ['getPlayerShareList',
-					  'getCompanyShareList']);
-
-	// Error service mock
-	let errorService = jasmine
-		.createSpyObj('ErrorService', ['getErrors', 'hasErrors', 'addError']);
-
-	shareService.getPlayerShareList
-		.and.callFake(() => Promise.resolve(testPlayerShares));
-	shareService.getCompanyShareList
-		.and.callFake(() => Promise.resolve(testCompanyShares));
-
-	// Log service mock
-	let logService = jasmine
-		.createSpyObj('LogService', ['getLog']);
-	logService.getLog
-		.and.callFake(() => Promise.resolve(testLog));
+	// Service mocks
+	let gameService;
+	let playerService;
+	let companyService;
+	let shareService;
+	let errorService;
+	let logService;
 
 	beforeEach(() => {
+		testGame = new Game('game-uuid', 12000);
+		testPlayers = [
+			new Player('player-uuid-0', 'game-uuid', 'Alice', 100),
+			new Player('player-uuid-1', 'game-uuid', 'Bob', 200),
+			new Player('player-uuid-2', 'game-uuid', 'Charlie', 300)
+		];
+		testPlayers[0].share_set = [
+			'share-uuid-0',
+			'share-uuid-1',
+			'share-uuid-6'
+		];
+		testCompanies = [
+			new Company('company-uuid-0', 'game-uuid', 'B&O', 100, 10),
+			new Company('company-uuid-1', 'game-uuid', 'PMQ', 200, 10),
+			new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10),
+			new Company('company-uuid-3', 'game-uuid', 'C&O', 400, 5)
+		];
+		testPlayerShares = [
+			new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-1', 3),
+			new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-0', 2),
+			new Share('share-uuid-2', 'player-uuid-1', 'company-uuid-0', 5),
+			new Share('share-uuid-6', 'player-uuid-0', 'company-uuid-3', 2),
+		];
+		testCompanyShares = [
+			new Share('share-uuid-3', 'company-uuid-0', 'company-uuid-0', 2),
+			new Share('share-uuid-4', 'company-uuid-1', 'company-uuid-1', 1),
+			new Share('share-uuid-5', 'company-uuid-2', 'company-uuid-2', 3)
+		];
+		testLog = [
+			new LogEntry('log-uuid-0', 'game-uuid',
+						 new Date('1970-01-01T01:01:01.0001Z'),
+						 'First log entry'),
+			new LogEntry('log-uuid-1', 'game-uuid',
+						 new Date('1971-02-02T02:02:02.0002Z'),
+						 'Second entry'),
+			new LogEntry('log-uuid-2', 'game-uuid',
+						 new Date('1972-03-03T03:03:03.0003Z'),
+						 'Third log entry'),
+		];
+
+
+		// Game service mock
+		gameService = jasmine.createSpyObj('gameService',
+										   ['getGame', 'create']);
+		gameService.getGame.and.callFake(() => Promise.resolve(testGame));
+
+		// Player service mock
+		playerService = jasmine.createSpyObj('playerService', ['getPlayer',
+											 'getPlayerList', 'create']);
+		playerService.getPlayerList
+			.and.callFake(() => Promise.resolve(testPlayers));
+
+		// Company service mock
+		companyService = jasmine.createSpyObj('companyService',
+											  ['getCompany',
+											  'getCompanyList', 'create']);
+		companyService.getCompanyList
+			.and.callFake(() => Promise.resolve(testCompanies));
+
+		// Share service mock
+		shareService = jasmine.createSpyObj('ShareService',
+											['getPlayerShareList',
+											'getCompanyShareList']);
+
+		shareService.getPlayerShareList
+			.and.callFake(() => Promise.resolve(testPlayerShares));
+		shareService.getCompanyShareList
+			.and.callFake(() => Promise.resolve(testCompanyShares));
+
+		// Error service mock
+		errorService = jasmine.createSpyObj('ErrorService', ['getErrors',
+											'hasErrors', 'addError']);
+
+		// Log service mock
+		logService = jasmine.createSpyObj('LogService', ['getLog']);
+		logService.getLog
+			.and.callFake(() => Promise.resolve(testLog));
+
 		service = new GameStateService(gameService, playerService,
 									   companyService, shareService,
 									   errorService, logService);
@@ -103,11 +128,12 @@ describe('GameStateService', () => {
 		expect(service.game).toEqual(testGame);
 	}));
 
-	it('loading a game retrieves players', () => {
+	it('loading a game retrieves players', fakeAsync(() => {
 		service.loadGame('game-uuid');
+		tick();
 		expect(playerService.getPlayerList.calls.first().args[0])
 			.toBe('game-uuid');
-	});
+	}));
 
 	it('loading a game stores the players in a dictionary', fakeAsync(() => {
 		service.loadGame('game-uuid');
@@ -117,11 +143,12 @@ describe('GameStateService', () => {
 		expect(service.players['player-uuid-2']).toEqual(testPlayers[2]);
 	}));
 
-	it('loading a game retrieves companies', () => {
+	it('loading a game retrieves companies', fakeAsync(() => {
 		service.loadGame('game-uuid');
+		tick();
 		expect(companyService.getCompanyList.calls.first().args[0])
 			.toBe('game-uuid');
-	});
+	}));
 
 	it('loading a game stores companies in a dictionary', fakeAsync(() => {
 		service.loadGame('game-uuid');
@@ -131,13 +158,14 @@ describe('GameStateService', () => {
 		expect(service.companies['company-uuid-2']).toEqual(testCompanies[2]);
 	}));
 
-	it('loading a game retrieves shares', () => {
+	it('loading a game retrieves shares', fakeAsync(() => {
 		service.loadGame('game-uuid');
+		tick();
 		expect(shareService.getPlayerShareList.calls.first().args[0])
 			.toBe('game-uuid');
-		expect(shareService.getPlayerShareList.calls.first().args[0])
+		expect(shareService.getCompanyShareList.calls.first().args[0])
 			.toBe('game-uuid');
-	});
+	}));
 
 	it('loading a game stores shares in a single dictionary', fakeAsync(() => {
 		service.loadGame('game-uuid');
@@ -150,10 +178,11 @@ describe('GameStateService', () => {
 		expect(service.shares['share-uuid-5']).toEqual(testCompanyShares[2]);
 	}));
 
-	it('loading a game retrieves the log', () => {
+	it('loading a game retrieves the log', fakeAsync(() => {
 		service.loadGame('game-uuid');
+		tick();
 		expect(logService.getLog.calls.first().args[0]).toBe('game-uuid');
-	});
+	}));
 
 	it('loading a game stores the log in an array', fakeAsync(() => {
 		service.loadGame('game-uuid');
@@ -217,10 +246,19 @@ describe('GameStateService', () => {
 	}));
 
 	it('updateCompany() keeps old company value', fakeAsync(() => {
-		let company = Company.fromJson({uuid: 'company-uuid-1', name: 'PMQ',
-			cash: 1, game: 'game-uuid', share_count: 10, ipo_shares: 5,
-			bank_shares: 9, player_owners: [], share_set: [],
-			text_color: 'black', background_color: 'white'});
+		let company = Company.fromJson({
+			uuid: 'company-uuid-1',
+			name: 'PMQ',
+			cash: 1,
+			game: 'game-uuid',
+			share_count: 10,
+			ipo_shares: 5,
+			bank_shares: 9,
+			player_owners: [],
+			share_set: [],
+			text_color: 'black',
+			background_color: 'white'
+		});
 		service.loadGame('game-uuid');
 		tick();
 		service.companies['company-uuid-1'].value = 72;
@@ -262,8 +300,6 @@ describe('GameStateService', () => {
 		testCompanies[0].background_color = 'color2';
 		testCompanies[1].text_color = 'color3';
 		testCompanies[1].background_color = 'color4';
-		testPlayers[0].share_set = ['share-uuid-0', 'share-uuid-1',
-			'share-uuid-6'];
 		service.loadGame('game-uuid');
 		tick();
 		let info = service.shareInfo(testPlayers[0]);
@@ -333,11 +369,6 @@ describe('GameStateService', () => {
 	it('netWorth() returns net worth of a player', fakeAsync(() => {
 		service.loadGame('game-uuid');
 		tick();
-		service.players['player-uuid-0'].share_set = [
-			'share-uuid-0',
-			'share-uuid-1',
-			'share-uuid-6'
-		];
 		service.companies['company-uuid-0'].value = 50;
 		service.companies['company-uuid-1'].value = 90;
 		expect(service.netWorth(service.players['player-uuid-0'])['netWorth'])
@@ -347,11 +378,6 @@ describe('GameStateService', () => {
 	it('netWorth() returns value of shares in each company', fakeAsync(() => {
 		service.loadGame('game-uuid');
 		tick();
-		service.players['player-uuid-0'].share_set = [
-			'share-uuid-0',
-			'share-uuid-1',
-			'share-uuid-6'
-		];
 		service.companies['company-uuid-0'].value = 50;
 		service.companies['company-uuid-1'].value = 90;
 		let netWorth = service.netWorth(service.players['player-uuid-0']);
