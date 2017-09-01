@@ -9,7 +9,8 @@ describe ('Game model', () => {
 			companies: ['company-1-uuid', 'company-2-uuid'],
 			cash: 12000,
 			pool_shares_pay: true,
-			ipo_shares_pay: true
+			ipo_shares_pay: true,
+			treasury_shares_pay: false
 		};
 		let game = Game.fromJson(json);
 		// Test each property individually instead of looping over them
@@ -20,5 +21,6 @@ describe ('Game model', () => {
 		expect(game.companies).toEqual(json.companies);
 		expect(game.pool_shares_pay).toEqual(json.pool_shares_pay);
 		expect(game.ipo_shares_pay).toEqual(json.ipo_shares_pay);
+		expect(game.treasury_shares_pay).toEqual(json.treasury_shares_pay);
 	});
 });

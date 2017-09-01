@@ -15,12 +15,22 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="tip-12">
+		<div class="tp-12">
 			<label for="ipo-shares-pay">
 				<input type="checkbox" name="ipo-shares-pay"
 					id="ipo-shares-pay"
 					[(ngModel)]="gameState.game.ipo_shares_pay">
 				Shares in the ipo pool pay dividends to the company
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="tp-12">
+			<label for="treasury-shares-pay">
+				<input type="checkbox" name="treasury-shares-pay"
+					id="treasury-shares-pay"
+					[(ngModel)]="gameState.game.treasury_shares_pay">
+				Shares in a company's treasury pay dividends to the company
 			</label>
 		</div>
 	</div>
