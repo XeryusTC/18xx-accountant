@@ -13,4 +13,6 @@
 	<a routerLink="/game/{{ gameState.game.uuid }}/add-company"
 		routerLinkActive="button-disabled"
 		class="button" id="add_company">Add Company</a>
+	<a (click)="netWorthService.toggleNetWorthDisplay()" class="button"
+		id="display-net-worth">Display net worth</a>
 </nav>

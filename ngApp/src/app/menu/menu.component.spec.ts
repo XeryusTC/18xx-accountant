@@ -5,6 +5,7 @@ import { RouterLinkStubDirective } from '../testing/router-stubs';
 
 import { Game }             from '../models/game';
 import { MenuComponent }    from './menu.component';
+import { NetWorthService }  from '../net-worth.service';
 import { GameStateService } from '../game-state.service';
 
 describe('MenuComponent', () => {
@@ -20,7 +21,8 @@ describe('MenuComponent', () => {
 			imports: [RouterTestingModule],
 			declarations: [ MenuComponent, RouterLinkStubDirective ],
 			providers: [
-				{provide: GameStateService, useValue: gameServiceStub}
+				{provide: GameStateService, useValue: gameServiceStub},
+				NetWorthService
 			]
 		})
 		.compileComponents();

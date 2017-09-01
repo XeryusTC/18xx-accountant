@@ -8,6 +8,7 @@ import { ErrorService }         from './error.service';
 import { GameService }          from './game.service';
 import { GameStateService }     from './game-state.service';
 import { LogService }           from './log.service';
+import { NetWorthService }      from './net-worth.service';
 import { OperateService }       from './operate.service';
 import { PlayerService }        from './player.service';
 import { ShareService }         from './share.service';
@@ -76,6 +77,7 @@ import { SettingsSectionComponent } from './settings-section/settings-section.co
 		GameStateService,
 		GameService,
 		LogService,
+		NetWorthService,
 		OperateService,
 		PlayerService,
 		ShareService,
