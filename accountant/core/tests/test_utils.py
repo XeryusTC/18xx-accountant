@@ -676,6 +676,23 @@ class OperateTests(TestCase):
         utils.operate(self.company, 40, utils.OperateMethod.FULL)
         mock_transfer_money.assert_any_call(None, company2, 8)
 
+    def test_operating_doesnt_give_money_to_company_when_treasury_doesnt_pay(
+            self, mock_transfer_money):
+        self.game.treasury_shares_pay = False
+        self.game.save()
+        self.setup_test_shares()
+        affected = utils.operate(self.company, 180, utils.OperateMethod.FULL)
+        self.assertNotIn(self.company, affected)
+        self.assertEqual(self.company.cash, 0)
+
+    def test_operating_gives_money_to_company_when_treasury_shares_pay(self,
+            mock_transfer_money):
+        self.game.treasury_shares_pay = True
+        self.game.save()
+        self.setup_test_shares()
+        utils.operate(self.company, 190, utils.OperateMethod.FULL)
+        mock_transfer_money.assert_any_call(None, self.company, 19)
+
     def test_shareholder_payout_is_proportional_to_percentage_owned(self,
             mock_transfer_money):
         self.company.share_count = 4

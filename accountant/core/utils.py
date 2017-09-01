@@ -162,10 +162,11 @@ def _distribute_dividends(company, amount):
         if dividend != 0:
             result[share.owner] = dividend
     # Calculate dividends paid to companies
-    for share in company.companyshare_set.all():
-        dividend = dividends_per_share  * share.shares
-        if dividend != 0:
-            result[share.owner] = dividend
+    if company.game.treasury_shares_pay:
+        for share in company.companyshare_set.all():
+            dividend = dividends_per_share  * share.shares
+            if dividend != 0:
+                result[share.owner] = dividend
     # Calculate dividends paid by pool shares to the owning company
     if company.game.pool_shares_pay and company.bank_shares != 0:
         dividend = dividends_per_share * company.bank_shares
