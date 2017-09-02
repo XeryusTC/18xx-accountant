@@ -28,7 +28,8 @@ class Player(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     name = models.CharField(max_length=16, default='Player')
-    game = models.ForeignKey(Game, related_name='players')
+    game = models.ForeignKey(Game, related_name='players',
+        on_delete=models.CASCADE)
     cash = models.IntegerField(default=0)
 
     class Meta:
@@ -45,7 +46,8 @@ class Company(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     name = models.CharField(max_length=8, default='Company')
-    game = models.ForeignKey(Game, related_name='companies')
+    game = models.ForeignKey(Game, related_name='companies',
+        on_delete=models.CASCADE)
     text_color = models.CharField(max_length=16, choices=COLOR_CODES,
         default='black', blank=False)
     background_color = models.CharField(max_length=16, choices=COLOR_CODES,
@@ -81,7 +83,7 @@ class PlayerShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     owner = models.ForeignKey(Player, related_name='share_set')
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     shares = models.IntegerField(default=1)
 
     class Meta:
@@ -96,7 +98,7 @@ class CompanyShare(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     owner = models.ForeignKey(Company, related_name='share_set')
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     shares = models.IntegerField(default=1)
 
     class Meta:
@@ -110,7 +112,8 @@ class CompanyShare(models.Model):
 class LogEntry(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
-    game = models.ForeignKey(Game, related_name='log')
+    game = models.ForeignKey(Game, related_name='log',
+        on_delete=models.CASCADE)
     time = models.DateTimeField(default=timezone.now)
     text = models.TextField(default='')
     acting_company = models.ForeignKey(Company, related_name='+', null=True,
