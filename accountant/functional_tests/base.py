@@ -2,6 +2,7 @@
 from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import inspect
+import os
 from pytractor import webdriver
 from unipath import Path
 
@@ -44,7 +45,8 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             print()  # Start stories on a fresh line
 
     def tearDown(self):
-        if self._test_has_failed():  # pragma: no cover
+        if self._test_has_failed() and \
+                'TRAVIS' not in os.environ:  # pragma: no cover
             SCREEN_DUMP_LOCATION.mkdir()
             for ix, handle in enumerate(self.browser.window_handles):
                 self.browser.switch_to_window(handle)
