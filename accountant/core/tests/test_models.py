@@ -306,7 +306,7 @@ class LogEntryTests(TestCase):
 
     def test_acting_company_field_points_to_company(self):
         company = factories.CompanyFactory.create(game=self.game)
-        entry = LogEntry.objects.create(game=self.game, acting_company=company)
+        LogEntry.objects.create(game=self.game, acting_company=company)
 
     def test_are_sorted_chronological(self):
         entry1 = LogEntry.objects.create(game=self.game,
