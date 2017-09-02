@@ -32,7 +32,7 @@
 					<th>{{ company.name }}</th>
 					<td *ngFor="let player of gameState.players|values:'name'"
 						id="value-{{ player.name }}-{{ company.name }}">
-						{{ gameState.netWorth(player)[company.uuid] }}
+						{{ gameState.netWorth(player)[company.uuid] || '0' }}
 					</td>
 				</tr>
 			</tbody>

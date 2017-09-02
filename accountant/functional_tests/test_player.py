@@ -479,3 +479,18 @@ class NetWorthTests(FunctionalTestCase):
         self.assertIn('bg-blue-800', bo_row.get_attribute('class'))
         self.assertIn('fg-blue-300', co_row.get_attribute('class'))
         self.assertIn('bg-yellow-500', co_row.get_attribute('class'))
+
+    def test_shares_worth_is_0_when_player_doesnt_own_shares(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        alice_uuid = self.create_player(game_uuid, 'Alice')
+        prr_uuid = self.create_company(game_uuid, 'PRR')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She clicks the net worth button')
+        game_page = game.GamePage(self.browser)
+        game_page.display_net_worth_link.click()
+
+        self.story('The share worth of PRR for alice reads 0')
+        net_worth = game.NetWorthPopup(self.browser)
+        self.assertEqual(net_worth.value('Alice', 'PRR').text, '0')
