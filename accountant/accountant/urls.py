@@ -14,20 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from django.contrib import admin
 import rest_framework.urls
 
 import core.urls
 import interface.urls
 import ng.urls
 
-urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-]
-
 urlpatterns = (
     url(r'^ui/', include(interface.urls, namespace='ui')),
     url(r'^api/', include(core.urls)),
-    url(r'^api-auth/', include(rest_framework.urls, namespace=rest_framework)),
+    url(r'^api-auth/', include(rest_framework.urls,
+        namespace='rest_framework')),
     url(r'^', include(ng.urls, namespace='ng')),
 )
