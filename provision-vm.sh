@@ -37,7 +37,7 @@ fi
 
 # Install angular-cli
 if ! command_exists ng ; then
-	npm install -g @angular/cli@1.0.0
+	npm install -g @angular/cli@1.3.2
 fi
 
 # Install angular requirements
