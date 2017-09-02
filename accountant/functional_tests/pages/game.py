@@ -188,3 +188,7 @@ class NetWorthPopup(PageObject):
     def value(self, player, row):
         field_name = 'value-{}-{}'.format(player, row)
         return self.popup.find_element_by_id(field_name)
+
+    def company_row(self, company):
+        field_id = 'row-{}'.format(company)
+        return self.popup.find_element_by_id(field_id)

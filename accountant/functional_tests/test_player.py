@@ -443,3 +443,39 @@ class NetWorthTests(FunctionalTestCase):
         self.story('She closes the net worth display')
         net_worth.background.click()
         self.assertIsNone(net_worth.popup)
+
+    def test_shares_worth_are_in_company_colors(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        alice_uuid = self.create_player(game_uuid, 'Alice', cash=100)
+        bob_uuid   = self.create_player(game_uuid, 'Bob',   cash=500)
+        bo_uuid = self.create_company(game_uuid, 'B&O', text='white',
+            background='blue-800')
+        co_uuid = self.create_company(game_uuid, 'C&O', text='blue-300',
+            background='yellow-500')
+        self.create_player_share(alice_uuid, bo_uuid, shares=3)
+        self.create_player_share(alice_uuid, co_uuid, shares=6)
+        self.create_player_share(bob_uuid,   bo_uuid, shares=5)
+        self.create_player_share(bob_uuid,   co_uuid, shares=4)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('She sets the values of the companies')
+        for company in game_page.get_companies():
+            company['value'].clear()
+            if company['name'].text == 'B&O':
+                company['value'].send_keys('90')
+            elif company['name'].text == 'C&O':
+                company['value'].send_keys('40')
+
+        self.story('She clicks teh net worth button')
+        game_page.display_net_worth_link.click()
+
+        self.story('In the popup all the company values are in company color')
+        net_worth = game.NetWorthPopup(self.browser)
+        bo_row = net_worth.company_row('B&O')
+        co_row = net_worth.company_row('C&O')
+        self.assertIn('fg-white', bo_row.get_attribute('class'))
+        self.assertIn('bg-blue-800', bo_row.get_attribute('class'))
+        self.assertIn('fg-blue-300', co_row.get_attribute('class'))
+        self.assertIn('bg-yellow-500', co_row.get_attribute('class'))
