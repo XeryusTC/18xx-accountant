@@ -4,7 +4,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th></th>
+					<td></td>
 					<th *ngFor="let player of gameState.players|values:'name'">
 						{{ player.name }}
 					</th>
@@ -12,16 +12,17 @@
 			</thead>
 			<tbody>
 				<tr>
-					<th>Net Worth</th>
+					<th class="bottom-border">Net Worth</th>
 					<td *ngFor="let player of gameState.players|values:'name'"
-						id="value-{{ player.name }}-net-worth">
+						id="value-{{ player.name }}-net-worth"
+						class="text-cash bottom-border">
 						{{ gameState.netWorth(player)['netWorth'] }}
 					</td>
 				</tr>
 				<tr>
 					<th>Cash</th>
 					<td *ngFor="let player of gameState.players|values:'name'"
-						id="value-{{ player.name }}-cash">
+						id="value-{{ player.name }}-cash" class="text-cash">
 						{{ player.cash }}
 					</td>
 				</tr>
@@ -31,7 +32,8 @@
 					id="row-{{ company.name }}">
 					<th>{{ company.name }}</th>
 					<td *ngFor="let player of gameState.players|values:'name'"
-						id="value-{{ player.name }}-{{ company.name }}">
+						id="value-{{ player.name }}-{{ company.name }}"
+						class="text-cash">
 						{{ gameState.netWorth(player)[company.uuid] || '0' }}
 					</td>
 				</tr>

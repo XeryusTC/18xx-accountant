@@ -129,6 +129,24 @@ div.background {
 	z-index: 51;
 }
 
+table {
+	margin: 0.2rem;
+}
+
+table td, table th {
+	text-align: left;
+	vertical-align: top;
+	padding: 0.2rem 0.5rem;
+}
+
+table thead th {
+	border-bottom: 0.15rem solid #b0bec5;
+}
+
+td.bottom-border, th.bottom-border {
+	border-bottom: 0.1rem solid #b0bec5;
+}
+
 /*****************
  * Error display *
  *****************/
