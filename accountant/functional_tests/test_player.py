@@ -428,3 +428,18 @@ class NetWorthTests(FunctionalTestCase):
         self.assertEqual(net_worth.value('Bob',     'C&O').text, '268')
         self.assertEqual(net_worth.value('Charlie', 'B&O').text, '360')
         self.assertEqual(net_worth.value('Charlie', 'B&M').text, '320')
+
+    def test_can_close_net_worth_display(self):
+        self.story('Alice is a user who starts a new game')
+        game_uuid = self.create_game()
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('The opens the net worth display')
+        game_page.display_net_worth_link.click()
+        net_worth = game.NetWorthPopup(self.browser)
+        self.assertIsNotNone(net_worth.popup)
+
+        self.story('She closes the net worth display')
+        net_worth.background.click()
+        self.assertIsNone(net_worth.popup)

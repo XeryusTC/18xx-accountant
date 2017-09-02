@@ -183,6 +183,7 @@ class ErrorPage(PageObject):
 
 class NetWorthPopup(PageObject):
     popup = PageElement(id_='net-worth')
+    background = PageElement(css='.background')
 
     def value(self, player, row):
         field_name = 'value-{}-{}'.format(player, row)

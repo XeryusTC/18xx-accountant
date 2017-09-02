@@ -1,4 +1,5 @@
-<div *ngIf="netWorthService.displayNetWorth" class="background">
+<div class="background" *ngIf="netWorthService.displayNetWorth"
+	(click)="netWorthService.toggleNetWorthDisplay()">
 	<div id="net-worth">
 		<table>
 			<thead>
