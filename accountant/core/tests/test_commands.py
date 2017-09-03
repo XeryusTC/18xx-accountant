@@ -64,7 +64,7 @@ class CreateplayerTests(TestCase):
 
     def test_raises_CommandError_when_game_doesnt_exist(self):
         with self.assertRaises(CommandError) as cm:
-            call_command('createplayer', 'fake-uuid', 'Charlie')
+            call_command('createplayer', FAKE_UUID, 'Charlie')
         self.assertIn('This is not a valid UUID', cm.exception.args)
 
     def test_cash_parameter_determines_amount_of_cash_player_has(self):
@@ -111,7 +111,7 @@ class CreatecompanyTests(TestCase):
 
     def test_raises_CommandError_when_game_doesnt_exist(self):
         with self.assertRaises(CommandError) as cm:
-            call_command('createcompany', 'fake-uuid', 'Erie')
+            call_command('createcompany', FAKE_UUID, 'Erie')
         self.assertIn('This is not a valid UUID', cm.exception.args)
 
     def test_cash_parameter_determines_amount_of_cash_company_has(self):

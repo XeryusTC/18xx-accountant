@@ -47,7 +47,7 @@ class HomePageTest(FunctionalTestCase):
 
     def test_gives_error_on_non_existent_game(self):
         self.story('Alice is a user who requests a non existing game')
-        self.browser.get(self.server_url + \
+        self.browser.get(self.server_url +
                 '/game/000000000000-0000-0000-0000-00000000')
 
         self.story('There is a box overlaying the page that shows an error')

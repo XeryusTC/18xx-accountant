@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             game = Game.objects.get(pk=options['game'])
-        except ValueError:
+        except Game.DoesNotExist:
             raise CommandError('This is not a valid UUID')
         company = Company.objects.create(game=game, name=options['name'],
             cash=options['cash'], share_count=options['share_count'],
