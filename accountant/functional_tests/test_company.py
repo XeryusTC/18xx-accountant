@@ -500,3 +500,45 @@ class ManageCompanyTests(FunctionalTestCase):
 
         self.story('The detail section is still visible')
         self.assertIsNotNone(company['detail'])
+
+
+class EditCompanyTests(FunctionalTestCase):
+    def test_can_change_company_name(self):
+        self.story('Alice is a user with a who starts a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&O')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('When she opens the B&O section there is an edit button')
+        bo = game_page.get_companies()[0]
+        self.assertIsNone(bo['edit'])
+        bo['elem'].click()
+        self.assertIsNotNone(bo['edit'])
+
+        self.story('After clicking the edit button she lands on a new page')
+        edit_company = game.EditCompanyPage(self.browser)
+        bo['edit'].click()
+        self.assertRegex(self.browser.current_url,
+            r'/edit-company/([^/]+)$')
+        self.assertEqual(self.browser.title, 'Edit company')
+        self.assertEqual(edit_company.header.text, 'Edit company')
+
+        self.story('She changes the name, increases the number of shares, '
+            'and changes the color of the company')
+        edit_company.name.clear()
+        edit_company.name.send_keys('C&O')
+        edit_company.shares.clear()
+        edit_company.shares.send_keys('20')
+        edit_company.select_text_color('amber-200')
+        edit_company.select_background_color('light-blue-400')
+        edit_company.edit_button.click()
+
+        self.story('She returns to the game page and the company has changed')
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
+        self.assertEqual(len(game_page.get_companies()), 1)
+        co = game_page.get_companies()[0]
+        self.assertEqual(co['name'].text, 'C&O')
+        self.assertEqual(co['share_count'].text, '20')
+        self.assertIn('fg-amber-200', co['elem'].get_attribute('class'))
+        self.assertIn('bg-light-blue-400', co['elem'].get_attribute('class'))

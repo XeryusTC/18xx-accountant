@@ -78,6 +78,7 @@ class Company(Entity):
     _share_count = PageElement(css=".share_count", context=True)
     _ipo_shares = PageElement(css=".ipo", context=True)
     _bank_shares = PageElement(css=".bank", context=True)
+    _edit = PageElement(id_="edit", context=True)
 
     def __getitem__(self, key):
         if key == 'share_count':
@@ -88,6 +89,8 @@ class Company(Entity):
             return self._bank_shares(self.root)
         elif key == 'value':
             return self._value(self.root)
+        elif key == 'edit':
+            return self._edit(self.root)
         return super(Company, self).__getitem__(key)
 
 
@@ -192,3 +195,24 @@ class NetWorthPopup(PageObject):
     def company_row(self, company):
         field_id = 'row-{}'.format(company)
         return self.popup.find_element_by_id(field_id)
+
+
+class EditCompanyPage(PageObject):
+    header = PageElement(id_='title')
+    name = PageElement(name='name')
+    shares = PageElement(name='share_count')
+    text_color = MultiPageElement(name='text-color-select')
+    background_color = MultiPageElement(name='background-color-select')
+    edit_button = PageElement(tag_name='button')
+
+    def select_text_color(self, color):
+        for radio in self.text_color:
+            if radio.get_attribute('value') == color:
+                radio.click()
+                break
+
+    def select_background_color(self, color):
+        for radio in self.background_color:
+            if radio.get_attribute('value') == color:
+                radio.click()
+                break
