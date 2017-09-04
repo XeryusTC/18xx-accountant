@@ -1,3 +1,66 @@
-<p>
-  edit-company-form works!
-</p>
+<form (ngSubmit)="onSubmit()" #companyForm="ngForm">
+	<div class="row">
+		<div class="mp-2">
+			<label for="name">Name</label>
+		</div>
+		<div class="mp-10 tp-2">
+			<input type="text" name="name" id="name" [(ngModel)]="model.name">
+		</div>
+	</div>
+	<div class="row">
+		<div class="mp-2">
+			<label for="share_count">Number of shares</label>
+		</div>
+		<div class="mp-2">
+			<input name="share_count" id="share_count" type="number"
+				[(ngModel)]="model.share_count">
+		</div>
+	</div>
+
+	<div class="row nested" *ngIf="colors">
+		<div class="mp-12 tp-6">
+			<div class="row">
+				<div class="mp-12">
+					<label>Text color</label>
+				</div>
+			</div>
+			<div class="row" *ngFor="let row of colors; let i=index">
+				<ng-container *ngFor="let color of row; let j=index">
+					<label class="mp-1 bg-{{ color }} centered color-select">
+						<input type="radio" name="text-color-select"
+							(click)="model.text_color = color"
+							[checked]="color === model.text_color"
+							[value]="color">
+					</label>
+				</ng-container>
+			</div>
+		</div>
+		<div class="mp-12 tp-6">
+			<div class="row">
+				<div class="mp-12">
+					<label>Background color</label>
+				</div>
+			</div>
+			<div class="row" *ngFor="let row of colors; let i=index">
+				<ng-container *ngFor="let color of row; let j=index">
+					<label class="mp-1 bg-{{ color }} centered color-select">
+						<input type="radio" name="background-color-select"
+							(click)="model.background_color = color"
+							[checked]="color === model.text_color"
+							[value]="color">
+					</label>
+				</ng-container>
+			</div>
+		</div>
+	</div>
+	<div class="row" *ngIf="!colors">
+		<div class="mp-12 tp-6">Loading colors...</div>
+		<div class="mp-12 tp-6">Loading colors...</div>
+	</div>
+
+	<div class="row">
+		<div class="mp-12">
+			<button type="submit">Edit company</button>
+		</div>
+	</div>
+</form>
