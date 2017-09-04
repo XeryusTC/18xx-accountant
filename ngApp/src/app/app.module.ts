@@ -43,6 +43,7 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { LogSectionComponent } from './log-section/log-section.component';
 import { SettingsSectionComponent } from './settings-section/settings-section.component';
 import { NetWorthComponent } from './net-worth/net-worth.component';
+import { EditCompanyComponent } from './edit-company/edit-company.component';
 
 @NgModule({
 	declarations: [
@@ -66,6 +67,7 @@ import { NetWorthComponent } from './net-worth/net-worth.component';
 		LogSectionComponent,
 		SettingsSectionComponent,
 		NetWorthComponent,
+		EditCompanyComponent,
 	],
 	imports: [
 		BrowserModule,
