@@ -44,6 +44,7 @@ import { LogSectionComponent } from './log-section/log-section.component';
 import { SettingsSectionComponent } from './settings-section/settings-section.component';
 import { NetWorthComponent } from './net-worth/net-worth.component';
 import { EditCompanyComponent } from './edit-company/edit-company.component';
+import { EditCompanyFormComponent } from './edit-company-form/edit-company-form.component';
 
 @NgModule({
 	declarations: [
@@ -68,6 +69,7 @@ import { EditCompanyComponent } from './edit-company/edit-company.component';
 		SettingsSectionComponent,
 		NetWorthComponent,
 		EditCompanyComponent,
+		EditCompanyFormComponent,
 	],
 	imports: [
 		BrowserModule,
