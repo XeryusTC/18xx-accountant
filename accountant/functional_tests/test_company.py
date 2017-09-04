@@ -543,6 +543,33 @@ class EditCompanyTests(FunctionalTestCase):
         self.assertIn('fg-amber-200', co['elem'].get_attribute('class'))
         self.assertIn('bg-light-blue-400', co['elem'].get_attribute('class'))
 
+    def test_cannot_edit_so_that_duplicate_companies_exist(self):
+        self.story('Alice is a user who starts a game with two companies')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NNH')
+        self.create_company(game_uuid, 'PRR')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to edit the NNH')
+        game_page = game.GamePage(self.browser)
+        nnh, prr = game_page.get_companies()
+        nnh['elem'].click()
+        nnh['edit'].click()
+        self.assertRegex(self.browser.current_url,
+            r'/edit-company/([^/]+)$')
+
+        self.story('She changes the name of the NNH to PRR')
+        edit_company = game.EditCompanyPage(self.browser)
+        edit_company.name.clear()
+        edit_company.name.send_keys('PRR')
+
+        self.story('When she clicks the Edit button she sees an error')
+        edit_company.edit_button.click()
+        self.assertRegex(self.browser.current_url,
+            r'/edit-company/([^/]+)$')
+        self.assertIn('There is already a company with this name in your game',
+            edit_company.error_list.text)
+
     def test_company_colors_preview(self):
         self.story('Alice is a user who starts a neww game with a company')
         game_uuid = self.create_game()

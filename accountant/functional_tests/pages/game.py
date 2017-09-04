@@ -205,6 +205,7 @@ class EditCompanyPage(PageObject):
     background_color = MultiPageElement(name='background-color-select')
     edit_button = PageElement(tag_name='button')
     preview = PageElement(id_='preview')
+    error_list = PageElement(css='.errorlist')
 
     def select_text_color(self, color):
         for radio in self.text_color:
