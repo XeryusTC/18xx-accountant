@@ -1,10 +1,9 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick }
 	from '@angular/core/testing';
 import { FormsModule }                      from '@angular/forms';
-import { BaseRequestOptions, Http }         from '@angular/http';
-import { MockBackend }                      from '@angular/http/testing';
 
-import { ActivatedRoute, ActivatedRouteStub } from '../testing/router-stubs';
+import { ActivatedRoute, ActivatedRouteStub, Router }
+	from '../testing/router-stubs';
 
 import { Company }                  from '../models/company';
 import { ColorsService }            from '../colors.service';
@@ -20,6 +19,7 @@ describe('EditCompanyFormComponent', () => {
 	let colorsServiceStub;
 	let companyServiceStub;
 	let gameStateStub;
+	let routerSpy;
 
 	let testColors = [['black', 'white'], ['red-50', 'red-100', 'red-200',
 		'red-300', 'red-400', 'red-500', 'red-600', 'red-700', 'red-800',
@@ -27,18 +27,27 @@ describe('EditCompanyFormComponent', () => {
 
 	beforeEach(async(() => {
 		activatedRoute = new ActivatedRouteStub();
-		activatedRoute.testParams = {uuid: 'test'};
+
 		colorsServiceStub = jasmine.createSpyObj('ColorsService',
 												 ['getColors']);
 		colorsServiceStub.getColors
 			.and.callFake(() => Promise.resolve(testColors));
 
+		companyServiceStub = jasmine.createSpyObj('CompanyService',
+												  ['update']);
+		companyServiceStub.update
+			.and.callFake((company: Company) => Promise.resolve(company));
+
 		gameStateStub = jasmine.createSpyObj('GameStateService',
 											 ['companies']);
 		gameStateStub.companies = {
 			'test-company': new Company('test-company', 'game-uuid', 'Cie',
-										0, 10)
+										0, 10),
+			'other-company': new Company('other-company', 'game-uuid', 'B&O',
+										 0, 10)
 		};
+
+		routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
 		TestBed.configureTestingModule({
 			imports: [ FormsModule ],
@@ -47,10 +56,13 @@ describe('EditCompanyFormComponent', () => {
 				{provide: ActivatedRoute, useValue: activatedRoute},
 				{provide: ColorsService, useValue: colorsServiceStub},
 				{provide: CompanyService, useValue: companyServiceStub},
-				{provide: GameStateService, useValue: gameStateStub}
+				{provide: GameStateService, useValue: gameStateStub},
+				{provide: Router, useValue: routerSpy}
 			]
 		})
 		.compileComponents();
+
+		activatedRoute.testParams = {uuid: 'test-company'};
 	}));
 
 	beforeEach(() => {
@@ -66,9 +78,9 @@ describe('EditCompanyFormComponent', () => {
 	});
 
 	it('should get the company uuid from the current route', () => {
-		activatedRoute.testParams = {uuid: 'test-company'};
+		activatedRoute.testParams = {uuid: 'other-company'};
 		fixture.detectChanges();
-		expect(component.model).toBe(gameStateStub.companies['test-company']);
+		expect(component.model).toBe(gameStateStub.companies['other-company']);
 	});
 
 	it('Retrieve colors from ColorsService', () => {
@@ -81,5 +93,24 @@ describe('EditCompanyFormComponent', () => {
 		fixture.detectChanges();
 		tick();
 		expect(component.colors).toEqual(testColors);
+	}));
+
+	it('updates company on submit', fakeAsync(() => {
+		fixture.detectChanges();
+		component.onSubmit();
+		tick();
+		expect(companyServiceStub.update.calls.first().args[0])
+			.toEqual(gameStateStub.companies['test-company']);
+	}));
+
+	it('navigates to the game on successful submit', fakeAsync(() => {
+		fixture.detectChanges();
+		component.onSubmit();
+		tick();
+
+		expect(routerSpy.navigate.calls.any())
+			.toEqual(true, 'Router.navigate called');
+		expect(routerSpy.navigate.calls.first().args[0])
+			.toEqual(['game/', 'game-uuid']);
 	}));
 });
