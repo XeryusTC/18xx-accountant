@@ -570,8 +570,30 @@ class EditCompanyTests(FunctionalTestCase):
         self.assertIn('There is already a company with this name in your game',
             edit_company.error_list.text)
 
+    def test_can_return_to_game_page_from_edit_company_page(self):
+        self.story('Alice is a user who starts a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&M')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to edit the B&M')
+        game_page = game.GamePage(self.browser)
+        bm = game_page.get_companies()[0]
+        bm['elem'].click()
+        bm['edit'].click()
+        self.assertRegex(self.browser.current_url,
+            r'/edit-company/([^/]+)$')
+
+        self.story('She realizes she doesnt want to edit the B&M and clicks '
+            'the back button')
+        edit_company = game.EditCompanyPage(self.browser)
+        edit_company.back.click()
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
+        bm = game_page.get_companies()[0]
+        self.assertEqual(bm['name'].text, 'B&M')
+
     def test_company_colors_preview(self):
-        self.story('Alice is a user who starts a neww game with a company')
+        self.story('Alice is a user who starts a new game with a company')
         game_uuid = self.create_game()
         self.create_company(game_uuid, 'CPR', text='red-500',
             background='black')
