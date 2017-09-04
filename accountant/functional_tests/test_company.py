@@ -647,3 +647,50 @@ class EditCompanyTests(FunctionalTestCase):
         nyc = game_page.get_companies()[0]
         self.assertEqual(nyc['share_count'].text, '20')
         self.assertEqual(nyc['ipo_shares'].text, '15')
+
+    def test_decreasing_share_count_removes_ipo_shares(self):
+        self.story('Alice is a user who starts a new game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'Erie', share_count=10, ipo_shares=5)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to the edit page for the Erie')
+        game_page = game.GamePage(self.browser)
+        erie = game_page.get_companies()[0]
+        erie['elem'].click()
+        erie['edit'].click()
+
+        self.story('She increases the number of shares that the Erie has')
+        edit_page = game.EditCompanyPage(self.browser)
+        edit_page.shares.clear()
+        edit_page.shares.send_keys('7\n')
+
+        self.story('Back on the main page the share count has decreased')
+        erie = game_page.get_companies()[0]
+        self.assertEqual(erie['share_count'].text, '7')
+        self.assertEqual(erie['ipo_shares'].text, '2')
+
+    def test_decreasing_share_count_removes_from_pool_when_insufficient_ipo(
+            self):
+        self.story('Alice is a user who starts a new game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'C&O', share_count=10, ipo_shares=5,
+            bank_shares=5)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to the edit page for the C&O')
+        game_page = game.GamePage(self.browser)
+        co = game_page.get_companies()[0]
+        co['elem'].click()
+        co['edit'].click()
+
+        self.story('She increases the number of shares that the Erie has')
+        edit_page = game.EditCompanyPage(self.browser)
+        edit_page.shares.clear()
+        edit_page.shares.send_keys('2\n')
+
+        self.story('Back on the main page the share count has decreased')
+        co = game_page.get_companies()[0]
+        self.assertEqual(co['share_count'].text, '2')
+        self.assertEqual(co['ipo_shares'].text, '0')
+        self.assertEqual(co['bank_shares'].text, '2')
