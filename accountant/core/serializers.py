@@ -97,7 +97,14 @@ class CompanySerializer(serializers.ModelSerializer):
                     instance.ipo_shares
             else:
                 validated_data['ipo_shares'] += share_delta
-        return super(CompanySerializer, self).update(instance, validated_data)
+        company = super(CompanySerializer, self).update(instance,
+            validated_data)
+        game = company.game
+        entry = models.LogEntry.objects.create(game=game,
+            text='Company {} has been edited'.format(company.name))
+        game.log_cursor = entry
+        game.save()
+        return company
 
 
 class PlayerShareSerializer(serializers.ModelSerializer):

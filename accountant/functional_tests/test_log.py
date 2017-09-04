@@ -446,3 +446,25 @@ class LogTests(FunctionalTestCase):
             DATE_REGEX + 'NNH operates for 90 of which it retains half')
         self.assertIn('bg-orange-500',
             game_page.log[-1].get_attribute('class'))
+
+    def test_editing_company_adds_log_entry(self):
+        self.story('Create a game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'B&O')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+        self.assertEqual(len(game_page.log), 0)
+
+        self.story('Go to B&O edit screen, change some info')
+        company = game_page.get_companies()[0]
+        company['elem'].click()
+        company['edit'].click()
+        edit_company = game.EditCompanyPage(self.browser)
+        edit_company.select_background_color('blue-800')
+        edit_company.shares.send_keys('0\n')
+
+        self.story('Return to the game page and there is an entry in the log')
+        self.assertEqual(len(game_page.log), 1)
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'Company B&O has been edited')
+        self.assertIn('bg-blue-400', game_page.log[-1].get_attribute('class'))
