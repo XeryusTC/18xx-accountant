@@ -1,21 +1,23 @@
 <div class="section" id="players">
 	<div class="row">
-		<div class="tp-12"><h4>Players</h4></div>
+		<div class="mp-12">
+			<h4>Players</h4>
+		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">Name</div>
-		<div class="tp-1">Cash</div>
-		<div class="tp-9">Shares</div>
+		<div class="mp-3 tp-2">Name</div>
+		<div class="mp-1 tp-1">Cash</div>
+		<div class="mp-8 tp-9">Shares</div>
 	</div>
 	<hr />
 	<div *ngFor="let player of gameState.players | values:'name'; let odd=odd"
 	   class="player" [class.odd-player]="odd">
 		<div class="row" (click)="selected.selectPlayer(player)">
-			<div class="tp-2 name">{{ player.name }}</div>
-			<div class="tp-1 cash text-cash">
+			<div class="mp-3 tp-2 name">{{ player.name }}</div>
+			<div class="mp-1 tp-1 cash text-cash">
 				{{ player.cash }}
 			</div>
-			<div class="tp-9 share-container">
+			<div class="mp-8 tp-9 share-container">
 				<div *ngFor="let share of gameState.shareInfo(player)"
 					class="share fg-{{ share.text_color }}
 						   bg-{{ share.background_color }}">

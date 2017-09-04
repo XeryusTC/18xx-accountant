@@ -1,18 +1,18 @@
 <div id="bank" class="section">
 	<h4>Bank</h4>
 	<div class="row">
-		<div class="tp-6">
+		<div class="mp-4 tp-6">
 			Cash
 		</div>
-		<div class="tp-6">
+		<div class="mp-8 tp-6">
 			<span id="cash">{{ gameState.game.cash }}</span>
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-12">Bank pool</div>
+		<div class="mp-12">Bank pool</div>
 	</div>
 	<div class="row" *ngIf="gameState.companies">
-		<div class="tp-12">
+		<div class="mp-12">
 			<ng-container
 				*ngFor="let company of gameState.companies | values:'name'">
 				<div *ngIf="company.bank_shares != 0"

@@ -1,18 +1,18 @@
 <div class="section">
 	<div class="row">
-		<div class="tp-12">
+		<div class="mp-12">
 			<h4>Companies</h4>
 		</div>
 	</div>
 
 	<div class="row">
-		<div class="tp-2">Name</div>
-		<div class="tp-1">Cash</div>
-		<div class="tp-1">Value</div>
-		<div class="tp-1">#Shares</div>
-		<div class="tp-1">In IPO</div>
-		<div class="tp-1">In Bank</div>
-		<div class="tp-5">Shares</div>
+		<div class="mp-3 tp-2">Name</div>
+		<div class="mp-1 tp-1">Cash</div>
+		<div class="mp-2 tp-2">Value</div>
+		<div class="mp-2 tp-2">#Shares</div>
+		<div class="ml-hide tp-1">In IPO</div>
+		<div class="ml-hide tp-1">In Bank</div>
+		<div class="mp-4 tp-3">Shares</div>
 	</div>
 	<hr />
 
@@ -21,16 +21,16 @@
 		<div class="row summary fg-{{ company.text_color }}
 					bg-{{ company.background_color }}"
 			 (click)="selected.selectCompany(company)">
-			<div class="tp-2 name">{{ company.name }}</div>
-			<div class="tp-1 cash text-cash">{{ company.cash }}</div>
-			<div class="tp-1 value">
+			<div class="mp-3 tp-2 name">{{ company.name }}</div>
+			<div class="mp-1 tp-1 cash text-cash">{{ company.cash }}</div>
+			<div class="mp-2 tp-2 value">
 				<input type="number" [(ngModel)]="company.value"
 					   (click)="$event.stopPropagation()">
 			</div>
-			<div class="tp-1 share_count">{{ company.share_count }}</div>
-			<div class="tp-1 ipo">{{ company.ipo_shares }}</div>
-			<div class="tp-1 bank">{{ company.bank_shares }}</div>
-			<div class="tp-5">
+			<div class="mp-2 tp-2 share_count">{{ company.share_count }}</div>
+			<div class="ml-hide tp-1 ipo">{{ company.ipo_shares }}</div>
+			<div class="ml-hide tp-1 bank">{{ company.bank_shares }}</div>
+			<div class="mp-4 tp-3">
 				<div *ngFor="let share of gameState.shareInfo(company)"
 					 class="share fg-{{ share.text_color }}
 							bg-{{ share.background_color }}">
