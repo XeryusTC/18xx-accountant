@@ -1,28 +1,29 @@
 <form (ngSubmit)="onSubmit()" #playerForm="ngForm">
 	<div *ngIf="errors" class="errorlist row">
-		<div *ngFor="let error of errors" class="tp-12 error">
-			{{error}}
+		<div *ngFor="let error of errors" class="mp-12 error">
+			{{ error }}
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="name">Player name</label>
 		</div>
-		<div class="tp-10">
+		<div class="mp-10 tp-2">
 			<input type="text" name="name" id="name" [(ngModel)]="model.name">
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="cash">Starting cash</label>
 		</div>
-		<div class="tp-10">
+		<div class="mp-2">
 			<input type="number" name="cash" id="cash"
 				[(ngModel)]="model.cash">
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-12">
+		<div class="mp-2"></div>
+		<div class="tp-10">
 			<button type="submit">Add player</button>
 		</div>
 	</div>

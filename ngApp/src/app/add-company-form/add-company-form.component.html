@@ -1,58 +1,53 @@
 <form (ngSubmit)="onSubmit()" #companyForm="ngForm">
 	<div *ngIf="errors" class="errorlist row">
-		<div *ngFor="let error of errors" class="tp-12">
+		<div *ngFor="let error of errors" class="mp-12">
 			{{ error }}
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label>Preview</label>
 		</div>
-		<div class="tp-2">
+		<div class="mp-2">
 			<span id="preview" class="bg-{{model.background_color}}
 				fg-{{model.text_color}}">{{model.name}}</span>
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="name">Name</label>
 		</div>
-		<div class="tp-10">
+		<div class="mp-10 tp-2">
 			<input type="text" name="name" id="name" [(ngModel)]="model.name">
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="cash">Cash</label>
 		</div>
-		<div class="tp-10">
+		<div class="mp-2">
 			<input name="cash" id="cash" type="number"
 				[(ngModel)]="model.cash">
 		</div>
 	</div>
 	<div class="row">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="share_count">Number of shares</label>
 		</div>
-		<div class="tp-10">
+		<div class="mp-2">
 			<input name="share_count" id="share_count" type="number"
 				[(ngModel)]="model.share_count">
 		</div>
 	</div>
-	<div class="row">
-		<div class="tp-6">
-			<label>Text color</label>
-		</div>
-		<div class="tp-6">
-			<label>Background color</label>
-		</div>
-	</div>
 
 	<div class="row nested" *ngIf="colors">
-		<div class="tp-6">
+		<div class="mp-12 tp-6">
+			<div class="mp-12">
+				<label>Text color</label>
+			</div>
 			<div class="row" *ngFor="let row of colors; let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
-					<label class="tp-1 bg-{{ color }} centered color-select">
+					<label class="mp-1 bg-{{ color }} centered color-select">
 						<input type="radio" name="text-color-select"
 							(click)="model.text_color = color"
 							[checked]="color === model.text_color"
@@ -61,10 +56,13 @@
 				</ng-container>
 			</div>
 		</div>
-		<div class="tp-6">
+		<div class="mp-12 tp-6">
+			<div class="mp-12">
+				<label>Background color</label>
+			</div>
 			<div class="row" *ngFor="let row of colors; let i=index">
 				<ng-container *ngFor="let color of row; let j=index">
-					<label class="tp-1 bg-{{ color }} color-select centered">
+					<label class="mp-1 bg-{{ color }} color-select centered">
 						<input type="radio" name="background-color-select"
 							(click)="model.background_color = color"
 							[checked]="color == model.background_color"
@@ -75,12 +73,12 @@
 		</div>
 	</div>
 	<div class="row" *ngIf="!colors">
-		<div class="tp-6">Loading colors...</div>
-		<div class="tp-6">Loading colors...</div>
+		<div class="mp-12 tp-6">Loading colors...</div>
+		<div class="mp-12 tp-6">Loading colors...</div>
 	</div>
 
 	<div class="row">
-		<div class="tp-4">
+		<div class="mp-4">
 			<button type="submit">Add company</button>
 		</div>
 	</div>
