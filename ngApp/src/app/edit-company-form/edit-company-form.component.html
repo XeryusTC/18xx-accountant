@@ -1,6 +1,16 @@
 <form (ngSubmit)="onSubmit()" #companyForm="ngForm">
 	<div class="row">
 		<div class="mp-2">
+			<label>Preview</label>
+		</div>
+		<div class="mp-2">
+			<span id="preview" class="bg-{{ model.background_color }}
+				fg-{{ model.text_color }}">{{ model.name }}</span>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="mp-2">
 			<label for="name">Name</label>
 		</div>
 		<div class="mp-10 tp-2">

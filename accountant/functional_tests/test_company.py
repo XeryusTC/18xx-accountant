@@ -542,3 +542,37 @@ class EditCompanyTests(FunctionalTestCase):
         self.assertEqual(co['share_count'].text, '20')
         self.assertIn('fg-amber-200', co['elem'].get_attribute('class'))
         self.assertIn('bg-light-blue-400', co['elem'].get_attribute('class'))
+
+    def test_company_colors_preview(self):
+        self.story('Alice is a user who starts a neww game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'CPR', text='red-500',
+            background='black')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to the edit page for the CPR')
+        game_page = game.GamePage(self.browser)
+        cpr = game_page.get_companies()[0]
+        cpr['elem'].click()
+        cpr['edit'].click()
+        self.assertRegex(self.browser.current_url,
+            r'/edit-company/([^/]+)$')
+
+        self.story('On the edit page there is a preview')
+        edit_company = game.EditCompanyPage(self.browser)
+        self.assertEqual(edit_company.preview.text, 'CPR')
+        self.assertIn('fg-red-500',
+            edit_company.preview.get_attribute('class'))
+        self.assertIn('bg-black', edit_company.preview.get_attribute('class'))
+
+        self.story('She enters a new name and selects some colors')
+        edit_company.name.clear()
+        edit_company.name.send_keys('CanPac')
+        edit_company.select_text_color('black')
+        edit_company.select_background_color('red-500')
+
+        self.story('The preview has updated with the new options')
+        self.assertEqual(edit_company.preview.text, 'CanPac')
+        self.assertIn('fg-black', edit_company.preview.get_attribute('class'))
+        self.assertIn('bg-red-500',
+            edit_company.preview.get_attribute('class'))
