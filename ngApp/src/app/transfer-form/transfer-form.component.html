@@ -1,14 +1,14 @@
 <form (ngSubmit)="onSubmit($event)" #transferForm="ngForm">
 	<div class="row inline-form">
-		<div class="tp-1">
+		<div class="mp-2">
 			<label for="name">Transfer</label>
 		</div>
-		<div class="tp-2">
+		<div class="mp-2">
 			<input type="number" name="amount" id="amount" required
 									  [(ngModel)]="amount">
 		</div>
 
-		<div class="tp-7">
+		<div class="mp-6">
 			to
 			<label for="target-bank" class="transfer">
 				<input type="radio" name="target" id="target-bank" value="bank"
@@ -37,7 +37,7 @@
 			</ng-container>
 		</div>
 
-		<div class="tp-2">
+		<div class="mp-2">
 			<input type="submit" name="transfer" value="Transfer"
 				[disabled]="!transferForm.form.valid">
 		</div>

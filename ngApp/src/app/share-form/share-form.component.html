@@ -1,35 +1,31 @@
 <form (ngSubmit)="onSubmit($event)" #shareForm="ngForm">
 	<div class="row" *ngFor="let error of errors">
-		<div class="tp-12 error" [innerHTML]="error"></div>
+		<div class="mp-12 error" [innerHTML]="error"></div>
 	</div>
 	<div class="row inline-form">
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="action-buy">
 				<input type="radio" name="action" id="action-buy" required
 					value="buy" [(ngModel)]="action"> Buy
 			</label>
+			<br />
 			<label for="action-sell">
 				<input type="radio" name="action" id="action-sell" required
 					value="sell" [(ngModel)]="action"> Sell
 			</label>
 		</div>
-		<div class="tp-2">
+		<div class="mp-2">
 			<input name="shares" id="shares" type="number" required
 				[(ngModel)]="share_amount">
 		</div>
-		<div class="tp-2">
+		<div class="mp-2">
 			<label for="shares">Shares</label>
 		</div>
-		<div class="tp-2">
-			<input type="submit" name="transfer-share" value="Buy"
-				*ngIf="action=='buy'" [disabled]="!shareForm.form.valid">
-			<input type="submit" name="transfer-share" value="Sell"
-				*ngIf="action=='sell'" [disabled]="!shareForm.form.valid">
-		</div>
+		<div class="mp-4"></div>
 	</div>
 	<div class="row">
-		<div class="tp-1">of</div>
-		<div class="tp-11">
+		<div class="mp-2">of</div>
+		<div class="mp-10">
 			<label *ngFor='let company of gameState.companies | values:"name"'
 				for="company-{{ company.name }}" class="company-label
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
@@ -42,17 +38,9 @@
 	</div>
 
 	<div class="row">
-		<div class="tp-1" id="action-text" *ngIf="action=='buy'">from</div>
-		<div class="tp-1" id="action-text" *ngIf="action=='sell'">to</div>
-		<div class="tp-11">
-			<label for="source-ipo" class="source">
-				<input type="radio" name="source" id="source-ipo" value="ipo"
-					[(ngModel)]="source" required> IPO
-			</label>
-			<label for="source-bank" class="source">
-				<input type="radio" name="source" id="source-bank"
-					value="bank" [(ngModel)]="source" required> Bank
-			</label>
+		<div class="mp-2" id="action-text" *ngIf="action=='buy'">from</div>
+		<div class="mp-2" id="action-text" *ngIf="action=='sell'">to</div>
+		<div class="mp-10">
 			<label *ngFor='let company of gameState.companies | values:"name"'
 				for="source-{{ company.name }}" class="source
 				fg-{{ company.text_color }} bg-{{ company.background_color }}">
@@ -61,6 +49,24 @@
 					required>
 						{{ company.name }}
 			</label>
+			<label for="source-ipo" class="source">
+				<input type="radio" name="source" id="source-ipo" value="ipo"
+					[(ngModel)]="source" required> IPO
+			</label>
+			<label for="source-bank" class="source">
+				<input type="radio" name="source" id="source-bank"
+					value="bank" [(ngModel)]="source" required> Bank
+			</label>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="mp-2"></div>
+		<div class="mp-10">
+			<input type="submit" name="transfer-share" value="Buy"
+				*ngIf="action=='buy'" [disabled]="!shareForm.form.valid">
+			<input type="submit" name="transfer-share" value="Sell"
+				*ngIf="action=='sell'" [disabled]="!shareForm.form.valid">
 		</div>
 	</div>
 </form>
