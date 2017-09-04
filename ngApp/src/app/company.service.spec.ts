@@ -100,8 +100,36 @@ describe('CompanyService', () => {
 	   })));
 	});
 
-	it('create() should return an error when server is dowwn', done => {
+	it('create() should return an error when server is down', done => {
 		service.create(testCompany)
+			.then(company => fail('The request should not be successful'))
+			.catch(error => done());
+		conn.mockRespond(new Response(new ResponseOptions({
+			status: 404,
+			statusText: 'URL not found',
+			body: 'The page could not be found'
+		})));
+	});
+
+	it('update() queries the correct url', () => {
+		service.update(testCompany);
+		expect(conn).toBeDefined('no http service connection at all?');
+		expect(conn.request.url).toMatch('/api/company/test-uuid/$',
+										 'url valid');
+	});
+
+	it('update() returns the updated company on success', done => {
+		service.update(testCompany).then(response => {
+			expect(response).toEqual(testCompany);
+			done();
+		});
+		conn.mockRespond(new Response(new ResponseOptions({
+			body: JSON.stringify(testCompany)
+		})));
+	});
+
+	it('update() should return an error when server is down', done => {
+		service.update(testCompany)
 			.then(company => fail('The request should not be successful'))
 			.catch(error => done());
 		conn.mockRespond(new Response(new ResponseOptions({
