@@ -625,3 +625,25 @@ class EditCompanyTests(FunctionalTestCase):
         self.assertIn('fg-black', edit_company.preview.get_attribute('class'))
         self.assertIn('bg-red-500',
             edit_company.preview.get_attribute('class'))
+
+    def test_increasing_share_count_adds_ipo_shares(self):
+        self.story('Alice is a user who starts a new game with a company')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'NYC', share_count=10, ipo_shares=5)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She goes to the edit page for the NYC')
+        game_page = game.GamePage(self.browser)
+        nyc = game_page.get_companies()[0]
+        nyc['elem'].click()
+        nyc['edit'].click()
+
+        self.story('She increases the number of shares that the NYC has')
+        edit_page = game.EditCompanyPage(self.browser)
+        edit_page.shares.clear()
+        edit_page.shares.send_keys('20\n')
+
+        self.story('Back on the main page the share count has increased')
+        nyc = game_page.get_companies()[0]
+        self.assertEqual(nyc['share_count'].text, '20')
+        self.assertEqual(nyc['ipo_shares'].text, '15')
