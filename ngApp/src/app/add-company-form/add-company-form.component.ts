@@ -12,7 +12,6 @@ const DUPLICATE_COMPANY_ERROR =
 
 @Component({
 	selector: 'add-company-form',
-	providers: [ ColorsService ],
 	templateUrl: './add-company-form.component.html',
 	styleUrls: ['./add-company-form.component.css']
 })

@@ -3,6 +3,7 @@ import { NgModule }             from '@angular/core';
 import { FormsModule }          from '@angular/forms';
 import { HttpModule }           from '@angular/http';
 
+import { ColorsService }        from './colors.service';
 import { CompanyService }       from './company.service';
 import { ErrorService }         from './error.service';
 import { GameService }          from './game.service';
@@ -78,6 +79,7 @@ import { EditCompanyFormComponent } from './edit-company-form/edit-company-form.
 		GameRoutingModule
 	],
 	providers: [
+		ColorsService,
 		CompanyService,
 		ErrorService,
 		GameStateService,
