@@ -90,7 +90,13 @@ class CompanySerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if instance.share_count != validated_data['share_count']:
             share_delta = validated_data['share_count'] - instance.share_count
-            validated_data['ipo_shares'] += share_delta
+            # Removing more shares then there are in the IPO
+            if share_delta < -instance.ipo_shares:
+                validated_data['ipo_shares'] = 0
+                validated_data['bank_shares'] += share_delta + \
+                    instance.ipo_shares
+            else:
+                validated_data['ipo_shares'] += share_delta
         return super(CompanySerializer, self).update(instance, validated_data)
 
 
