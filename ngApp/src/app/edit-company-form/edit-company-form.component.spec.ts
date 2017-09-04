@@ -113,4 +113,18 @@ describe('EditCompanyFormComponent', () => {
 		expect(routerSpy.navigate.calls.first().args[0])
 			.toEqual(['game/', 'game-uuid']);
 	}));
+
+	it('displays non field errors on the page', fakeAsync(() => {
+		let errors = {"non_field_errors": ["test error", "test_error_2"]};
+		companyServiceStub.update
+			.and.returnValue(Promise.reject({json: () => errors}));
+
+		fixture.detectChanges();
+		component.onSubmit();
+		tick();
+
+		expect(component.errors.length).toBe(2);
+		expect(component.errors).toContain('test error');
+		expect(component.errors).toContain('test_error_2');
+	}));
 });

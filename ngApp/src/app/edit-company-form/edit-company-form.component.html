@@ -1,4 +1,9 @@
 <form (ngSubmit)="onSubmit()" #companyForm="ngForm">
+	<div class="errorlist row" *ngIf="errors">
+		<div *ngFor="let error of errors" class="mp-12 error">
+			{{ error }}
+		</div>
+	</div>
 	<div class="row">
 		<div class="mp-2">
 			<label>Preview</label>

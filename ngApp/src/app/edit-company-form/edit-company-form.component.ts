@@ -14,6 +14,7 @@ import { GameStateService } from '../game-state.service';
 export class EditCompanyFormComponent implements OnInit {
 	public colors: string[][];
 	public model: Company;
+	public errors: string[];
 
 	private uuid_sub;
 
@@ -41,6 +42,15 @@ export class EditCompanyFormComponent implements OnInit {
 			.then(company => {
 				console.log('updated company', company);
 				this.router.navigate(['game/', company.game]);
+			})
+			.catch(error => {
+				this.errors = [];
+				let errors = error.json();
+				/* istanbul ignore else */
+				if ('non_field_errors' in errors) {
+					this.errors = this.errors
+						.concat(errors['non_field_errors']);
+				}
 			});
 	}
 }
