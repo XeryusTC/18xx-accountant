@@ -55,6 +55,61 @@ class CompanySerializerTests(TestCase):
         self.assertEqual(company.share_count, 10)
         self.assertEqual(company.ipo_shares, 10)
 
+    def test_removes_from_IPO_shares_when_removing_shares(self):
+        game = factories.GameFactory()
+        company = factories.CompanyFactory(game=game, share_count=5,
+            ipo_shares=5)
+        s = serializers.CompanySerializer(company, data={'share_count': 2,
+            'game': game.pk, 'ipo_shares': 5})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        company.refresh_from_db()
+        self.assertEqual(company.share_count, 2)
+        self.assertEqual(company.ipo_shares, 2)
+
+    def test_removes_from_pool_when_insufficient_shares_in_IPO(self):
+        game = factories.GameFactory()
+        company = factories.CompanyFactory(game=game, share_count=10,
+            ipo_shares=3, bank_shares=7)
+        s = serializers.CompanySerializer(company, data={'share_count': 2,
+            'game': game.pk, 'ipo_shares': 3, 'bank_shares': 7})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        company.refresh_from_db()
+        self.assertEqual(company.share_count, 2)
+        self.assertEqual(company.ipo_shares, 0)
+        self.assertEqual(company.bank_shares, 2)
+
+    def test_removes_from_pool_when_no_shares_in_IPO(self):
+        game = factories.GameFactory()
+        company = factories.CompanyFactory(game=game, share_count=15,
+            ipo_shares=0, bank_shares=6)
+        s = serializers.CompanySerializer(company, data={'share_count': 10,
+            'game': game.pk, 'ipo_shares': 0, 'bank_shares': 6})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        company.refresh_from_db()
+        self.assertEqual(company.share_count, 10)
+        self.assertEqual(company.ipo_shares, 0)
+        self.assertEqual(company.bank_shares, 1)
+
+    def test_pool_shares_can_be_negative_as_after_changing_share_count(self):
+        game = factories.GameFactory()
+        company = factories.CompanyFactory(game=game, share_count=10,
+            ipo_shares=1, bank_shares=1)
+        s = serializers.CompanySerializer(company, data={'share_count': 5,
+            'game': game.pk, 'ipo_shares': 1, 'bank_shares': 1})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        company.refresh_from_db()
+        self.assertEqual(company.share_count, 5)
+        self.assertEqual(company.ipo_shares, 0)
+        self.assertEqual(company.bank_shares, -3)
+
 
 class PlayerSerializerTests(TestCase):
     def test_returns_user_friendly_message_when_player_not_unique(self):
