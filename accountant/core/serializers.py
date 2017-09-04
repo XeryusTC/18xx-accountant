@@ -87,6 +87,12 @@ class CompanySerializer(serializers.ModelSerializer):
         game.save()
         return company
 
+    def update(self, instance, validated_data):
+        if instance.share_count != validated_data['share_count']:
+            share_delta = validated_data['share_count'] - instance.share_count
+            validated_data['ipo_shares'] += share_delta
+        return super(CompanySerializer, self).update(instance, validated_data)
+
 
 class PlayerShareSerializer(serializers.ModelSerializer):
     class Meta:

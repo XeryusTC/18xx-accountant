@@ -42,6 +42,19 @@ class CompanySerializerTests(TestCase):
             'Added 20-share company C&O with 300 starting cash')
         self.assertEqual(game.log_cursor, game.log.last())
 
+    def test_adds_IPO_shares_when_updating_with_extra_shares(self):
+        game = factories.GameFactory()
+        company = factories.CompanyFactory(game=game, name='test',
+            share_count=5, ipo_shares=5)
+        s = serializers.CompanySerializer(company, data={'share_count': 10,
+            'game': game.pk, 'ipo_shares': 5})
+        s.is_valid(raise_exception=True)
+        s.save()
+
+        company.refresh_from_db()
+        self.assertEqual(company.share_count, 10)
+        self.assertEqual(company.ipo_shares, 10)
+
 
 class PlayerSerializerTests(TestCase):
     def test_returns_user_friendly_message_when_player_not_unique(self):
