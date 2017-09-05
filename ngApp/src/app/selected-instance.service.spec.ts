@@ -29,6 +29,13 @@ describe('SelectedInstanceService', () => {
 		expect(service.selectedCompany).toBeNull();
 	});
 
+	it('selectPlayer() should unset if player is the same', () => {
+		service.selectedPlayer = testPlayer.uuid;
+		service.selectPlayer(testPlayer);
+		expect(service.selectedPlayer).toBeNull();
+		expect(service.selectedCompany).toBeNull();
+	});
+
 	it('no company is selected after creation', () => {
 		expect(service.selectedCompany).toBeNull();
 	});
@@ -42,6 +49,13 @@ describe('SelectedInstanceService', () => {
 	it('selectCompany() should unset the selected player', () => {
 		service.selectedPlayer = testPlayer.uuid;
 		service.selectCompany(testCompany);
+		expect(service.selectedPlayer).toBeNull();
+	});
+
+	it('selectCompany() should unset if company is the same', () => {
+		service.selectedCompany = testCompany.uuid;
+		service.selectCompany(testCompany);
+		expect(service.selectedCompany).toBeNull();
 		expect(service.selectedPlayer).toBeNull();
 	});
 });

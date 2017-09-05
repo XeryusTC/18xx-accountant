@@ -9,12 +9,20 @@ export class SelectedInstanceService {
 	public selectedCompany: string = null;
 
 	selectPlayer(player: Player): void {
-		this.selectedPlayer = player.uuid;
+		if (this.selectedPlayer == player.uuid) {
+			this.selectedPlayer = null;
+		} else {
+			this.selectedPlayer = player.uuid;
+		}
 		this.selectedCompany = null;
 	}
 
 	selectCompany(company: Company): void {
-		this.selectedCompany = company.uuid;
+		if (this.selectedCompany == company.uuid) {
+			this.selectedCompany = null;
+		} else {
+			this.selectedCompany = company.uuid;
+		}
 		this.selectedPlayer = null;
 	}
 }

@@ -215,6 +215,22 @@ class ManagePlayerTests(FunctionalTestCase):
         self.assertIsNotNone(player['detail'])
         self.assertIsNone(company['detail'])
 
+    def test_clicking_player_again_closes_detail_section(self):
+        self.story('Alice is a user who starts a game')
+        game_uuid = self.create_game()
+        self.create_player(game_uuid, 'Alice')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She opens her detail section')
+        game_page = game.GamePage(self.browser)
+        player = game_page.get_players()[0]
+        player['row'].click()
+        self.assertIsNotNone(player['detail'])
+
+        self.story('She clicks herself again and this time it close')
+        player['name'].click()
+        self.assertIsNone(player['detail'])
+
     def test_player_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game(cash=11000)

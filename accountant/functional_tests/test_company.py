@@ -347,6 +347,22 @@ class ManageCompanyTests(FunctionalTestCase):
         nnh = game_page.get_companies()[0]  # Get DOM updates
         self.assertIsNotNone(nnh['detail'])
 
+    def test_clicking_company_again_closes_detail_section(self):
+        self.story('Alice is a user who starts a game')
+        game_uuid = self.create_game()
+        self.create_company(game_uuid, 'Erie')
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She opens the Erie detail section')
+        game_page = game.GamePage(self.browser)
+        erie = game_page.get_companies()[0]
+        erie['elem'].click()
+        self.assertIsNotNone(erie['detail'])
+
+        self.story('She clicks the Erie again and this time it closes')
+        erie['elem'].click()
+        self.assertIsNone(erie['detail'])
+
     def test_company_can_transfer_money_to_bank(self):
         self.story('Alice is a user who starts a new game')
         game_uuid = self.create_game(cash=11600)
