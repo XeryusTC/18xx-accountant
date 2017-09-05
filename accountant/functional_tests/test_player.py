@@ -155,6 +155,18 @@ class CreatePlayerTests(FunctionalTestCase):
         self.assertEqual(['Alice', 'Bert', 'Bob', 'Charlie', 'Dave'],
             [player['name'].text for player in players])
 
+    def test_can_navigate_to_add_player_page_directly(self):
+        """Test if issue #6 does not occur"""
+        self.story('Alice is a user who navigates to the add player page')
+        game_uuid = self.create_game()
+        self.browser.get(self.server_url + '/game/' + game_uuid + \
+            '/add-player')
+
+        self.story('She tries to navigate back to the game page, it works')
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.back.click()
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
+
 
 class ManagePlayerTests(FunctionalTestCase):
     """Tests for managing player actions during a game"""

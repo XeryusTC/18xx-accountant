@@ -239,6 +239,19 @@ class CompanyTests(FunctionalTestCase):
         self.assertEqual(['B&O', 'C&O', 'CPR', 'Erie', 'PRR'],
             [company['name'].text for company in game_page.get_companies()])
 
+    def test_can_navigate_to_add_company_page_directly(self):
+        """Test if issue #6 does not occur"""
+        self.story('Alice is a user who navigates to the add company page')
+        game_uuid = self.create_game()
+        self.browser.get('{}/game/{}/add-company'.format(self.server_url,
+            game_uuid))
+
+        self.story('She tries to navigate back to the game page, it works')
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.back.click()
+        self.assertRegex(self.browser.current_url, r'/game/([^/]+)$')
+
+
 class ManageCompanyTests(FunctionalTestCase):
     def test_clicking_company_opens_company_detail_section(self):
         self.story('Alice is a user who starts a new game')
