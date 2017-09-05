@@ -2,31 +2,32 @@
 from page_objects import PageObject, PageElement, MultiPageElement
 
 class Homepage(PageObject):
-    stylesheets = MultiPageElement(tag_name='link')
-    scripts = MultiPageElement(tag_name='script')
-    start_button = PageElement(name='new_game')
-    bank_cash = PageElement(name='cash')
-    app_root = PageElement(tag_name='app-root')
-    pool_shares_pay = PageElement(name='pool-shares-pay')
-    ipo_shares_pay = PageElement(name='ipo-shares-pay')
+    stylesheets         = MultiPageElement(tag_name='link')
+    scripts             = MultiPageElement(tag_name='script')
+    start_button        = PageElement(name='new_game')
+    bank_cash           = PageElement(name='cash')
+    app_root            = PageElement(tag_name='app-root')
+    pool_shares_pay     = PageElement(name='pool-shares-pay')
+    ipo_shares_pay      = PageElement(name='ipo-shares-pay')
     treasury_shares_pay = PageElement(name='treasury-shares-pay')
 
 class GamePage(PageObject):
-    add_player_link = PageElement(id_='add_player')
-    add_company_link = PageElement(id_='add_company')
+    add_player_link        = PageElement(id_='add_player')
+    add_company_link       = PageElement(id_='add_company')
     display_net_worth_link = PageElement(id_='display-net-worth')
-    bank_cash = PageElement(css="#bank #cash")
-    bank_pool = MultiPageElement(css="#bank .pool")
-    pool_shares_pay = PageElement(name='pool-shares-pay')
-    ipo_shares_pay = PageElement(name='ipo-shares-pay')
-    treasury_shares_pay = PageElement(name='treasury-shares-pay')
 
-    player_name_list = MultiPageElement(css="div.player div.name")
+    bank_cash              = PageElement(css="#bank #cash")
+    bank_pool              = MultiPageElement(css="#bank .pool")
 
-    log = MultiPageElement(css="#log div.entry")
+    pool_shares_pay        = PageElement(name='pool-shares-pay')
+    ipo_shares_pay         = PageElement(name='ipo-shares-pay')
+    treasury_shares_pay    = PageElement(name='treasury-shares-pay')
 
-    _player_list = MultiPageElement(class_name="player")
-    _company_list = MultiPageElement(class_name="company")
+    log                    = MultiPageElement(css="#log div.entry")
+
+    player_name_list       = MultiPageElement(css="div.player div.name")
+    _player_list           = MultiPageElement(class_name="player")
+    _company_list          = MultiPageElement(class_name="company")
 
     def get_players(self):
         res = []
@@ -42,11 +43,11 @@ class GamePage(PageObject):
 
 
 class Entity(PageObject):
-    _name = PageElement(css=".name", context=True)
-    _cash = PageElement(css=".cash", context=True)
-    _detail = PageElement(css=".detail", context=True)
-    _shares = MultiPageElement(css=".share", context=True)
-    _summary = PageElement(css=".row", context=True)
+    _name    = PageElement(css=".name",       context=True)
+    _cash    = PageElement(css=".cash",       context=True)
+    _detail  = PageElement(css=".detail",     context=True)
+    _shares  = MultiPageElement(css=".share", context=True)
+    _summary = PageElement(css=".row",        context=True)
 
     def __init__(self, root, *args, **kwargs):
         super(Entity, self).__init__(*args, **kwargs)
@@ -74,11 +75,11 @@ class Player(Entity):
 
 
 class Company(Entity):
-    _value = PageElement(css=".value input", context=True)
+    _value       = PageElement(css=".value input", context=True)
     _share_count = PageElement(css=".share_count", context=True)
-    _ipo_shares = PageElement(css=".ipo", context=True)
-    _bank_shares = PageElement(css=".bank", context=True)
-    _edit = PageElement(id_="edit", context=True)
+    _ipo_shares  = PageElement(css=".ipo",         context=True)
+    _bank_shares = PageElement(css=".bank",        context=True)
+    _edit        = PageElement(id_="edit",         context=True)
 
     def __getitem__(self, key):
         if key == 'share_count':
@@ -95,27 +96,27 @@ class Company(Entity):
 
 
 class AddPlayerPage(PageObject):
-    name = PageElement(name='name')
-    cash = PageElement(name='cash')
+    name       = PageElement(name='name')
+    cash       = PageElement(name='cash')
     add_button = PageElement(tag_name='button')
-    header = PageElement(id_='title')
+    header     = PageElement(id_='title')
     error_list = PageElement(css='.errorlist')
-    back = PageElement(id_='back')
-    game = PageElement(name='game')
+    back       = PageElement(id_='back')
+    game       = PageElement(name='game')
 
 
 class AddCompanyPage(PageObject):
-    header = PageElement(id_='title')
-    name = PageElement(name='name')
-    cash = PageElement(name='cash')
-    shares = PageElement(name='share_count')
-    add_button = PageElement(tag_name='button')
-    game = PageElement(name='game')
-    error_list = PageElement(css='.errorlist')
-    back = PageElement(id_='back')
-    text_color = MultiPageElement(name='text-color-select')
+    header           = PageElement(id_='title')
+    name             = PageElement(name='name')
+    cash             = PageElement(name='cash')
+    shares           = PageElement(name='share_count')
+    add_button       = PageElement(tag_name='button')
+    game             = PageElement(name='game')
+    error_list       = PageElement(css='.errorlist')
+    back             = PageElement(id_='back')
+    text_color       = MultiPageElement(name='text-color-select')
     background_color = MultiPageElement(name='background-color-select')
-    preview = PageElement(id_='preview')
+    preview          = PageElement(id_='preview')
 
     def select_text_color(self, color):
         for radio in self.text_color:
@@ -131,10 +132,10 @@ class AddCompanyPage(PageObject):
 
 
 class TransferForm(PageObject):
-    amount = PageElement(name='amount', context=True)
-    target = MultiPageElement(name='target', context=True)
-    labels = MultiPageElement(css='label.transfer', context=True)
-    transfer_button = PageElement(name='transfer', context=True)
+    amount          = PageElement(name='amount',             context=True)
+    target          = MultiPageElement(name='target',        context=True)
+    labels          = MultiPageElement(css='label.transfer', context=True)
+    transfer_button = PageElement(name='transfer',           context=True)
 
     def select_target(self, name, context):  # pragma: no cover
         for radio in self.target(context):
@@ -146,13 +147,13 @@ class TransferForm(PageObject):
 
 
 class ShareForm(PageObject):
-    shares = PageElement(name='shares', context=True)
-    company = MultiPageElement(css='label.company-label', context=True)
-    source = MultiPageElement(css='label.source', context=True)
-    transfer_button = PageElement(name='transfer-share', context=True)
-    buy_share = PageElement(id_='action-buy', context=True)
-    sell_share = PageElement(id_='action-sell', context=True)
-    action = PageElement(id_='action-text', context=True)
+    shares          = PageElement(name='shares',                  context=True)
+    company         = MultiPageElement(css='label.company-label', context=True)
+    source          = MultiPageElement(css='label.source',        context=True)
+    transfer_button = PageElement(name='transfer-share',          context=True)
+    buy_share       = PageElement(id_='action-buy',               context=True)
+    sell_share      = PageElement(id_='action-sell',              context=True)
+    action          = PageElement(id_='action-text',              context=True)
 
     def select_company(self, name, context):  # pragma: no cover
         for label in self.company(context):
@@ -185,7 +186,7 @@ class ErrorPage(PageObject):
 
 
 class NetWorthPopup(PageObject):
-    popup = PageElement(id_='net-worth')
+    popup      = PageElement(id_='net-worth')
     background = PageElement(css='.background')
 
     def value(self, player, row):
@@ -198,15 +199,15 @@ class NetWorthPopup(PageObject):
 
 
 class EditCompanyPage(PageObject):
-    header = PageElement(id_='title')
-    name = PageElement(name='name')
-    shares = PageElement(name='share_count')
-    text_color = MultiPageElement(name='text-color-select')
+    header           = PageElement(id_='title')
+    name             = PageElement(name='name')
+    shares           = PageElement(name='share_count')
+    text_color       = MultiPageElement(name='text-color-select')
     background_color = MultiPageElement(name='background-color-select')
-    edit_button = PageElement(tag_name='button')
-    preview = PageElement(id_='preview')
-    error_list = PageElement(css='.errorlist')
-    back = PageElement(id_='back')
+    edit_button      = PageElement(tag_name='button')
+    preview          = PageElement(id_='preview')
+    error_list       = PageElement(css='.errorlist')
+    back             = PageElement(id_='back')
 
     def select_text_color(self, color):
         for radio in self.text_color:

@@ -159,7 +159,7 @@ class CreatePlayerTests(FunctionalTestCase):
         """Test if issue #6 does not occur"""
         self.story('Alice is a user who navigates to the add player page')
         game_uuid = self.create_game()
-        self.browser.get(self.server_url + '/game/' + game_uuid + \
+        self.browser.get(self.server_url + '/game/' + game_uuid +
             '/add-player')
 
         self.story('She tries to navigate back to the game page, it works')
