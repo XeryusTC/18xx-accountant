@@ -407,8 +407,8 @@ class ManageCompanyTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '11700')
 
         self.story('Alice goes to transfer money again')
-        company['elem'].click()
-        company = game_page.get_companies()[0]
+        if company['detail'] == None: # pragma: no cover
+            company['elem'].click()
         transfer_form.amount(company['detail']).clear()
         transfer_form.amount(company['detail']).send_keys('50')
         self.story("This time she doesn't select a target, the bank is the"
