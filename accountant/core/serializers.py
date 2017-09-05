@@ -101,7 +101,8 @@ class CompanySerializer(serializers.ModelSerializer):
             validated_data)
         game = company.game
         entry = models.LogEntry.objects.create(game=game,
-            text='Company {} has been edited'.format(company.name))
+            text='Company {} has been edited'.format(company.name),
+            acting_company=company)
         game.log_cursor = entry
         game.save()
         return company

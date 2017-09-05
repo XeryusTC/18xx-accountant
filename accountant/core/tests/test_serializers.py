@@ -51,10 +51,12 @@ class CompanySerializerTests(TestCase):
         s.save()
 
         game.refresh_from_db()
+        company.refresh_from_db()
         self.assertEqual(LogEntry.objects.filter(game=game).count(), 1)
         self.assertEqual(game.log.last().text,
             'Company TEST has been edited')
         self.assertEqual(game.log_cursor, game.log.last())
+        self.assertEqual(game.log.last().acting_company, company)
 
     def test_adds_IPO_shares_when_updating_with_extra_shares(self):
         game = factories.GameFactory()

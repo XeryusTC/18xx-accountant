@@ -467,4 +467,4 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Company B&O has been edited')
-        self.assertIn('bg-blue-400', game_page.log[-1].get_attribute('class'))
+        self.assertIn('bg-blue-800', game_page.log[-1].get_attribute('class'))
