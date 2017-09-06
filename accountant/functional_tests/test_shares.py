@@ -413,7 +413,7 @@ class BuyShareTests(FunctionalTestCase):
 
         self.story('Buy company buys one of its own shares back from the '
             'share company')
-        if buy_company['detail'] == None: # pragma: no cover
+        if buy_company['detail'] == None:  # pragma: no cover
             buy_company['elem'].click()
         buy_company = game_page.get_companies()[0]  # Get DOM updates
         for label in share_form.source(buy_company['detail']):
