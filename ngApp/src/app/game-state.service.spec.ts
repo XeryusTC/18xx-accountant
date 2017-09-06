@@ -50,6 +50,7 @@ describe('GameStateService', () => {
 			new Company('company-uuid-2', 'game-uuid', 'RDR', 300, 10),
 			new Company('company-uuid-3', 'game-uuid', 'C&O', 400, 5)
 		];
+		testCompanies[0].share_set = ['share-uuid-3'];
 		testPlayerShares = [
 			new Share('share-uuid-0', 'player-uuid-0', 'company-uuid-1', 3),
 			new Share('share-uuid-1', 'player-uuid-0', 'company-uuid-0', 2),
@@ -399,4 +400,49 @@ describe('GameStateService', () => {
 		expect(errorService.addError.calls.first().args[0])
 			.toMatch('^Game not found');
 	}));
+
+	it('ownsShare() returns true if entity owns share (player)',
+	   fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.ownsShare(testPlayers[0], testCompanies[0]))
+			.toBe(true);
+	   }));
+
+	it('ownsShare() returns false if entity doesnt own share (player)',
+	   fakeAsync(() => {
+		testPlayerShares[1].shares = 0;
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.ownsShare(testPlayers[2], testCompanies[0]))
+			.toBe(false);
+		expect(service.ownsShare(testPlayers[0], testCompanies[0]))
+			.toBe(false);
+	   }));
+
+	it('ownsShare() returns true if entity owns share (company)',
+	   fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.ownsShare(testCompanies[0], testCompanies[0]))
+			.toBe(true);
+	   }));
+
+	it('ownsShare() returns false if entity doesnt own share(company)',
+	   fakeAsync(() => {
+		testCompanyShares[0].shares = 0;
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.ownsShare(testCompanies[0], testCompanies[1]))
+			.toBe(false);
+		expect(service.ownsShare(testCompanies[0], testCompanies[0]))
+			.toBe(false);
+	   }));
+
+	it('ownsShare() returns false if company is undefined',
+	   fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.ownsShare(testCompanies[0], undefined)).toBe(false);
+	   }));
 });

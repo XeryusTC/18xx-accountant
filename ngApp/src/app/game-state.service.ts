@@ -170,4 +170,17 @@ export class GameStateService {
 		}
 		return worth;
 	}
+
+	ownsShare(owner: Player | Company, company: Company): boolean {
+		if (company === undefined) {
+			return false;
+		}
+		for (let share of owner.share_set) {
+			if (this.shares[share].company == company.uuid &&
+			    this.shares[share].shares != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
