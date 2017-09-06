@@ -438,6 +438,62 @@ class BuyShareTests(FunctionalTestCase):
             shares=['buy 50%', 'share 40%'])
         self.verify_company(share_company, cash=1180, shares=['share 30%'])
 
+    def test_only_sources_that_own_shares_are_shown(self):
+        self.story('Alice is a user with a game')
+        game_uuid = self.create_game()
+        alice_uuid = self.create_player(game_uuid, 'Alice', cash=100)
+        bob_uuid = self.create_player(game_uuid, 'Bob')
+        nyc_uuid = self.create_company(game_uuid, 'NYC', ipo_shares=1,
+            bank_shares=2)
+        self.create_player_share(bob_uuid, nyc_uuid, shares=3)
+        self.create_company_share(nyc_uuid, nyc_uuid, shares=4)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+
+        self.story('She opens her detail section')
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        alice = game_page.get_players()[0]
+        alice['row'].click()
+
+        self.story('When she selects to buy NYC shares she can only select '
+            'from the bank pool, the IPO, or the NYC')
+        share_form.select_company('NYC', alice['detail'])
+        self.assertCountEqual(['Bank', 'IPO', 'NYC'],
+            [source.text for source in share_form.source(alice['detail'])])
+
+        self.story('She buys all the shares from the IPO')
+        share_form.select_source('ipo', alice['detail'])
+        share_form.transfer_button(alice['detail']).click()
+
+        self.story('Only the bank and NYC remains as sources')
+        alice = game_page.get_players()[0]  # Get DOM updates
+        share_form.select_company('NYC', alice['detail'])
+        self.assertCountEqual(['Bank', 'NYC'],
+            [source.text for source in share_form.source(alice['detail'])])
+
+        self.story('Alice buys all the shares from the NYC')
+        share_form.shares(alice['detail']).clear()
+        share_form.shares(alice['detail']).send_keys('4')
+        share_form.select_source('NYC', alice['detail'])
+        share_form.transfer_button(alice['detail']).click()
+
+        self.story('Only the bank remains as a source')
+        alice = game_page.get_players()[0]  # Get DOM updates
+        share_form.select_company('NYC', alice['detail'])
+        self.assertCountEqual(['Bank'],
+            [source.text for source in share_form.source(alice['detail'])])
+
+        self.story('Alice also buys the shares from the bank')
+        share_form.shares(alice['detail']).clear()
+        share_form.shares(alice['detail']).send_keys('2')
+        share_form.select_source('bank', alice['detail'])
+        share_form.transfer_button(alice['detail']).click()
+
+        self.story('There are no shares from the NYC available anymore')
+        alice = game_page.get_players()[0]  # Get DOM updates
+        share_form.select_company('NYC', alice['detail'])
+        self.assertEqual(len(share_form.source(alice['detail'])), 0)
+
 
 class SellShareTests(FunctionalTestCase):
     def test_player_can_sell_shares_to_bank_pool(self):
