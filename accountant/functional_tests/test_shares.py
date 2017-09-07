@@ -385,18 +385,18 @@ class BuyShareTests(FunctionalTestCase):
             'treasury')
         buy_company['elem'].click()
         buy_company = game_page.get_companies()[0]  # Get DOM updates
-        for label in share_form.source(buy_company['detail']):
-            if label.get_attribute('for') == 'source-share':
-                label.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Share company has no treasury shares')
         for label in share_form.company(buy_company['detail']):
             if label.get_attribute('for') == 'company-share':
                 label.click()
                 break
         else:  # pragma: no cover
             self.fail('Cannot find the share company in available shares list')
+        for label in share_form.source(buy_company['detail']):
+            if label.get_attribute('for') == 'source-share':
+                label.click()
+                break
+        else:  # pragma: no cover
+            self.fail('Share company has no treasury shares')
         share_form.shares(buy_company['detail']).clear()
         share_form.shares(buy_company['detail']).send_keys('4\n')
 
@@ -416,18 +416,18 @@ class BuyShareTests(FunctionalTestCase):
         if buy_company['detail'] == None:  # pragma: no cover
             buy_company['elem'].click()
         buy_company = game_page.get_companies()[0]  # Get DOM updates
-        for label in share_form.source(buy_company['detail']):
-            if label.get_attribute('for') == 'source-share':
-                label.click()
-                break
-        else:  # pragma: no cover
-            self.fail('Share company has no treasury shares')
         for label in share_form.company(buy_company['detail']):
             if label.get_attribute('for') == 'company-buy':
                 label.click()
                 break
         else:  # pragma: no cover
             self.fail('Cannot find the buy company in available shares list')
+        for label in share_form.source(buy_company['detail']):
+            if label.get_attribute('for') == 'source-share':
+                label.click()
+                break
+        else:  # pragma: no cover
+            self.fail('Share company has no treasury shares')
         share_form.shares(buy_company['detail']).clear()
         share_form.shares(buy_company['detail']).send_keys('5\n')
 
