@@ -40,7 +40,21 @@
 	<div class="row">
 		<div class="mp-2" id="action-text" *ngIf="action=='buy'">from</div>
 		<div class="mp-2" id="action-text" *ngIf="action=='sell'">to</div>
-		<div class="mp-10" *ngIf="company_share">
+		<div class="mp-10">
+			<label *ngIf="(company_share &&
+						   gameState.companies[company_share].ipo_shares > 0)
+						  || action=='sell'"
+				for="source-ipo" class="source">
+				<input type="radio" name="source" id="source-ipo" value="ipo"
+					[(ngModel)]="source" required> IPO
+			</label>
+			<label *ngIf="(company_share &&
+						   gameState.companies[company_share].bank_shares > 0)
+						  || action=='sell'"
+				for="source-bank" class="source">
+				<input type="radio" name="source" id="source-bank"
+					value="bank" [(ngModel)]="source" required> Bank
+			</label>
 			<ng-container
 			 *ngFor='let company of gameState.companies | values:"name"'>
 				<label *ngIf='gameState.ownsShare(company,
@@ -54,16 +68,6 @@
 						{{ company.name }}
 				</label>
 			</ng-container>
-			<label *ngIf='gameState.companies[company_share].ipo_shares > 0'
-				for="source-ipo" class="source">
-				<input type="radio" name="source" id="source-ipo" value="ipo"
-					[(ngModel)]="source" required> IPO
-			</label>
-			<label *ngIf='gameState.companies[company_share].bank_shares > 0'
-				for="source-bank" class="source">
-				<input type="radio" name="source" id="source-bank"
-					value="bank" [(ngModel)]="source" required> Bank
-			</label>
 		</div>
 	</div>
 
