@@ -35,7 +35,7 @@ describe('ShareFormComponent', () => {
 		gameStateStub = jasmine
 			.createSpyObj('GameStateService', ['updateGame', 'updatePlayer',
 						  'updateCompany', 'updateShare', 'companies',
-						  'updateLog']);
+						  'updateLog', 'ownsShare']);
 		gameStateStub.players = {
 			[buyPlayer.uuid]: buyPlayer,
 			[sourcePlayer.uuid]: sourcePlayer
