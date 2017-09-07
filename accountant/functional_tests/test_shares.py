@@ -441,7 +441,7 @@ class BuyShareTests(FunctionalTestCase):
     def test_only_sources_that_own_shares_are_shown(self):
         self.story('Alice is a user with a game')
         game_uuid = self.create_game()
-        alice_uuid = self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_player(game_uuid, 'Alice', cash=100)
         bob_uuid = self.create_player(game_uuid, 'Bob')
         nyc_uuid = self.create_company(game_uuid, 'NYC', ipo_shares=1,
             bank_shares=2)
