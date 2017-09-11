@@ -12,6 +12,7 @@ class Homepage(PageObject):
     treasury_shares_pay = PageElement(name='treasury-shares-pay')
 
 class GamePage(PageObject):
+    reload_game            = PageElement(id_='reload')
     add_player_link        = PageElement(id_='add_player')
     add_company_link       = PageElement(id_='add_company')
     display_net_worth_link = PageElement(id_='display-net-worth')
