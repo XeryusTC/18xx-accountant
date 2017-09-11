@@ -1,4 +1,8 @@
 <nav>
+	<a (click)="gameState.loadGame(gameState.game.uuid)"
+		class="button" id="reload">
+		Reload
+	</a>
 	<a routerLink="/game/{{ gameState.game.uuid }}"
 		routerLinkActive="button-disabled"
 		[routerLinkActiveOptions]="{ exact: true }"
