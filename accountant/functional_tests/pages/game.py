@@ -16,6 +16,8 @@ class GamePage(PageObject):
     add_player_link        = PageElement(id_='add_player')
     add_company_link       = PageElement(id_='add_company')
     display_net_worth_link = PageElement(id_='display-net-worth')
+    undo                   = PageElement(id_='undo')
+    redo                   = PageElement(id_='redo')
 
     bank_cash              = PageElement(css="#bank #cash")
     bank_pool              = MultiPageElement(css="#bank .pool")
