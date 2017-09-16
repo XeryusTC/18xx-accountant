@@ -387,3 +387,29 @@ class OperateTests(TestCase):
         s = serializers.OperateSerializer(data={'company': self.company.pk,
             'amount': 300, 'method': 'withhold'})
         self.assertTrue(s.is_valid())
+
+
+class UndoRedoSerializerTests(TestCase):
+    def test_game_field_is_required(self):
+        s = serializers.UndoRedoSerializer(data={})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn('game', s.errors.keys())
+
+    def test_action_field_is_required(self):
+        s = serializers.UndoRedoSerializer(data={})
+        with self.assertRaises(exceptions.ValidationError):
+            s.is_valid(raise_exception=True)
+        self.assertIn('action', s.errors.keys())
+
+    def test_action_can_be_undo(self):
+        game = factories.GameFactory()
+        s = serializers.UndoRedoSerializer(data={'game': game.pk,
+            'action': 'undo'})
+        s.is_valid(raise_exception=True)
+
+    def test_action_can_be_redo(self):
+        game = factories.GameFactory()
+        s = serializers.UndoRedoSerializer(data={'game': game.pk,
+            'action': 'redo'})
+        s.is_valid(raise_exception=True)

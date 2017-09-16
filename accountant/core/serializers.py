@@ -211,3 +211,9 @@ class OperateSerializer(serializers.Serializer):
         model_field=models.Company._meta.get_field('uuid'))
     amount = serializers.IntegerField()
     method = serializers.ChoiceField(choices=['full', 'half', 'withhold'])
+
+
+class UndoRedoSerializer(serializers.Serializer):
+    game = serializers.ModelField(
+        model_field=models.Game._meta.get_field('uuid'))
+    action = serializers.ChoiceField(choices=['undo', 'redo'])
