@@ -115,3 +115,27 @@ class LogEntryAPITests(APITestCase):
         response = self.client.post(url, {})
         self.assertEqual(response.status_code,
             status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class UndoTests(APITestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+        self.url = reverse('undo')
+
+    def test_GET_request_is_empty(self):
+        """GET is for debug (and doc) purposes only"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data)
+
+
+class RedoTests(APITestCase):
+    def setUp(self):
+        self.game = factories.GameFactory()
+        self.url = reverse('undo')
+
+    def test_GET_request_is_empty(self):
+        """GET is for debug (and doc) purposes only"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data)

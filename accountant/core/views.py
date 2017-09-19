@@ -345,3 +345,8 @@ class OperateView(APIView):
 class ColorsView(APIView):
     def get(self, request, format=None):
         return Response(models.Company.COLOR_CODES)
+
+
+class UndoRedoView(APIView):
+    def get(self, request, format=None):
+        return Response()

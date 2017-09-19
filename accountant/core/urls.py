@@ -22,6 +22,8 @@ router.add_api_view('operate', url(r'^operate/$',
     views.OperateView.as_view(), name='operate'))
 router.add_api_view('colors', url(r'^colors/$', views.ColorsView.as_view(),
     name='colors'))
+router.add_api_view('undo', url(r'^undo/$', views.UndoRedoView.as_view(),
+    name='undo'))
 
 urlpatterns = [
     url(r'^', include(router.urls)),
