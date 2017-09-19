@@ -300,6 +300,18 @@ class LogEntryTests(TestCase):
         time = timezone.now()
         self.assertAlmostEqual(entry.time, time, delta=timedelta(seconds=5))
 
+    def test_action_field_is_None_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsNone(entry.action)
+
+    def test_acting_player_field_is_None_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsNone(entry.acting_player)
+
+    def test_acting_player_field_points_to_player(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        LogEntry.objects.create(game=self.game, acting_player=player)
+
     def test_acting_company_field_is_None_by_default(self):
         entry = LogEntry.objects.create(game=self.game)
         self.assertIsNone(entry.acting_company)
@@ -307,6 +319,10 @@ class LogEntryTests(TestCase):
     def test_acting_company_field_points_to_company(self):
         company = factories.CompanyFactory.create(game=self.game)
         LogEntry.objects.create(game=self.game, acting_company=company)
+
+    def test_amount_field_is_0_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertEquals(entry.amount, 0)
 
     def test_are_sorted_chronological(self):
         entry1 = LogEntry.objects.create(game=self.game,

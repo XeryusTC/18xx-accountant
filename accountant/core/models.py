@@ -110,14 +110,24 @@ class CompanyShare(models.Model):
 
 
 class LogEntry(models.Model):
+    TRANSFER_MONEY_PLAYER_TO_BANK = 0
+    ACTION_CHOICES = (
+        (TRANSFER_MONEY_PLAYER_TO_BANK, 'Player transfers money to bank'),
+    )
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
         editable=False)
     game = models.ForeignKey(Game, related_name='log',
         on_delete=models.CASCADE)
     time = models.DateTimeField(default=timezone.now)
     text = models.TextField(default='')
+    action = models.IntegerField(default=None, choices=ACTION_CHOICES,
+        null=True, blank=True)
+    acting_player = models.ForeignKey(Player, related_name='+', null=True,
+        default=None)
     acting_company = models.ForeignKey(Company, related_name='+', null=True,
         default=None)
+    amount = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['time']
