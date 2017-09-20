@@ -12,6 +12,7 @@ import { PlayerService }  from './player.service';
 import { CompanyService } from './company.service';
 import { ShareService }   from './share.service';
 import { LogService }     from './log.service';
+import { UndoService }    from './undo.service';
 
 export const DIFFERENT_GAME_ERROR = 'This game is different from the old one';
 const GAME_NOT_FOUND_ERROR =
@@ -37,7 +38,8 @@ export class GameStateService {
 			    private companyService: CompanyService,
 				private shareService: ShareService,
 				private errorService: ErrorService,
-				private logService: LogService
+				private logService: LogService,
+				private undoService: UndoService
 	) { }
 
 	isLoaded(): boolean {
@@ -182,5 +184,20 @@ export class GameStateService {
 			}
 		}
 		return false;
+	}
+
+	undo(): void {
+		this.undoService.undo(this.game)
+			.then(result => {
+				this.log.pop();  // Remove last log entry
+				if ('game' in result) {
+					this.updateGame(result.game);
+				}
+				if ('players' in result) {
+					for (let player of result.players) {
+						this.updatePlayer(player);
+					}
+				}
+			});
 	}
 }

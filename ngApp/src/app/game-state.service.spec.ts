@@ -12,6 +12,7 @@ import { GameService }      from './game.service';
 import { GameStateService, DIFFERENT_GAME_ERROR } from './game-state.service';
 import { LogService }       from './log.service';
 import { PlayerService }    from './player.service';
+import { UndoService }      from './undo.service';
 
 describe('GameStateService', () => {
 	let service: GameStateService;
@@ -31,6 +32,7 @@ describe('GameStateService', () => {
 	let shareService;
 	let errorService;
 	let logService;
+	let undoService;
 
 	beforeEach(() => {
 		testGame = new Game('game-uuid', 12000);
@@ -112,9 +114,13 @@ describe('GameStateService', () => {
 		logService.getLog
 			.and.callFake(() => Promise.resolve(testLog));
 
+		// Undo service mock
+		undoService = jasmine.createSpyObj('UndoService', ['undo', 'redo']);
+		undoService.undo.and.callFake(() => Promise.resolve({}));
+
 		service = new GameStateService(gameService, playerService,
 									   companyService, shareService,
-									   errorService, logService);
+									   errorService, logService, undoService);
 	});
 
 	it('loading a game use game service', () => {
@@ -444,5 +450,43 @@ describe('GameStateService', () => {
 		service.loadGame('game-uuid');
 		tick();
 		expect(service.ownsShare(testCompanies[0], undefined)).toBe(false);
-	   }));
+	}));
+
+	it('undo() uses UndoService.undo()', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		expect(undoService.undo.calls.first().args[0]).toBe(testGame);
+	}));
+
+	it('undo() should update game instance', fakeAsync(() => {
+		let newGame = new Game('game-uuid', 0);
+		undoService.undo.and.callFake(() => Promise.resolve({game: newGame}));
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		tick();
+		expect(service.game).toEqual(newGame);
+	}));
+
+	it('undo() should update players when affected', fakeAsync(() => {
+		let newPlayer = new Player('test-uuid', 'game-uuid', 'Alice', 7);
+		undoService.undo
+			.and.callFake(() => Promise.resolve({players: [newPlayer]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		tick();
+		expect(service.players['test-uuid']).toBe(newPlayer);
+	}));
+
+	it('undo() should remove the last log item', fakeAsync(() => {
+		expect(service.log.length).toBe(3);
+		undoService.undo.and.callFake(() => Promise.resolve({}));
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		tick();
+		expect(service.log.length).toBe(2);
+	}));
 });
