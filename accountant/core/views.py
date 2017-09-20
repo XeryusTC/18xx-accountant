@@ -354,5 +354,32 @@ class ColorsView(APIView):
 
 
 class UndoRedoView(APIView):
+    serializer_class = serializers.UndoRedoSerializer
+
     def get(self, request, format=None):
         return Response()
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            if serializer.validated_data['action'] == 'undo':
+                func = utils.undo
+            else:
+                func = utils.redo
+            affected = func(models.Game.objects.get(
+                pk=serializer.validated_data['game']))
+
+            # Construct response
+            context = {'request': request}
+            response = {
+                'game': serializers.GameSerializer(affected['game'],
+                    context=context).data,
+            }
+            if 'players' in affected:
+                response['players'] = []
+                for player in affected['players']:
+                    response['players'].append(serializers.PlayerSerializer(
+                        player, context=context).data)
+
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
