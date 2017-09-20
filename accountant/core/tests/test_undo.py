@@ -31,3 +31,22 @@ class UndoTransferMoneyTests(TestCase):
         self.game.refresh_from_db()
         mock_transfer_money.assert_called_once_with(None, player, 10)
         self.assertEqual(self.game.log_cursor, self.start_entry)
+
+    @mock.patch.object(utils, 'transfer_money')
+    def test_undo_player_transfer_money_to_bank_returns_affected_instances(
+            self, mock_transfer_money):
+        player = factories.PlayerFactory(game=self.game, cash=0)
+        entry = models.LogEntry.objects.create(
+            game=self.game,
+            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK,
+            acting_player=player,
+            amount=10)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        affected = utils.undo(self.game)
+
+        self.game.refresh_from_db()
+        player.refresh_from_db()
+        self.assertEqual(affected['game'], self.game)
+        self.assertEqual(affected['players'], [player])
