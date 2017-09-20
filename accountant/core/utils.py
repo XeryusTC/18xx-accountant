@@ -184,3 +184,11 @@ def _distribute_dividends(company, amount):
             except KeyError:
                 result[company] = dividend
     return result
+
+def undo(game):
+    entry = game.log_cursor
+    if entry.action == models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK:
+        transfer_money(None, entry.acting_player, entry.amount)
+    game.log_cursor = game.log.filter(time__lt=entry.time).last()
+    game.save()
+    return affected
