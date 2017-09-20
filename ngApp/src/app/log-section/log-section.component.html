@@ -1,5 +1,7 @@
 <div class="section" id="log">
 	<h4>Log</h4>
+	<a (click)="gameState.undo()" class="button" id="undo">Undo</a>
+	<a (click)="gameState.redo()" class="button" id="redo">Redo</a>
 	<div class="log-container"
 		#logScroll [scrollTop]="logScroll.scrollHeight">
 		<div class="entry {{ entryColorClass(entry) }}"
