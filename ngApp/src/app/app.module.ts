@@ -15,6 +15,7 @@ import { PlayerService }        from './player.service';
 import { ShareService }         from './share.service';
 import { TransferMoneyService } from './transfer-money.service';
 import { TransferShareService } from './transfer-share.service';
+import { UndoService }          from './undo.service';
 
 import { ValuesPipe } from './values.pipe';
 
@@ -91,7 +92,8 @@ import { EditCompanyFormComponent } from './edit-company-form/edit-company-form.
 		ShareService,
 		Title,
 		TransferMoneyService,
-		TransferShareService
+		TransferShareService,
+		UndoService
 	],
 	bootstrap: [AppComponent]
 })
