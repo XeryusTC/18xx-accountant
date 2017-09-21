@@ -65,6 +65,86 @@ class UndoTests(APITestCase):
             str(self.company.pk))
         self.assertEqual(response.data['companies'][0]['cash'], 102)
 
+    def test_undoing_player_to_player_transfer_includes_instances(self):
+        other_player = factories.PlayerFactory(game=self.game)
+        entry = models.LogEntry.objects.create(game=self.game,
+            acting_player=self.player, receiving_player=other_player,
+            amount=2, action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.player.refresh_from_db()
+        other_player.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('game', response.data.keys())
+        self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([p['uuid'] for p in response.data['players']],
+            [str(self.player.pk), str(other_player.pk)])
+
+    def test_undoing_player_to_company_transfer_includes_instances(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            acting_player=self.player, receiving_company=self.company,
+            amount=2, action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.player.refresh_from_db()
+        self.company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('game', response.data.keys())
+        self.assertEqual(len(response.data['players']), 1)
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(response.data['players'][0]['uuid'],
+            str(self.player.pk))
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(self.company.pk))
+
+    def test_undoing_company_to_player_transfer_includes_instances(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            acting_company=self.company, receiving_player=self.player,
+            amount=2, action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.player.refresh_from_db()
+        self.company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('game', response.data.keys())
+        self.assertEqual(len(response.data['players']), 1)
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(response.data['players'][0]['uuid'],
+            str(self.player.pk))
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(self.company.pk))
+
+    def test_undoing_company_to_company_transfer_includes_instances(self):
+        other_company = factories.CompanyFactory(game=self.game)
+        entry = models.LogEntry.objects.create(game=self.game,
+            acting_company=self.company, receiving_company=other_company,
+            amount=2, action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.company.refresh_from_db()
+        other_company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('game', response.data.keys())
+        self.assertNotIn('players', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.company.pk), str(other_company.pk)])
+
 
 class RedoTests(APITestCase):
     def setUp(self):

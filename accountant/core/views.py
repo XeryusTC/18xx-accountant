@@ -373,11 +373,11 @@ class UndoRedoView(APIView):
                 pk=serializer.validated_data['game']))
 
             # Construct response
+            response = {}
             context = {'request': request}
-            response = {
-                'game': serializers.GameSerializer(affected['game'],
-                    context=context).data,
-            }
+            if 'game' in affected:
+                response['game'] = serializers.GameSerializer(affected['game'],
+                    context=context).data
             if 'players' in affected:
                 response['players'] = []
                 for player in affected['players']:
