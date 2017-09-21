@@ -148,6 +148,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['game']['cash'], 990)
+        self.assertEqual(len(response.data['players']), 1)
         self.assertEqual(response.data['players'][0]['uuid'], str(player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 20)
 
