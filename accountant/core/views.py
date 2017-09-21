@@ -380,6 +380,9 @@ class UndoRedoView(APIView):
                 for player in affected['players']:
                     response['players'].append(serializers.PlayerSerializer(
                         player, context=context).data)
+            if 'log' in affected:
+                response['log'] = serializers.LogEntrySerializer(
+                    affected['log'], context=context).data
 
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
