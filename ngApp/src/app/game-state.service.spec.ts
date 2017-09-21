@@ -481,6 +481,18 @@ describe('GameStateService', () => {
 		expect(service.players['test-uuid']).toBe(newPlayer);
 	}));
 
+	it('undo() should update companies when affected', fakeAsync(() => {
+		let newCompany = new Company('company-uuid-0', 'game-uuid', 'B&O', 0,
+									 10);
+		undoService.undo
+			.and.callFake(() => Promise.resolve({companies: [newCompany]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		tick();
+		expect(service.companies['company-uuid-0']).toBe(newCompany);
+	}));
+
 	it('undo() should remove the last log item', fakeAsync(() => {
 		undoService.undo.and.callFake(() => Promise.resolve({}));
 		service.loadGame('game-uuid');
