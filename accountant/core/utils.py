@@ -221,15 +221,33 @@ def undo(game):
 
 def redo(game):
     entry = game.log.filter(time__gt=game.log_cursor.time).first()
-    affected = {'game': game, 'log': entry}
+    affected = {'log': entry, 'players': [], 'companies': []}
 
     if entry.action == models.LogEntry.TRANSFER_MONEY:
+        # Determine who should send money
         if entry.acting_player is not None:
-            transfer_money(entry.acting_player, None, entry.amount)
-            affected['players'] = [entry.acting_player]
+            acting = entry.acting_player
+            affected['players'].append(entry.acting_player)
         elif entry.acting_company is not None:
-            transfer_money(entry.acting_company, None, entry.amount)
-            affected['companies'] = [entry.acting_company]
+            acting = entry.acting_company
+            affected['companies'].append(entry.acting_company)
+        # Determine who should receive money
+        if entry.receiving_player is not None:
+            receiving = entry.receiving_player
+            affected['players'].append(entry.receiving_player)
+        elif entry.receiving_company is not None:
+            receiving = entry.receiving_company
+            affected['companies'].append(entry.receiving_company)
+        else:
+            receiving = None
+            affected['game'] = game
+        transfer_money(acting, receiving, entry.amount)
+
+    # Remove empty items from affected
+    if not affected['players']:
+        del affected['players']
+    if not affected['companies']:
+        del affected['companies']
 
     game.refresh_from_db()
     game.log_cursor = entry
