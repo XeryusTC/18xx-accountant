@@ -188,7 +188,7 @@ def _distribute_dividends(company, amount):
 def undo(game):
     affected = {'game': game}
     entry = game.log_cursor
-    if entry.action == models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK:
+    if entry.action == models.LogEntry.TRANSFER_MONEY:
         transfer_money(None, entry.acting_player, entry.amount)
         affected['players'] = [entry.acting_player]
 
@@ -201,7 +201,7 @@ def redo(game):
     entry = game.log.filter(time__gt=game.log_cursor.time).first()
     affected = {'game': game, 'log': entry}
 
-    if entry.action == models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK:
+    if entry.action == models.LogEntry.TRANSFER_MONEY:
         transfer_money(entry.acting_player, None, entry.amount)
         affected['players'] = [entry.acting_player]
 

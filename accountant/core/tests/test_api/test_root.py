@@ -137,7 +137,7 @@ class UndoTests(APITestCase):
         player = factories.PlayerFactory(game=self.game, cash=10)
         entry = models.LogEntry.objects.create(game=self.game,
             acting_player=player, amount=10,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK)
+            action=models.LogEntry.TRANSFER_MONEY)
         self.game.log_cursor = entry
         self.game.save()
 
@@ -173,7 +173,7 @@ class RedoTests(APITestCase):
         player = factories.PlayerFactory(game=self.game, cash=100)
         entry = models.LogEntry.objects.create(game=self.game,
             acting_player=player, amount=1,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK)
+            action=models.LogEntry.TRANSFER_MONEY)
 
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'redo'})

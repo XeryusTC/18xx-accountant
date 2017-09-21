@@ -117,11 +117,9 @@ class TransferMoneyView(APIView):
                 amount=serializer.validated_data['amount'],
                 text='{source} transfered {cash} to {dest}'.format(
                     source=source_name, dest=dest_name,
-                    cash=serializer.validated_data['amount']))
+                    cash=serializer.validated_data['amount']),
+                action=models.LogEntry.TRANSFER_MONEY)
             if isinstance(serializer.source_instance, models.Player):
-                if serializer.dest_instance == None:
-                    entry.action = \
-                        models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK
                 entry.acting_player = serializer.source_instance
             elif isinstance(serializer.source_instance, models.Company):
                 entry.acting_company = serializer.source_instance

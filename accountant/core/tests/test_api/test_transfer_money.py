@@ -96,8 +96,7 @@ class TransferMoneyTests(APITestCase):
             {'from_player': self.player.pk, 'amount': 18})
         self.game.refresh_from_db()
         entry = self.game.log.last()
-        self.assertEqual(entry.action,
-            models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK)
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
         self.assertEqual(entry.acting_player, self.player)
         self.assertEqual(entry.amount, 18)
 

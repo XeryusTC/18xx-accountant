@@ -20,7 +20,7 @@ class UndoTransferMoneyTests(TestCase):
         player = factories.PlayerFactory(game=self.game, cash=0)
         entry = models.LogEntry.objects.create(
             game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK,
+            action=models.LogEntry.TRANSFER_MONEY,
             acting_player=player,
             amount=10)
         self.game.log_cursor = entry
@@ -38,7 +38,7 @@ class UndoTransferMoneyTests(TestCase):
         player = factories.PlayerFactory(game=self.game, cash=0)
         entry = models.LogEntry.objects.create(
             game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK,
+            action=models.LogEntry.TRANSFER_MONEY,
             acting_player=player,
             amount=10)
         self.game.log_cursor = entry
@@ -66,7 +66,7 @@ class RedoTransferMoneyTests(TestCase):
         player = factories.PlayerFactory(game=self.game, cash=0)
         entry = models.LogEntry.objects.create(
             game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK,
+            action=models.LogEntry.TRANSFER_MONEY,
             acting_player=player,
             amount=10)
 
@@ -82,7 +82,7 @@ class RedoTransferMoneyTests(TestCase):
         player = factories.PlayerFactory(game=self.game, cash=0)
         entry = models.LogEntry.objects.create(
             game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK,
+            action=models.LogEntry.TRANSFER_MONEY,
             acting_player=player,
             amount=20)
 

@@ -110,9 +110,9 @@ class CompanyShare(models.Model):
 
 
 class LogEntry(models.Model):
-    TRANSFER_MONEY_PLAYER_TO_BANK = 0
+    TRANSFER_MONEY = 0
     ACTION_CHOICES = (
-        (TRANSFER_MONEY_PLAYER_TO_BANK, 'Player transfers money to bank'),
+        (TRANSFER_MONEY, 'Money transfer'),
     )
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
