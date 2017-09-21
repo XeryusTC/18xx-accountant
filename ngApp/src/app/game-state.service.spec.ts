@@ -117,6 +117,7 @@ describe('GameStateService', () => {
 		// Undo service mock
 		undoService = jasmine.createSpyObj('UndoService', ['undo', 'redo']);
 		undoService.undo.and.callFake(() => Promise.resolve({}));
+		undoService.redo.and.callFake(() => Promise.resolve({}));
 
 		service = new GameStateService(gameService, playerService,
 									   companyService, shareService,
@@ -481,12 +482,52 @@ describe('GameStateService', () => {
 	}));
 
 	it('undo() should remove the last log item', fakeAsync(() => {
-		expect(service.log.length).toBe(3);
 		undoService.undo.and.callFake(() => Promise.resolve({}));
 		service.loadGame('game-uuid');
 		tick();
+		expect(service.log.length).toBe(3);
 		service.undo();
 		tick();
 		expect(service.log.length).toBe(2);
+	}));
+
+	it('redo() uses UndoService.redo()', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.redo();
+		expect(undoService.redo.calls.first().args[0]).toBe(testGame);
+	}));
+
+	it('redo() should update game instance', fakeAsync(() => {
+		let newGame = new Game('game-uuid', 0);
+		undoService.redo.and.callFake(() => Promise.resolve({game: newGame}));
+		service.loadGame('game-uuid');
+		tick();
+		service.redo();
+		tick();
+		expect(service.game).toEqual(newGame);
+	}));
+
+	it('redo() should update players when affected', fakeAsync(() => {
+		let newPlayer = new Player('test-uuid', 'game-uuid', 'Alice', 2);
+		undoService.redo
+			.and.callFake(() => Promise.resolve({players: [newPlayer]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.redo();
+		tick();
+		expect(service.players['test-uuid']).toBe(newPlayer);
+	}));
+
+	it('redo() should add log entry in response to log', fakeAsync(() => {
+		let entry = new LogEntry('uuid', 'game-uuid', new Date(), '');
+		undoService.redo.and.callFake(() => Promise.resolve({log: entry}));
+		service.loadGame('game-uuid');
+		tick();
+		expect(service.log.length).toBe(3);
+		service.redo();
+		tick();
+		expect(service.log.length).toBe(4);
+		expect(service.log[3]).toBe(entry);
 	}));
 });

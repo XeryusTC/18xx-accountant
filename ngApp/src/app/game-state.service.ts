@@ -200,4 +200,21 @@ export class GameStateService {
 				}
 			});
 	}
+
+	redo(): void {
+		this.undoService.redo(this.game)
+			.then(result => {
+				if ('game' in result) {
+					this.updateGame(result.game);
+				}
+				if ('players' in result) {
+					for (let player of result.players) {
+						this.updatePlayer(player);
+					}
+				}
+				if ('log' in result) {
+					this.updateLog(result.log);
+				}
+			});
+	}
 }
