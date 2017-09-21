@@ -6,6 +6,7 @@ from .. import factories
 from .. import models
 from .. import utils
 
+@mock.patch.object(utils, 'transfer_money')
 class UndoTransferMoneyTests(TestCase):
     def setUp(self):
         self.game = factories.GameFactory(cash=1000)
@@ -14,14 +15,11 @@ class UndoTransferMoneyTests(TestCase):
         self.game.log_cursor = self.start_entry
         self.game.save()
 
-    @mock.patch.object(utils, 'transfer_money')
     def test_can_undo_player_transfering_money_to_bank(self,
             mock_transfer_money):
         player = factories.PlayerFactory(game=self.game, cash=0)
-        entry = models.LogEntry.objects.create(
-            game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY,
-            acting_player=player,
+        entry = models.LogEntry.objects.create(game=self.game,
+            action=models.LogEntry.TRANSFER_MONEY, acting_player=player,
             amount=10)
         self.game.log_cursor = entry
         self.game.save()
@@ -32,14 +30,26 @@ class UndoTransferMoneyTests(TestCase):
         mock_transfer_money.assert_called_once_with(None, player, 10)
         self.assertEqual(self.game.log_cursor, self.start_entry)
 
-    @mock.patch.object(utils, 'transfer_money')
+    def test_can_undo_company_transfering_money_to_bank(self,
+            mock_transfer_money):
+        company = factories.CompanyFactory(game=self.game, cash=0)
+        entry = models.LogEntry.objects.create(game=self.game,
+            action=models.LogEntry.TRANSFER_MONEY, acting_company=company,
+            amount=20)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        utils.undo(self.game)
+
+        self.game.refresh_from_db()
+        mock_transfer_money.assert_called_once_with(None, company, 20)
+        self.assertEqual(self.game.log_cursor, self.start_entry)
+
     def test_undo_player_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
         player = factories.PlayerFactory(game=self.game, cash=0)
-        entry = models.LogEntry.objects.create(
-            game=self.game,
-            action=models.LogEntry.TRANSFER_MONEY,
-            acting_player=player,
+        entry = models.LogEntry.objects.create(game=self.game,
+            action=models.LogEntry.TRANSFER_MONEY, acting_player=player,
             amount=10)
         self.game.log_cursor = entry
         self.game.save()
@@ -50,6 +60,22 @@ class UndoTransferMoneyTests(TestCase):
         player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [player])
+
+    def test_undo_company_transfer_money_to_bank_returns_affected_instances(
+            self, mock_transfer_money):
+        company = factories.CompanyFactory(game=self.game, cash=0)
+        entry = models.LogEntry.objects.create(game=self.game,
+            action=models.LogEntry.TRANSFER_MONEY, acting_company=company,
+            amount=20)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        affected = utils.undo(self.game)
+
+        self.game.refresh_from_db()
+        company.refresh_from_db()
+        self.assertEqual(affected['game'], self.game)
+        self.assertEqual(affected['companies'], [company])
 
 
 class RedoTransferMoneyTests(TestCase):

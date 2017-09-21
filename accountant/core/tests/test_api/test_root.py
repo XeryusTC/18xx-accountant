@@ -168,6 +168,28 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['players'][0]['uuid'], str(player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 20)
 
+    def test_undoing_company_to_bank_money_transfer_includes_instances(self):
+        company = factories.CompanyFactory(game=self.game, cash=20)
+        entry = models.LogEntry.objects.create(game=self.game,
+            acting_company=company, amount=2,
+            action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.game.refresh_from_db()
+        company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
+        self.assertEqual(response.data['game']['cash'], 998)
+        self.assertNotIn('players', response.data.keys())
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(company.pk))
+        self.assertEqual(response.data['companies'][0]['cash'], 22)
+
 
 class RedoTests(APITestCase):
     def setUp(self):

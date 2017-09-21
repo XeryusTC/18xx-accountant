@@ -189,8 +189,12 @@ def undo(game):
     affected = {'game': game}
     entry = game.log_cursor
     if entry.action == models.LogEntry.TRANSFER_MONEY:
-        transfer_money(None, entry.acting_player, entry.amount)
-        affected['players'] = [entry.acting_player]
+        if entry.acting_player is not None:
+            transfer_money(None, entry.acting_player, entry.amount)
+            affected['players'] = [entry.acting_player]
+        elif entry.acting_company is not None:
+            transfer_money(None, entry.acting_company, entry.amount)
+            affected['companies'] = [entry.acting_company]
 
     game.refresh_from_db()
     game.log_cursor = game.log.filter(time__lt=entry.time).last()

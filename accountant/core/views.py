@@ -379,6 +379,11 @@ class UndoRedoView(APIView):
                 for player in affected['players']:
                     response['players'].append(serializers.PlayerSerializer(
                         player, context=context).data)
+            if 'companies' in affected:
+                response['companies'] = []
+                for company in affected['companies']:
+                    response['companies'].append(serializers.CompanySerializer(
+                        company, context=context).data)
             if 'log' in affected:
                 response['log'] = serializers.LogEntrySerializer(
                     affected['log'], context=context).data
