@@ -93,12 +93,27 @@ class LogEntryAPITests(APITestCase):
         game = factories.GameFactory.create()
         entries = factories.LogEntryFactory.create_batch(game=game, size=4)
         factories.LogEntryFactory.create_batch(size=7)
+        game.log_cursor = entries[-1]
+        game.save()
         url = reverse('logentry-list') + '?game=' + str(game.pk)
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertCountEqual([str(e.uuid) for e in entries],
+            [e['uuid'] for e in response.data])
+
+    def test_retrieve_log_entries_within_a_game_up_to_log_cursor(self):
+        game = factories.GameFactory()
+        entries = factories.LogEntryFactory.create_batch(game=game, size=5)
+        game.log_cursor = entries[2]
+        game.save()
+        url = reverse('logentry-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertCountEqual([str(e.uuid) for e in entries[:3]],
             [e['uuid'] for e in response.data])
 
     def test_retrieve_all_log_entries_when_no_query_params_set(self):
