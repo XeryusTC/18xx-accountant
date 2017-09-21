@@ -100,6 +100,15 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(entry.acting_player, self.player)
         self.assertEqual(entry.amount, 18)
 
+    def test_transfering_from_company_to_bank_creates_log_with_undo_data(self):
+        self.client.post(self.url, {'from_company': self.company.pk,
+            'amount': 19})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.amount, 19)
+
     def test_transfering_from_player_to_player_creates_log_entry(self):
         other_player = factories.PlayerFactory(game=self.game)
         self.assertEqual(0,
