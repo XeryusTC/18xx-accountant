@@ -196,3 +196,16 @@ def undo(game):
     game.log_cursor = game.log.filter(time__lt=entry.time).last()
     game.save()
     return affected
+
+def redo(game):
+    entry = game.log.filter(time__gt=game.log_cursor.time).first()
+    affected = {'game': game, 'log': entry}
+
+    if entry.action == models.LogEntry.TRANSFER_MONEY_PLAYER_TO_BANK:
+        transfer_money(entry.acting_player, None, entry.amount)
+        affected['players'] = [entry.acting_player]
+
+    game.refresh_from_db()
+    game.log_cursor = entry
+    game.save()
+    return affected
