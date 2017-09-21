@@ -531,6 +531,18 @@ describe('GameStateService', () => {
 		expect(service.players['test-uuid']).toBe(newPlayer);
 	}));
 
+	it('redo() should update companies when affected', fakeAsync(() => {
+		let newCompany = new Company('company-uuid-0', 'game-uuid', 'B&O', 0,
+									 10);
+		undoService.redo
+			.and.callFake(() => Promise.resolve({companies: [newCompany]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.redo();
+		tick();
+		expect(service.companies['company-uuid-0']).toBe(newCompany);
+	}));
+
 	it('redo() should add log entry in response to log', fakeAsync(() => {
 		let entry = new LogEntry('uuid', 'game-uuid', new Date(), '');
 		undoService.redo.and.callFake(() => Promise.resolve({log: entry}));

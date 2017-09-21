@@ -217,6 +217,11 @@ export class GameStateService {
 						this.updatePlayer(player);
 					}
 				}
+				if ('companies' in result) {
+					for (let company of result.companies) {
+						this.updateCompany(company);
+					}
+				}
 				if ('log' in result) {
 					this.updateLog(result.log);
 				}
