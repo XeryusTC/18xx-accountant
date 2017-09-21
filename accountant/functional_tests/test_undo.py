@@ -86,6 +86,87 @@ class UndoTests(FunctionalTestCase):
         self.assertRegex(game_page.log[-1].text,
             DATE_REGEX + 'B&O transfered 30 to the bank')
 
+    def test_can_undo_player_transfering_money_to_company(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_company(game_uuid, 'B&O', cash=1000)
+
+        self.story('Alice transfers some money to the B&O')
+        game_page = game.GamePage(self.browser)
+        transfer_form = game.TransferForm(self.browser)
+        game_page.reload_game.click()
+        alice = game_page.get_players()[0]
+        alice['row'].click()
+        transfer_form.select_target('B&O', alice['detail'])
+        transfer_form.amount(alice['detail']).send_keys('40\n')
+
+        self.story('Verify transfer happened')
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=60)
+        self.verify_company(bno, cash=1040)
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=100)
+        self.verify_company(bno, cash=1000)
+        self.assertEqual(len(game_page.log), 1)
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=60)
+        self.verify_company(bno, cash=1040)
+        self.assertEqual(len(game_page.log), 2)
+
+    def test_can_undo_company_transfering_money_to_player(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_company(game_uuid, 'B&O', cash=1000)
+
+        self.story('Alice transfers some money to the B&O')
+        game_page = game.GamePage(self.browser)
+        transfer_form = game.TransferForm(self.browser)
+        game_page.reload_game.click()
+        bno = game_page.get_companies()[0]
+        bno['elem'].click()
+        transfer_form.select_target('Alice', bno['detail'])
+        transfer_form.amount(bno['detail']).send_keys('20\n')
+
+        self.story('Verify transfer happened')
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=120)
+        self.verify_company(bno, cash=980)
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=100)
+        self.verify_company(bno, cash=1000)
+        self.assertEqual(len(game_page.log), 1)
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        alice = game_page.get_players()[0]
+        bno = game_page.get_companies()[0]
+        self.verify_player(alice, cash=120)
+        self.verify_company(bno, cash=980)
+
     def test_log_does_not_show_undone_log_actions(self):
         self.story('Alice is a user who has a game with a player')
         self.browser.get(self.server_url)
