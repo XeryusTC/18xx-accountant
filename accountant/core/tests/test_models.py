@@ -320,6 +320,22 @@ class LogEntryTests(TestCase):
         company = factories.CompanyFactory.create(game=self.game)
         LogEntry.objects.create(game=self.game, acting_company=company)
 
+    def test_receiving_player_field_is_None_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsNone(entry.receiving_player)
+
+    def test_receiving_player_field_points_to_Player(self):
+        player = factories.PlayerFactory.create(game=self.game)
+        LogEntry.objects.create(game=self.game, receiving_player=player)
+
+    def test_receiving_company_field_is_None_by_default(self):
+        entry = LogEntry.objects.create(game=self.game)
+        self.assertIsNone(entry.receiving_company)
+
+    def test_receiving_company_field_points_to_Company(self):
+        company = factories.CompanyFactory.create(game=self.game)
+        LogEntry.objects.create(game=self.game, receiving_company=company)
+
     def test_amount_field_is_0_by_default(self):
         entry = LogEntry.objects.create(game=self.game)
         self.assertEquals(entry.amount, 0)

@@ -127,6 +127,10 @@ class LogEntry(models.Model):
         default=None)
     acting_company = models.ForeignKey(Company, related_name='+', null=True,
         default=None)
+    receiving_player = models.ForeignKey(Player, related_name='+', null=True,
+        default=None)
+    receiving_company = models.ForeignKey(Company, related_name='+', null=True,
+        default=None)
     amount = models.IntegerField(default=0)
 
     class Meta:
