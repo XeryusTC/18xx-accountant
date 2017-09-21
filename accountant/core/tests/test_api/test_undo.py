@@ -14,6 +14,8 @@ class UndoTests(APITestCase):
             text='New game started')
         self.game.log_cursor = self.start_entry
         self.game.save()
+        self.player = factories.PlayerFactory(game=self.game, cash=100)
+        self.company = factories.CompanyFactory(game=self.game, cash=100)
         self.url = reverse('undo')
 
     def test_GET_request_is_empty(self):
@@ -23,9 +25,8 @@ class UndoTests(APITestCase):
         self.assertIsNone(response.data)
 
     def test_undoing_player_to_bank_money_transfer_includes_instances(self):
-        player = factories.PlayerFactory(game=self.game, cash=10)
         entry = models.LogEntry.objects.create(game=self.game,
-            acting_player=player, amount=10,
+            acting_player=self.player, amount=1,
             action=models.LogEntry.TRANSFER_MONEY)
         self.game.log_cursor = entry
         self.game.save()
@@ -34,18 +35,18 @@ class UndoTests(APITestCase):
             'action': 'undo'})
 
         self.game.refresh_from_db()
-        player.refresh_from_db()
+        self.player.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
-        self.assertEqual(response.data['game']['cash'], 990)
+        self.assertEqual(response.data['game']['cash'], 999)
         self.assertEqual(len(response.data['players']), 1)
-        self.assertEqual(response.data['players'][0]['uuid'], str(player.pk))
-        self.assertEqual(response.data['players'][0]['cash'], 20)
+        self.assertEqual(response.data['players'][0]['uuid'],
+            str(self.player.pk))
+        self.assertEqual(response.data['players'][0]['cash'], 101)
 
     def test_undoing_company_to_bank_money_transfer_includes_instances(self):
-        company = factories.CompanyFactory(game=self.game, cash=20)
         entry = models.LogEntry.objects.create(game=self.game,
-            acting_company=company, amount=2,
+            acting_company=self.company, amount=2,
             action=models.LogEntry.TRANSFER_MONEY)
         self.game.log_cursor = entry
         self.game.save()
@@ -54,15 +55,15 @@ class UndoTests(APITestCase):
             'action': 'undo'})
 
         self.game.refresh_from_db()
-        company.refresh_from_db()
+        self.company.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['game']['cash'], 998)
         self.assertNotIn('players', response.data.keys())
         self.assertEqual(len(response.data['companies']), 1)
         self.assertEqual(response.data['companies'][0]['uuid'],
-            str(company.pk))
-        self.assertEqual(response.data['companies'][0]['cash'], 22)
+            str(self.company.pk))
+        self.assertEqual(response.data['companies'][0]['cash'], 102)
 
 
 class RedoTests(APITestCase):
