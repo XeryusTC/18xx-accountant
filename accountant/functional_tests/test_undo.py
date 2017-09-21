@@ -47,6 +47,45 @@ class UndoTests(FunctionalTestCase):
         self.assertRegex(game_page.log[1].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
+    def test_can_undo_company_transfering_money_to_bank(self):
+        self.story('Alice is a user who has a game with a company')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_company(game_uuid, 'B&O', cash=1000)
+
+        self.story('The B&O transfers some money to the bank')
+        game_page = game.GamePage(self.browser)
+        game_page.reload_game.click()
+        transfer_form = game.TransferForm(self.browser)
+        bno = game_page.get_companies()[0]
+        bno['elem'].click()
+        transfer_form.amount(bno['detail']).send_keys('30\n')
+
+        bno = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '12030')
+        self.assertEqual(bno['cash'].text, '970')
+        self.assertEqual(len(game_page.log), 2)
+        self.assertRegex(game_page.log[-1].text,
+            DATE_REGEX + 'B&O transfered 30 to the bank')
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        bno = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '12000')
+        self.assertEqual(bno['cash'].text, '1000'),
+        self.assertEqual(len(game_page.log), 1)
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        bno = game_page.get_companies()[0]
+        self.assertEqual(game_page.bank_cash.text, '12030')
+        self.assertEqual(bno['cash'].text, '970')
+        self.assertEqual(len(game_page.log), 2)
+        self.assertRegex(game_page.log[-1].text,
+            DATE_REGEX + 'B&O transfered 30 to the bank')
+
     def test_log_does_not_show_undone_log_actions(self):
         self.story('Alice is a user who has a game with a player')
         self.browser.get(self.server_url)
