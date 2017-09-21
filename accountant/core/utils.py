@@ -206,8 +206,12 @@ def redo(game):
     affected = {'game': game, 'log': entry}
 
     if entry.action == models.LogEntry.TRANSFER_MONEY:
-        transfer_money(entry.acting_player, None, entry.amount)
-        affected['players'] = [entry.acting_player]
+        if entry.acting_player is not None:
+            transfer_money(entry.acting_player, None, entry.amount)
+            affected['players'] = [entry.acting_player]
+        elif entry.acting_company is not None:
+            transfer_money(entry.acting_company, None, entry.amount)
+            affected['companies'] = [entry.acting_company]
 
     game.refresh_from_db()
     game.log_cursor = entry
