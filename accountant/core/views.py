@@ -124,6 +124,10 @@ class TransferMoneyView(APIView):
                 entry.acting_player = serializer.source_instance
             elif isinstance(serializer.source_instance, models.Company):
                 entry.acting_company = serializer.source_instance
+            if isinstance(serializer.dest_instance, models.Player):
+                entry.receiving_player = serializer.dest_instance
+            if isinstance(serializer.dest_instance, models.Company):
+                entry.receiving_company = serializer.dest_instance
             entry.save()
             game.log_cursor = entry
             game.save()

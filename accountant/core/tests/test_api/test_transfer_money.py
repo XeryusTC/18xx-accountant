@@ -91,24 +91,6 @@ class TransferMoneyTests(APITestCase):
             '{} transfered 10 to the bank'.format(self.player.name))
         self.assertEqual(self.game.log.last(), self.game.log_cursor)
 
-    def test_transfering_from_player_to_bank_creates_log_with_undo_data(self):
-        self.client.post(self.url,
-            {'from_player': self.player.pk, 'amount': 18})
-        self.game.refresh_from_db()
-        entry = self.game.log.last()
-        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
-        self.assertEqual(entry.acting_player, self.player)
-        self.assertEqual(entry.amount, 18)
-
-    def test_transfering_from_company_to_bank_creates_log_with_undo_data(self):
-        self.client.post(self.url, {'from_company': self.company.pk,
-            'amount': 19})
-        self.game.refresh_from_db()
-        entry = self.game.log.last()
-        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
-        self.assertEqual(entry.acting_company, self.company)
-        self.assertEqual(entry.amount, 19)
-
     def test_transfering_from_player_to_player_creates_log_entry(self):
         other_player = factories.PlayerFactory(game=self.game)
         self.assertEqual(0,
@@ -205,6 +187,66 @@ class TransferMoneyTests(APITestCase):
         self.assertEqual(self.game.log.last().text,
             'The bank transfered 17 to {}'.format(self.company.name))
         self.assertEqual(self.game.log.last(), self.game.log_cursor)
+
+    def test_transfering_from_player_to_bank_creates_log_with_undo_data(self):
+        self.client.post(self.url,
+            {'from_player': self.player.pk, 'amount': 18})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_player, self.player)
+        self.assertEqual(entry.amount, 18)
+
+    def test_transfering_from_company_to_bank_creates_log_with_undo_data(self):
+        self.client.post(self.url, {'from_company': self.company.pk,
+            'amount': 19})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.amount, 19)
+
+    def test_transfer_from_player_to_player_creates_log_with_undo_data(self):
+        other_player = factories.PlayerFactory(game=self.game)
+        self.client.post(self.url, {'from_player': self.player.pk,
+            'to_player': other_player.pk, 'amount': 20})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_player, self.player)
+        self.assertEqual(entry.receiving_player, other_player)
+        self.assertEqual(entry.amount, 20)
+
+    def test_transfer_from_player_to_company_creates_log_with_undo_data(self):
+        self.client.post(self.url, {'from_player': self.player.pk,
+            'to_company': self.company.pk, 'amount': 21})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_player, self.player)
+        self.assertEqual(entry.receiving_company, self.company)
+        self.assertEqual(entry.amount, 21)
+
+    def test_transfer_from_company_to_player_creates_log_with_undo_data(self):
+        self.client.post(self.url, {'from_company': self.company.pk,
+            'to_player': self.player.pk, 'amount': 22})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.receiving_player, self.player)
+        self.assertEqual(entry.amount, 22)
+
+    def test_transfer_from_company_to_company_creates_log_with_undo_data(self):
+        other_company = factories.CompanyFactory(game=self.game)
+        self.client.post(self.url, {'from_company': self.company.pk,
+            'to_company': other_company.pk, 'amount': 23})
+        self.game.refresh_from_db()
+        entry = self.game.log.last()
+        self.assertEqual(entry.action, models.LogEntry.TRANSFER_MONEY)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.receiving_company, other_company)
+        self.assertEqual(entry.amount, 23)
 
 
 @mock.patch.object(utils, 'transfer_money')
