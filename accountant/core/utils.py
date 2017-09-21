@@ -186,15 +186,33 @@ def _distribute_dividends(company, amount):
     return result
 
 def undo(game):
-    affected = {'game': game}
+    affected = {'players': [], 'companies': []}
     entry = game.log_cursor
     if entry.action == models.LogEntry.TRANSFER_MONEY:
+        # Determine who originally send money
         if entry.acting_player is not None:
-            transfer_money(None, entry.acting_player, entry.amount)
-            affected['players'] = [entry.acting_player]
+            acting = entry.acting_player
+            affected['players'].append(entry.acting_player)
         elif entry.acting_company is not None:
-            transfer_money(None, entry.acting_company, entry.amount)
-            affected['companies'] = [entry.acting_company]
+            acting = entry.acting_company
+            affected['companies'].append(entry.acting_company)
+        # Determine who originally received money
+        if entry.receiving_player is not None:
+            receiving = entry.receiving_player
+            affected['players'].append(entry.receiving_player)
+        elif entry.receiving_company is not None:
+            receiving = entry.receiving_company
+            affected['companies'].append(entry.receiving_company)
+        else:
+            receiving = None
+            affected['game'] = game
+        transfer_money(receiving, acting, entry.amount)
+
+    # Remove empty items from affected
+    if not affected['players']:
+        del affected['players']
+    if not affected['companies']:
+        del affected['companies']
 
     game.refresh_from_db()
     game.log_cursor = game.log.filter(time__lt=entry.time).last()
