@@ -196,6 +196,9 @@ def undo(game):
         elif entry.acting_company is not None:
             acting = entry.acting_company
             affected['companies'].append(entry.acting_company)
+        else:
+            acting = None
+            affected['game'] = game
         # Determine who originally received money
         if entry.receiving_player is not None:
             receiving = entry.receiving_player
@@ -231,6 +234,9 @@ def redo(game):
         elif entry.acting_company is not None:
             acting = entry.acting_company
             affected['companies'].append(entry.acting_company)
+        else:
+            acting = None
+            affected['game'] = game
         # Determine who should receive money
         if entry.receiving_player is not None:
             receiving = entry.receiving_player

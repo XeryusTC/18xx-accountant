@@ -24,6 +24,42 @@ class UndoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data)
 
+    def test_undoing_bank_to_player_money_transfer_includes_instances(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            receiving_player=self.player, amount=25,
+            action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.game.refresh_from_db()
+        self.player.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('companies', response.data.keys())
+        self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
+        self.assertEqual(response.data['players'][0]['uuid'],
+            str(self.player.pk))
+
+    def test_undoing_bank_to_company_money_transfer_includes_instances(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            receiving_company=self.company, amount=25,
+            action=models.LogEntry.TRANSFER_MONEY)
+        self.game.log_cursor = entry
+        self.game.save()
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'undo'})
+
+        self.game.refresh_from_db()
+        self.company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('players', response.data.keys())
+        self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(self.company.pk))
+
     def test_undoing_player_to_bank_money_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
             acting_player=self.player, amount=1,
@@ -162,6 +198,40 @@ class RedoTests(APITestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data)
+
+    def test_redoing_bank_to_player_money_transfer_includes_data(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            receiving_player=self.player, amount=25,
+            action=models.LogEntry.TRANSFER_MONEY)
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'redo'})
+
+        self.game.refresh_from_db()
+        self.player.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('companies', response.data.keys())
+        self.assertEqual(len(response.data['players']), 1)
+        self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
+        self.assertEqual(response.data['players'][0]['uuid'],
+            str(self.player.pk))
+
+    def test_redoing_bank_to_company_money_transfer_includes_data(self):
+        entry = models.LogEntry.objects.create(game=self.game,
+            receiving_company=self.company, amount=26,
+            action=models.LogEntry.TRANSFER_MONEY)
+
+        response = self.client.post(self.url, {'game': str(self.game.pk),
+            'action': 'redo'})
+
+        self.game.refresh_from_db()
+        self.company.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('players', response.data.keys())
+        self.assertEqual(len(response.data['companies']), 1)
+        self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
+        self.assertEqual(response.data['companies'][0]['uuid'],
+            str(self.company.pk))
 
     def test_redoing_player_to_bank_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
