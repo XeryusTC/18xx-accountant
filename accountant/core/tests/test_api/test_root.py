@@ -116,6 +116,15 @@ class LogEntryAPITests(APITestCase):
         self.assertCountEqual([str(e.uuid) for e in entries[:3]],
             [e['uuid'] for e in response.data])
 
+    def test_returns_empty_list_when_game_has_no_log_entries(self):
+        game = factories.GameFactory()
+        url = reverse('logentry-list') + '?game=' + str(game.pk)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
     def test_retrieve_all_log_entries_when_no_query_params_set(self):
         factories.LogEntryFactory.create_batch(size=12)
         url = reverse('logentry-list')

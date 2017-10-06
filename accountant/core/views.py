@@ -77,6 +77,8 @@ class LogEntryViewSet(viewsets.ReadOnlyModelViewSet):
         game_uuid = self.request.query_params.get('game', None)
         if game_uuid is not None:
             game = models.Game.objects.get(pk=game_uuid)
+            if game.log_cursor == None:
+                return None
             queryset = game.log.filter(time__lte=game.log_cursor.time)
         else:
             queryset = models.LogEntry.objects.all()
