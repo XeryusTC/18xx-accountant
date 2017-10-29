@@ -84,6 +84,10 @@ class Company(Entity):
     _bank_shares = PageElement(css=".bank",        context=True)
     _edit        = PageElement(id_="edit",         context=True)
 
+    def set_value(self, new_value):
+        self['value'].clear()
+        self['value'].send_keys(str(new_value))
+
     def __getitem__(self, key):
         if key == 'share_count':
             return self._share_count(self.root)

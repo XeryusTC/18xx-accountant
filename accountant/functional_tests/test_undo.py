@@ -167,6 +167,142 @@ class UndoTests(FunctionalTestCase):
         self.verify_player(alice, cash=120)
         self.verify_company(bno, cash=980)
 
+    def test_can_undo_player_buying_share_from_ipo(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_company(game_uuid, 'B&O', cash=0, ipo_shares=3)
+
+        self.story('Alice buys a share from the B&Os IPO')
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        game_page.reload_game.click()
+        bno = game_page.get_companies()[0]
+        bno.set_value(10)
+        alice = game_page.get_players()[0]
+        alice['row'].click()
+        share_form.select_company('B&O', alice['detail'])
+        share_form.select_source('ipo', alice['detail'])
+        share_form.shares(alice['detail']).clear()
+        share_form.shares(alice['detail']).send_keys('2\n')
+
+        self.story('Verify that Alice bought the share')
+        bno = game_page.get_companies()[0]
+        alice = game_page.get_players()[0]
+        self.verify_player(alice, cash=80, shares=['B&O 20%'])
+        self.verify_company(bno, cash=0, ipo_shares=1, bank_shares=0)
+        self.assertEqual(game_page.bank_cash.text, '12020')
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        bno = game_page.get_companies()[0]
+        alice = game_page.get_players()[0]
+        self.verify_player(alice, cash=100, shares=[])
+        self.verify_company(bno, cash=0, ipo_shares=3, bank_shares=0)
+        self.assertEqual(game_page.bank_cash.text, '12000')
+        self.assertEqual(len(game_page.log), 1)
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        bno = game_page.get_companies()[0]
+        alice = game_page.get_players()[0]
+        self.verify_player(alice, cash=80, shares=['B&O 20%'])
+        self.verify_company(bno, cash=0, ipo_shares=1, bank_shares=0)
+        self.assertEqual(game_page.bank_cash.text, '12020')
+        self.assertEqual(len(game_page.log), 2)
+
+    def test_can_undo_company_buying_share_from_bank(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_company(game_uuid, 'CPR', cash=0, bank_shares=5,
+            ipo_shares=5)
+        self.create_company(game_uuid, 'B&M', cash=100)
+
+        self.story('B&M buys a share of CPR from the bank')
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        game_page.reload_game.click()
+        bm, cpr = game_page.get_companies()
+        cpr.set_value(20)
+        bm['elem'].click()
+        share_form.select_company('CPR', bm['detail'])
+        share_form.select_source('bank', bm['detail'])
+        share_form.shares(bm['detail']).clear()
+        share_form.shares(bm['detail']).send_keys('4\n')
+
+        self.story('Verify that shares have been bought')
+        bm, cpr = game_page.get_companies()
+        self.verify_company(cpr, cash=0, ipo_shares=5, bank_shares=1)
+        self.verify_company(bm, cash=20, shares=['CPR 40%'])
+        self.assertEqual(game_page.bank_cash.text, '12080')
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        bm, cpr = game_page.get_companies()
+        self.verify_company(cpr, cash=0, ipo_shares=5, bank_shares=5)
+        self.verify_company(bm, cash=100, shares=[])
+        self.assertEqual(game_page.bank_cash.text, '12000')
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        bm, cpr = game_page.get_companies()
+        self.verify_company(cpr, cash=0, ipo_shares=5, bank_shares=1)
+        self.verify_company(bm, cash=20, shares=['CPR 40%'])
+        self.assertEqual(game_page.bank_cash.text, '12080')
+        self.assertEqual(len(game_page.log), 2)
+
+    def test_can_undo_player_buying_share_from_company_treasury(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_player(game_uuid, 'Alice', cash=300)
+        co_uuid = self.create_company(game_uuid, 'C&O', cash=0, bank_shares=0,
+            ipo_shares=0)
+        self.create_company_share(co_uuid, co_uuid, shares=10)
+
+        self.story('Alice buys a share C&O from the C&O')
+        game_page = game.GamePage(self.browser)
+        share_form = game.ShareForm(self.browser)
+        game_page.reload_game.click()
+        alice = game_page.get_players()[0]
+        co = game_page.get_companies()[0]
+        co.set_value(30)
+        alice['row'].click()
+        share_form.select_company('C&O', alice['detail'])
+        share_form.select_source('C&O', alice['detail'])
+        share_form.shares(alice['detail']).clear()
+        share_form.shares(alice['detail']).send_keys('6\n')
+
+        self.story('Verify that shares have been bought')
+        alice = game_page.get_players()[0]
+        co = game_page.get_companies()[0]
+        self.verify_player(alice, cash=120, shares=['C&O 60%'])
+        self.verify_company(co, cash=180, shares=['C&O 40%'])
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice = game_page.get_players()[0]
+        co = game_page.get_companies()[0]
+        self.verify_player(alice, cash=300, shares=[])
+        self.verify_company(co, cash=0, shares=['C&O 100%'])
+
+        self.story('Click the redo button, the transfer is done again')
+        game_page.redo.click()
+        alice = game_page.get_players()[0]
+        co = game_page.get_companies()[0]
+        self.verify_player(alice, cash=120, shares=['C&O 60%'])
+        self.verify_company(co, cash=180, shares=['C&O 40%'])
+
     def test_log_does_not_show_undone_log_actions(self):
         self.story('Alice is a user who has a game with a player')
         self.browser.get(self.server_url)
