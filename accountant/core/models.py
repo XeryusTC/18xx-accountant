@@ -111,8 +111,10 @@ class CompanyShare(models.Model):
 
 class LogEntry(models.Model):
     TRANSFER_MONEY = 0
+    TRANSFER_SHARE = 1
     ACTION_CHOICES = (
         (TRANSFER_MONEY, 'Money transfer'),
+        (TRANSFER_SHARE, 'Buy/sell share'),
     )
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
@@ -123,6 +125,8 @@ class LogEntry(models.Model):
     text = models.TextField(default='')
     action = models.IntegerField(default=None, choices=ACTION_CHOICES,
         null=True, blank=True)
+
+    # Transfer money related
     acting_player = models.ForeignKey(Player, related_name='+', null=True,
         default=None)
     acting_company = models.ForeignKey(Company, related_name='+', null=True,
@@ -132,6 +136,20 @@ class LogEntry(models.Model):
     receiving_company = models.ForeignKey(Company, related_name='+', null=True,
         default=None)
     amount = models.IntegerField(default=0)
+
+    # Transfer share related
+    buyer = models.CharField(max_length=8, default='')
+    source = models.CharField(max_length=8, default='')
+    shares = models.IntegerField(default=0)
+    price = models.IntegerField(default=0)
+    player_buyer = models.ForeignKey(Player, related_name='+', null=True,
+        default=None)
+    player_source = models.ForeignKey(Player, related_name='+', null=True,
+        default=None)
+    company_buyer = models.ForeignKey(Company, related_name='+', null=True,
+        default=None)
+    company_source = models.ForeignKey(Company, related_name='+', null=True,
+        default=None)
 
     class Meta:
         ordering = ['time']
