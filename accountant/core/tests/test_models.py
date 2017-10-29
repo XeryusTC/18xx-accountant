@@ -279,6 +279,7 @@ class LogEntryTests(TestCase):
         self.game = factories.GameFactory.create()
         self.player = factories.PlayerFactory(game=self.game)
         self.company = factories.CompanyFactory.create(game=self.game)
+        self.entry = LogEntry.objects.create(game=self.game)
 
     def test_pk_is_uuid(self):
         entry = LogEntry.objects.create(game=self.game)
@@ -290,21 +291,18 @@ class LogEntryTests(TestCase):
             entry.save()
 
     def test_has_time_field(self):
-        entry = LogEntry.objects.create(game=self.game)
-        entry.time
+        self.entry.time
 
     def test_text_is_empty_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEqual(entry.text, '')
+        self.assertEqual(self.entry.text, '')
 
     def test_time_field_is_set_to_current_time(self):
-        entry = LogEntry.objects.create(game=self.game)
         time = timezone.now()
-        self.assertAlmostEqual(entry.time, time, delta=timedelta(seconds=5))
+        self.assertAlmostEqual(self.entry.time, time,
+            delta=timedelta(seconds=5))
 
     def test_action_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.action)
+        self.assertIsNone(self.entry.action)
 
     def test_action_field_can_be_TRANSFER_MONEY(self):
         LogEntry.objects.create(game=self.game, action=LogEntry.TRANSFER_MONEY)
@@ -313,82 +311,70 @@ class LogEntryTests(TestCase):
         LogEntry.objects.create(game=self.game, action=LogEntry.TRANSFER_SHARE)
 
     def test_acting_player_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.acting_player)
+        self.assertIsNone(self.entry.acting_player)
 
     def test_acting_player_field_points_to_player(self):
         LogEntry.objects.create(game=self.game, acting_player=self.player)
 
     def test_acting_company_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.acting_company)
+        self.assertIsNone(self.entry.acting_company)
 
     def test_acting_company_field_points_to_company(self):
         LogEntry.objects.create(game=self.game, acting_company=self.company)
 
     def test_receiving_player_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.receiving_player)
+        self.assertIsNone(self.entry.receiving_player)
 
     def test_receiving_player_field_points_to_Player(self):
         LogEntry.objects.create(game=self.game, receiving_player=self.player)
 
     def test_receiving_company_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.receiving_company)
+        self.assertIsNone(self.entry.receiving_company)
 
     def test_receiving_company_field_points_to_Company(self):
         LogEntry.objects.create(game=self.game, receiving_company=self.company)
 
     def test_amount_field_is_0_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEquals(entry.amount, 0)
+        self.assertEquals(self.entry.amount, 0)
 
     def test_buyer_field_is_empty_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEqual(entry.buyer, '')
+        self.assertEqual(self.entry.buyer, '')
 
     def test_source_field_is_empty_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEqual(entry.source, '')
+        self.assertEqual(self.entry.source, '')
 
     def test_player_buyer_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.player_buyer)
+        self.assertIsNone(self.entry.player_buyer)
 
     def test_player_buyer_field_points_to_Player(self):
         LogEntry.objects.create(game=self.game, player_buyer=self.player)
 
     def test_company_buyer_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.company_buyer)
+        self.assertIsNone(self.entry.company_buyer)
 
     def test_company_buyer_field_points_to_company(self):
         LogEntry.objects.create(game=self.game, company_buyer=self.company)
 
     def test_player_source_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.player_source)
+        self.assertIsNone(self.entry.player_source)
 
     def test_player_source_field_points_to_Player(self):
         LogEntry.objects.create(game=self.game, player_source=self.player)
 
     def test_company_source_field_is_None_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertIsNone(entry.company_source)
+        self.assertIsNone(self.entry.company_source)
 
     def test_company_source_field_points_to_Company(self):
         LogEntry.objects.create(game=self.game, company_source=self.company)
 
     def test_price_field_is_0_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEqual(entry.price, 0)
+        self.assertEqual(self.entry.price, 0)
 
     def test_shares_field_is_0_by_default(self):
-        entry = LogEntry.objects.create(game=self.game)
-        self.assertEqual(entry.shares, 0)
+        self.assertEqual(self.entry.shares, 0)
 
     def test_are_sorted_chronological(self):
+        self.entry.delete()
         entry1 = LogEntry.objects.create(game=self.game,
             time=timezone.make_aware(datetime(1970, 1, 1, 12, 0, 0)))
         entry2 = LogEntry.objects.create(game=self.game,
