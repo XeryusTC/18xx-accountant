@@ -236,10 +236,20 @@ class TransferShareView(APIView):
             entry = models.LogEntry.objects.create(game=share.game,
                 text=log_string.format(buyer=buyer_name, amount=abs(amount),
                                        company=share.name, source=source_name,
-                                       price=price))
-            if isinstance(buyer, models.Company):
+                                       price=price),
+                action=models.LogEntry.TRANSFER_SHARE, shares=amount,
+                price=price, buyer=serializer.validated_data['buyer_type'],
+                source=serializer.validated_data['source_type'])
+            if isinstance(buyer, models.Player):
+                entry.player_buyer = buyer
+            elif isinstance(buyer, models.Company):
+                entry.company_buyer = buyer
                 entry.acting_company = buyer
-                entry.save()
+            if isinstance(source, models.Player):
+                entry.player_source = source
+            elif isinstance(source, models.Company):
+                entry.company_source = source
+            entry.save()
             share.game.refresh_from_db()
             share.game.log_cursor = entry
             share.game.save()
