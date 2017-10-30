@@ -373,6 +373,12 @@ class LogEntryTests(TestCase):
     def test_shares_field_is_0_by_default(self):
         self.assertEqual(self.entry.shares, 0)
 
+    def test_company_field_is_None_by_default(self):
+        self.assertIsNone(self.entry.company)
+
+    def test_company_field_points_to_Company(self):
+        LogEntry.objects.create(game=self.game, company=self.company)
+
     def test_are_sorted_chronological(self):
         self.entry.delete()
         entry1 = LogEntry.objects.create(game=self.game,

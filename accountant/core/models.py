@@ -142,6 +142,8 @@ class LogEntry(models.Model):
     source = models.CharField(max_length=8, default='')
     shares = models.IntegerField(default=0)
     price = models.IntegerField(default=0)
+    company = models.ForeignKey(Company, related_name='+', null=True,
+        default=None)
     player_buyer = models.ForeignKey(Player, related_name='+', null=True,
         default=None)
     player_source = models.ForeignKey(Player, related_name='+', null=True,
