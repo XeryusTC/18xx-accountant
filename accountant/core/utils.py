@@ -264,6 +264,21 @@ def redo(game):
             receiving = None
             affected['game'] = game
         transfer_money(acting, receiving, entry.amount)
+    elif entry.action == models.LogEntry.TRANSFER_SHARE:
+        # Determine who bought the share
+        if entry.buyer == 'player':
+            buyer = entry.player_buyer
+        elif entry.buyer == 'company':
+            buyer = entry.company_buyer
+        # Determine where the share came from
+        source = Share.IPO
+        if entry.source == 'bank':
+            source = Share.BANK
+        elif entry.source == 'player':
+            source = entry.player_source
+        elif entry.source == 'company':
+            source = entry.company_source
+        buy_share(buyer, entry.company, source, entry.price, -entry.shares)
 
     # Remove empty items from affected
     if not affected['players']:
