@@ -511,6 +511,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'player')
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'ipo')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_buying_share_from_bank_creates_log_entry(self, mock):
         self.data.update({'buyer_type': 'player', 'source_type': 'bank',
@@ -526,6 +527,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'player')
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'bank')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_buying_share_from_company_creates_log_entry(self, mock):
         self.data.update({'buyer_type': 'player', 'source_type': 'company',
@@ -544,6 +546,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'company')
         self.assertEqual(entry.company_source, self.buy_company)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_buying_share_from_player_creates_log_entry(self, mock):
         extra_player = factories.PlayerFactory(game=self.game)
@@ -565,6 +568,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'player')
         self.assertEqual(entry.player_source, extra_player)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_buying_share_from_ipo_creates_log_entry(self, mock):
         self.data.update({'buyer_type': 'company',
@@ -582,6 +586,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'company')
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'ipo')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_buying_share_from_bank_creates_log_entry(self, mock):
         self.data.update({'buyer_type': 'company',
@@ -599,6 +604,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'company')
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'bank')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_buying_share_from_company_creates_log_entry(self, mock):
         extra_company = factories.CompanyFactory(game=self.game, cash=0)
@@ -621,6 +627,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'company')
         self.assertEqual(entry.company_source, extra_company)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_buying_share_from_player_creates_log_entry(self, mock):
         self.data.update({'buyer_type': 'company',
@@ -640,6 +647,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'player')
         self.assertEqual(entry.player_source, self.player)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_selling_share_to_ipo_creates_log_entry(self, mock):
         self.data.update({'price': 10, 'buyer_type': 'player',
@@ -656,6 +664,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'player')
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'ipo')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_selling_share_to_bank_creates_log_entry(self, mock):
         self.data.update({'price': 11, 'buyer_type': 'player',
@@ -672,6 +681,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'player')
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'bank')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_selling_share_to_player_creates_log_entry(self, mock):
         extra_player = factories.PlayerFactory(game=self.game)
@@ -693,6 +703,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'player')
         self.assertEqual(entry.player_source, extra_player)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_player_selling_share_to_company_creates_log_entry(self, mock):
         self.data.update({'price': 13, 'buyer_type': 'player',
@@ -711,6 +722,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.player_buyer, self.player)
         self.assertEqual(entry.source, 'company')
         self.assertEqual(entry.company_source, self.buy_company)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_selling_share_to_ipo_creates_log_entry(self, mock):
         self.data.update({'price': 14, 'buyer_type': 'company',
@@ -728,6 +740,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'company')
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'ipo')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_selling_share_to_bank_creates_log_entry(self, mock):
         self.data.update({'price': 15, 'buyer_type': 'company',
@@ -745,6 +758,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.buyer, 'company')
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'bank')
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_selling_share_to_player_creates_log_entry(self, mock):
         self.data.update({'price': 16, 'buyer_type': 'company',
@@ -764,6 +778,7 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'player')
         self.assertEqual(entry.player_source, self.player)
+        self.assertEqual(entry.company, self.share_company)
 
     def test_company_selling_share_to_company_creates_log_entry(self, mock):
         extra_company = factories.CompanyFactory(game=self.game, cash=0)
@@ -786,3 +801,4 @@ class ShareTransactionLogTests(APITestCase):
         self.assertEqual(entry.company_buyer, self.buy_company)
         self.assertEqual(entry.source, 'company')
         self.assertEqual(entry.company_source, extra_company)
+        self.assertEqual(entry.company, self.share_company)

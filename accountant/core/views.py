@@ -239,7 +239,8 @@ class TransferShareView(APIView):
                                        price=price),
                 action=models.LogEntry.TRANSFER_SHARE, shares=amount,
                 price=price, buyer=serializer.validated_data['buyer_type'],
-                source=serializer.validated_data['source_type'])
+                source=serializer.validated_data['source_type'],
+                company=share)
             if isinstance(buyer, models.Player):
                 entry.player_buyer = buyer
             elif isinstance(buyer, models.Company):
