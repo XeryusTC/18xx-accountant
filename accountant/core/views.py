@@ -401,16 +401,17 @@ class UndoRedoView(APIView):
                 for company in affected['companies']:
                     response['companies'].append(serializers.CompanySerializer(
                         company, context=context).data)
-            response['shares'] = []
-            for share in affected['shares']:
-                if isinstance(share, models.PlayerShare):
-                    response['shares'].append(
-                        serializers.PlayerShareSerializer(share,
-                            context=context).data)
-                else:
-                    response['shares'].append(
-                        serializers.CompanyShareSerializer(share,
-                            context=context).data)
+            if 'shares' in affected:
+                response['shares'] = []
+                for share in affected['shares']:
+                    if isinstance(share, models.PlayerShare):
+                        response['shares'].append(
+                            serializers.PlayerShareSerializer(share,
+                                context=context).data)
+                    else:
+                        response['shares'].append(
+                            serializers.CompanyShareSerializer(share,
+                                context=context).data)
             if 'log' in affected:
                 response['log'] = serializers.LogEntrySerializer(
                     affected['log'], context=context).data

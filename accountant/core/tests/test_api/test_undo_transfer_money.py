@@ -41,6 +41,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['players'][0]['uuid'],
             str(self.player.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_bank_to_company_money_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -59,6 +60,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_player_to_bank_money_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -79,6 +81,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['players'][0]['uuid'],
             str(self.player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 101)
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_company_to_bank_money_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -100,6 +103,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
         self.assertEqual(response.data['companies'][0]['cash'], 102)
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_player_to_player_transfer_includes_instances(self):
         other_player = factories.PlayerFactory(game=self.game)
@@ -119,6 +123,7 @@ class UndoTests(APITestCase):
         self.assertNotIn('companies', response.data.keys())
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(other_player.pk)])
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_player_to_company_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -140,6 +145,7 @@ class UndoTests(APITestCase):
             str(self.player.pk))
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_company_to_player_transfer_includes_instances(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -161,6 +167,7 @@ class UndoTests(APITestCase):
             str(self.player.pk))
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_undoing_company_to_company_transfer_includes_instances(self):
         other_company = factories.CompanyFactory(game=self.game)
@@ -180,6 +187,7 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.company.pk), str(other_company.pk)])
+        self.assertNotIn('shares', response.data.keys())
 
 
 class RedoTests(APITestCase):
@@ -215,6 +223,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['players'][0]['uuid'],
             str(self.player.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_bank_to_company_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -232,6 +241,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_player_to_bank_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -252,6 +262,7 @@ class RedoTests(APITestCase):
             str(self.player.pk))
         self.assertEqual(response.data['players'][0]['cash'], 99)
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_company_to_bank_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -271,6 +282,7 @@ class RedoTests(APITestCase):
             str(self.company.pk))
         self.assertEqual(response.data['companies'][0]['cash'], 98)
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_player_to_player_money_transfer_includes_data(self):
         other_player = factories.PlayerFactory(game=self.game)
@@ -288,6 +300,7 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(other_player.pk)])
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_player_to_company_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -307,6 +320,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_company_to_player_money_transfer_includes_data(self):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -326,6 +340,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['companies'][0]['uuid'],
             str(self.company.pk))
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_company_to_company_money_transfer_includes_data(self):
         other_company = factories.CompanyFactory(game=self.game)
@@ -343,3 +358,4 @@ class RedoTests(APITestCase):
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.company.pk), str(other_company.pk)])
         self.assertEqual(response.data['log']['uuid'], str(entry.pk))
+        self.assertNotIn('shares', response.data.keys())

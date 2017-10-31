@@ -186,7 +186,7 @@ def _distribute_dividends(company, amount):
     return result
 
 def undo(game):
-    affected = {'players': [], 'companies': [], 'shares': []}
+    affected = {'players': [], 'companies': []}
     entry = game.log_cursor
     if entry.action == models.LogEntry.TRANSFER_MONEY:
         # Determine who originally send money
@@ -211,6 +211,7 @@ def undo(game):
             affected['game'] = game
         transfer_money(receiving, acting, entry.amount)
     elif entry.action == models.LogEntry.TRANSFER_SHARE:
+        affected['shares'] = []
         # determine who bought the share
         if entry.buyer == 'player':
             buyer = entry.player_buyer
@@ -259,7 +260,7 @@ def undo(game):
 
 def redo(game):
     entry = game.log.filter(time__gt=game.log_cursor.time).first()
-    affected = {'log': entry, 'players': [], 'companies': [], 'shares': []}
+    affected = {'log': entry, 'players': [], 'companies': []}
 
     if entry.action == models.LogEntry.TRANSFER_MONEY:
         # Determine who should send money
@@ -284,6 +285,7 @@ def redo(game):
             affected['game'] = game
         transfer_money(acting, receiving, entry.amount)
     elif entry.action == models.LogEntry.TRANSFER_SHARE:
+        affected['shares'] = []
         # Determine who bought the share
         if entry.buyer == 'player':
             buyer = entry.player_buyer

@@ -146,6 +146,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('companies', affected.keys())
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_bank_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
@@ -162,6 +163,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_player_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
@@ -178,6 +180,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('companies', affected.keys())
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_company_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
@@ -194,6 +197,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_player_transfer_money_to_other_player_returns_affected(
             self, mock_transfer_money):
@@ -210,6 +214,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('companies', affected.keys())
         self.assertCountEqual(affected['players'], [self.player, other_player])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_player_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
@@ -226,6 +231,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_company_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
@@ -242,6 +248,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_undo_company_transfer_money_to_other_company_returns_affected(
             self, mock_transfer_money):
@@ -260,6 +267,7 @@ class UndoTransferMoneyTests(TestCase):
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
             [self.company, other_company])
+        self.assertNotIn('shares', affected.keys())
 
 
 @mock.patch.object(utils, 'transfer_money')
@@ -389,6 +397,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['log'], self.game.log_cursor)
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_bank_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
@@ -404,6 +413,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['companies'], [self.company])
         self.assertEqual(affected['log'], self.game.log_cursor)
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_player_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
@@ -419,6 +429,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['log'], self.game.log_cursor)
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_company_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
@@ -434,6 +445,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['companies'], [self.company])
         self.assertEqual(affected['log'], self.game.log_cursor)
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_player_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
@@ -450,6 +462,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertNotIn('companies', affected.keys())
         self.assertEqual(affected['log'], self.game.log_cursor)
         self.assertCountEqual(affected['players'], [self.player, other_player])
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_player_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
@@ -465,6 +478,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['log'], self.game.log_cursor)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_company_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
@@ -480,6 +494,7 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['log'], self.game.log_cursor)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.company])
+        self.assertNotIn('shares', affected.keys())
 
     def test_redo_company_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
@@ -497,3 +512,4 @@ class RedoTransferMoneyTests(TestCase):
         self.assertEqual(affected['log'], self.game.log_cursor)
         self.assertCountEqual(affected['companies'],
             [self.company, other_company])
+        self.assertNotIn('shares', affected.keys())
