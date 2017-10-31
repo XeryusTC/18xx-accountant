@@ -223,9 +223,11 @@ def undo(game):
         if entry.source == 'ipo':
             source = Share.IPO
             affected['game'] = game
+            affected['companies'].append(entry.company)
         elif entry.source == 'bank':
             source = Share.BANK
             affected['game'] = game
+            affected['companies'].append(entry.company)
         elif entry.source == 'player':
             source = entry.player_source
             affected['players'].append(entry.player_source)
@@ -297,9 +299,11 @@ def redo(game):
         if entry.source == 'ipo':
             source = Share.IPO
             affected['game'] = game
+            affected['companies'].append(entry.company)
         elif entry.source == 'bank':
             source = Share.BANK
             affected['game'] = game
+            affected['companies'].append(entry.company)
         elif entry.source == 'player':
             source = entry.player_source
             affected['players'].append(entry.player_source)

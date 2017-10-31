@@ -45,7 +45,8 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -58,7 +59,8 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -100,7 +102,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -113,7 +115,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -154,7 +156,8 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -167,7 +170,8 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -209,7 +213,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -222,7 +226,7 @@ class UndoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -290,7 +294,8 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -303,7 +308,8 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -345,7 +351,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -358,7 +364,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -400,7 +406,8 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -413,7 +420,8 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
-        self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([c['uuid'] for c in response.data['companies']],
+            [str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.player_share.pk)])
 
@@ -455,7 +463,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
@@ -468,7 +476,7 @@ class RedoTests(APITestCase):
         self.assertEqual(response.data['game']['uuid'], str(self.game.pk))
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
-            [str(self.buy_company.pk)])
+            [str(self.buy_company.pk), str(self.share_company.pk)])
         self.assertCountEqual([s['uuid'] for s in response.data['shares']],
             [str(self.company_share.pk)])
 
