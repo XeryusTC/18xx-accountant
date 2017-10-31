@@ -158,8 +158,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=17, shares=1)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -168,8 +166,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=18, shares=2)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -180,8 +176,6 @@ class UndoTransferShareTests(TestCase):
             source='company', company_source=self.buy_company, price=19,
             shares=3)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -193,7 +187,6 @@ class UndoTransferShareTests(TestCase):
             source='player', player_source=self.other_player, price=20,
             shares=4)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertCountEqual(affected['players'],
             [self.player, self.other_player])
@@ -204,8 +197,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=21, shares=5)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -215,8 +206,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=22, shares=6)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -228,7 +217,6 @@ class UndoTransferShareTests(TestCase):
             source='company', company_source=self.source_company, price=23,
             shares=7)
         affected = utils.undo(self.game)
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
@@ -242,8 +230,6 @@ class UndoTransferShareTests(TestCase):
             source='player', player_source=self.player, price=24,
             shares=8)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -254,8 +240,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=25, shares=-1)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -264,8 +248,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=26, shares=-2)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -276,8 +258,6 @@ class UndoTransferShareTests(TestCase):
             source='company', company_source=self.buy_company, price=27,
             shares=-3)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -289,7 +269,6 @@ class UndoTransferShareTests(TestCase):
             source='player', player_source=self.other_player, price=28,
             shares=-4)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertCountEqual(affected['players'],
             [self.player, self.other_player])
@@ -300,8 +279,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=29, shares=-5)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -311,8 +288,6 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=30, shares=-6)
         affected = utils.undo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -324,8 +299,6 @@ class UndoTransferShareTests(TestCase):
             source='company', company_source=self.source_company, price=31,
             shares=-7)
         affected = utils.undo(self.game)
-        self.buy_company.refresh_from_db()
-        self.source_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
@@ -339,8 +312,6 @@ class UndoTransferShareTests(TestCase):
             source='player', player_source=self.player, price=32,
             shares=-8)
         affected = utils.undo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -497,8 +468,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=1597, shares=1)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -507,8 +476,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=2584, shares=2)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -519,8 +486,6 @@ class RedoTransferShareTests(TestCase):
             source='company', company_source=self.buy_company, price=4181,
             shares=3)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -532,7 +497,6 @@ class RedoTransferShareTests(TestCase):
             source='player', player_source=self.other_player, price=6765,
             shares=4)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertCountEqual(affected['players'],
             [self.player, self.other_player])
@@ -543,8 +507,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=10946, shares=5)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -554,8 +516,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=17711, shares=6)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -567,7 +527,6 @@ class RedoTransferShareTests(TestCase):
             source='company', company_source=self.source_company, price=28657,
             shares=7)
         affected = utils.redo(self.game)
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
@@ -581,8 +540,6 @@ class RedoTransferShareTests(TestCase):
             source='player', player_source=self.player, price=46368,
             shares=8)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -593,8 +550,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=75025, shares=-1)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -603,8 +558,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=121393, shares=-2)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['shares'], [self.player_share])
@@ -615,8 +568,6 @@ class RedoTransferShareTests(TestCase):
             source='company', company_source=self.buy_company, price=196418,
             shares=-3)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -628,7 +579,6 @@ class RedoTransferShareTests(TestCase):
             source='player', player_source=self.other_player, price=317811,
             shares=-4)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertCountEqual(affected['players'],
             [self.player, self.other_player])
@@ -639,8 +589,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=514229, shares=-5)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -650,8 +598,6 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=832040, shares=-6)
         affected = utils.redo(self.game)
-        self.game.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
@@ -663,7 +609,6 @@ class RedoTransferShareTests(TestCase):
             source='company', company_source=self.source_company,
             price=1346269, shares=-7)
         affected = utils.redo(self.game)
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
@@ -677,8 +622,6 @@ class RedoTransferShareTests(TestCase):
             source='player', player_source=self.player, price=2178309,
             shares=-8)
         affected = utils.redo(self.game)
-        self.player.refresh_from_db()
-        self.buy_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
