@@ -186,7 +186,7 @@ def _distribute_dividends(company, amount):
     return result
 
 def undo(game):
-    affected = {'players': [], 'companies': []}
+    affected = {'players': [], 'companies': [], 'shares': []}
     entry = game.log_cursor
     if entry.action == models.LogEntry.TRANSFER_MONEY:
         # Determine who originally send money
@@ -232,6 +232,19 @@ def undo(game):
             source = entry.company_source
             affected['companies'].append(entry.company_source)
         buy_share(buyer, entry.company, source, entry.price, -entry.shares)
+        # Get affected shares (after transfer so they're up to date)
+        if isinstance(buyer, models.Player):
+            affected['shares'].append(models.PlayerShare.objects.get(
+                owner=buyer, company=entry.company))
+        else:
+            affected['shares'].append(models.CompanyShare.objects.get(
+                owner=buyer, company=entry.company))
+        if isinstance(source, models.Player):
+            affected['shares'].append(models.PlayerShare.objects.get(
+                owner=source, company=entry.company))
+        elif isinstance(source, models.Company):
+            affected['shares'].append(models.CompanyShare.objects.get(
+                owner=source, company=entry.company))
 
     # Remove empty items from affected
     if not affected['players']:
@@ -246,7 +259,7 @@ def undo(game):
 
 def redo(game):
     entry = game.log.filter(time__gt=game.log_cursor.time).first()
-    affected = {'log': entry, 'players': [], 'companies': []}
+    affected = {'log': entry, 'players': [], 'companies': [], 'shares': []}
 
     if entry.action == models.LogEntry.TRANSFER_MONEY:
         # Determine who should send money
@@ -292,6 +305,19 @@ def redo(game):
             source = entry.company_source
             affected['companies'].append(entry.company_source)
         buy_share(buyer, entry.company, source, entry.price, -entry.shares)
+        # Get affected shares (after transfer so they're up to date)
+        if isinstance(buyer, models.Player):
+            affected['shares'].append(models.PlayerShare.objects.get(
+                owner=buyer, company=entry.company))
+        else:
+            affected['shares'].append(models.CompanyShare.objects.get(
+                owner=buyer, company=entry.company))
+        if isinstance(source, models.Player):
+            affected['shares'].append(models.PlayerShare.objects.get(
+                owner=source, company=entry.company))
+        elif isinstance(source, models.Company):
+            affected['shares'].append(models.CompanyShare.objects.get(
+                owner=source, company=entry.company))
 
     # Remove empty items from affected
     if not affected['players']:

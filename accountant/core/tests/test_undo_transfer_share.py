@@ -14,9 +14,19 @@ class UndoTransferShareTests(TestCase):
             text='New game')
         self.game.log_cursor = self.start_entry
         self.game.save()
-        self.player = factories.PlayerFactory(game=self.game)
+        self.player, self.other_player = factories.PlayerFactory.create_batch(
+            game=self.game, size=2)
         self.buy_company = factories.CompanyFactory(game=self.game)
         self.share_company = factories.CompanyFactory(game=self.game)
+        self.source_company = factories.CompanyFactory(game=self.game)
+        self.player_share = factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=0)
+        self.other_player_share = factories.PlayerShareFactory(
+            owner=self.other_player, company=self.share_company, shares=0)
+        self.company_share = factories.CompanyShareFactory(
+            owner=self.buy_company, company=self.share_company, shares=0)
+        self.source_company_share = factories.CompanyShareFactory(
+            owner=self.source_company, company=self.share_company, shares=0)
 
     def create_entry(self, **kwargs):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -48,12 +58,12 @@ class UndoTransferShareTests(TestCase):
             self.buy_company, 3, -7)
 
     def test_can_undo_player_buying_share_from_player(self, mock_buy_share):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=4, shares=6)
+            source='player', player_source=self.other_player, price=4,
+            shares=6)
         utils.undo(self.game)
         mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            extra_player, 4, -6)
+            self.other_player, 4, -6)
 
     def test_can_undo_company_buying_share_from_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -70,12 +80,12 @@ class UndoTransferShareTests(TestCase):
             self.share_company, utils.Share.BANK, 6, -4)
 
     def test_can_undo_company_buying_share_from_company(self, mock_buy_share):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=7, shares=3)
+            source='company', company_source=self.source_company, price=7,
+            shares=3)
         utils.undo(self.game)
         mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, extra_company, 7, -3)
+            self.share_company, self.source_company, 7, -3)
 
     def test_can_undo_company_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -107,13 +117,12 @@ class UndoTransferShareTests(TestCase):
             self.buy_company, 11, 3)
 
     def test_can_undo_player_selling_shares_to_player(self, mock_buy_share):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=12,
+            source='player', player_source=self.other_player, price=12,
             shares=-5)
         utils.undo(self.game)
         mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            extra_player, 12, 5)
+            self.other_player, 12, 5)
 
     def test_can_undo_company_selling_shares_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -130,13 +139,12 @@ class UndoTransferShareTests(TestCase):
             self.share_company, utils.Share.BANK, 14, 4)
 
     def test_can_undo_company_selling_shares_to_company(self, mock_buy_share):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=15,
+            source='company', company_source=self.source_company, price=15,
             shares=-6)
         utils.undo(self.game)
         mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, extra_company, 15, 6)
+            self.share_company, self.source_company, 15, 6)
 
     def test_can_undo_company_selling_shares_to_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -154,6 +162,7 @@ class UndoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_undo_player_buying_share_from_bank_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -163,6 +172,7 @@ class UndoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_undo_player_buying_share_from_company_returns_affected(self,
             mock):
@@ -175,16 +185,20 @@ class UndoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.company_share])
 
     def test_undo_player_buying_share_from_player_returns_affected(self, mock):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=20,
+            source='player', player_source=self.other_player, price=20,
             shares=4)
         affected = utils.undo(self.game)
         self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
-        self.assertCountEqual(affected['players'], [self.player, extra_player])
+        self.assertCountEqual(affected['players'],
+            [self.player, self.other_player])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.other_player_share])
 
     def test_undo_company_buying_share_from_ipo_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -195,6 +209,7 @@ class UndoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_undo_company_buying_share_from_bank_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -205,20 +220,21 @@ class UndoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_undo_company_buying_share_from_company_returns_affected(self,
             mock):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=23,
+            source='company', company_source=self.source_company, price=23,
             shares=7)
         affected = utils.undo(self.game)
         self.buy_company.refresh_from_db()
-        extra_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
-            [self.buy_company, extra_company])
+            [self.buy_company, self.source_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.source_company_share])
 
     def test_undo_company_buying_share_from_player_returns_affected(self,
             mock):
@@ -231,6 +247,8 @@ class UndoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.player_share])
 
     def test_undo_player_selling_share_to_ipo_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -240,6 +258,7 @@ class UndoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_undo_player_selling_share_to_bank_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -249,6 +268,7 @@ class UndoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_undo_player_selling_share_to_company_returns_affected(self,
             mock):
@@ -261,16 +281,20 @@ class UndoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.company_share])
 
     def test_undo_player_selling_share_to_player_returns_affected(self, mock):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=28,
+            source='player', player_source=self.other_player, price=28,
             shares=-4)
         affected = utils.undo(self.game)
         self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
-        self.assertCountEqual(affected['players'], [self.player, extra_player])
+        self.assertCountEqual(affected['players'],
+            [self.player, self.other_player])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.other_player_share])
 
     def test_undo_company_selling_share_to_ipo_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -281,6 +305,7 @@ class UndoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_undo_company_selling_share_to_bank_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -291,20 +316,22 @@ class UndoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_undo_company_selling_share_to_company_returns_affected(self,
             mock):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=31,
+            source='company', company_source=self.source_company, price=31,
             shares=-7)
         affected = utils.undo(self.game)
         self.buy_company.refresh_from_db()
-        extra_company.refresh_from_db()
+        self.source_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
-            [self.buy_company, extra_company])
+            [self.buy_company, self.source_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.source_company_share])
 
     def test_undo_company_selling_share_to_player_returns_affected(self,
             mock):
@@ -317,6 +344,8 @@ class UndoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.player_share])
 
 
 @mock.patch.object(utils, 'buy_share')
@@ -328,8 +357,18 @@ class RedoTransferShareTests(TestCase):
         self.game.log_cursor = self.start_entry
         self.game.save()
         self.player = factories.PlayerFactory(game=self.game)
+        self.other_player = factories.PlayerFactory(game=self.game)
         self.buy_company = factories.CompanyFactory(game=self.game)
         self.share_company = factories.CompanyFactory(game=self.game)
+        self.source_company = factories.CompanyFactory(game=self.game)
+        self.player_share = factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=0)
+        self.other_player_share = factories.PlayerShareFactory(
+            owner=self.other_player, company=self.share_company, shares=0)
+        self.company_share = factories.CompanyShareFactory(
+            owner=self.buy_company, company=self.share_company, shares=0)
+        self.source_company_share = factories.CompanyShareFactory(
+            owner=self.source_company, company=self.share_company, shares=0)
 
     def create_entry(self, **kwargs):
         entry = models.LogEntry.objects.create(game=self.game,
@@ -359,12 +398,12 @@ class RedoTransferShareTests(TestCase):
            self.buy_company, 2, -1)
 
     def test_can_redo_player_buying_share_from_player(self, mock_buy_share):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=3, shares=4)
+            source='player', player_source=self.other_player, price=3,
+            shares=4)
         utils.redo(self.game)
         mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            extra_player, 3, -4)
+            self.other_player, 3, -4)
 
     def test_can_redo_company_buying_share_from_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -381,12 +420,12 @@ class RedoTransferShareTests(TestCase):
             self.share_company, utils.Share.BANK, 8, -6)
 
     def test_can_redo_company_buying_share_from_company(self, mock_buy_share):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=13, shares=7)
+            source='company', company_source=self.source_company, price=13,
+            shares=7)
         utils.redo(self.game)
         mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, extra_company, 13, -7)
+            self.share_company, self.source_company, 13, -7)
 
     def test_can_redo_company_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -418,12 +457,12 @@ class RedoTransferShareTests(TestCase):
            self.buy_company, 89, 3)
 
     def test_can_redo_player_selling_share_to_player(self, mock_buy_share):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=144, shares=-2)
+            source='player', player_source=self.other_player, price=144,
+            shares=-2)
         utils.redo(self.game)
         mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            extra_player, 144, 2)
+            self.other_player, 144, 2)
 
     def test_can_redo_company_selling_share_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -440,13 +479,12 @@ class RedoTransferShareTests(TestCase):
             self.share_company, utils.Share.BANK, 377, 2)
 
     def test_can_redo_company_selling_share_to_company(self, mock_buy_share):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=610,
+            source='company', company_source=self.source_company, price=610,
             shares=-3)
         utils.redo(self.game)
         mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, extra_company, 610, 3)
+            self.share_company, self.source_company, 610, 3)
 
     def test_can_redo_company_selling_share_to_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -463,6 +501,7 @@ class RedoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_redo_player_buying_share_from_bank_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -472,6 +511,7 @@ class RedoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_redo_player_buying_share_from_company_returns_affected(self,
             mock):
@@ -484,16 +524,20 @@ class RedoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.company_share])
 
     def test_redo_player_buying_share_from_player_returns_affected(self, mock):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=6765,
+            source='player', player_source=self.other_player, price=6765,
             shares=4)
         affected = utils.redo(self.game)
         self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
-        self.assertCountEqual(affected['players'], [self.player, extra_player])
+        self.assertCountEqual(affected['players'],
+            [self.player, self.other_player])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.other_player_share])
 
     def test_redo_company_buying_share_from_ipo_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -504,6 +548,7 @@ class RedoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_redo_company_buying_share_from_bank_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -514,20 +559,21 @@ class RedoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_redo_company_buying_share_from_company_returns_affected(self,
             mock):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=28657,
+            source='company', company_source=self.source_company, price=28657,
             shares=7)
         affected = utils.redo(self.game)
         self.buy_company.refresh_from_db()
-        extra_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
-            [self.buy_company, extra_company])
+            [self.buy_company, self.source_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.source_company_share])
 
     def test_redo_company_buying_share_from_player_returns_affected(self,
             mock):
@@ -540,6 +586,8 @@ class RedoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.player_share])
 
     def test_redo_player_selling_share_to_ipo_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -549,6 +597,7 @@ class RedoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_redo_player_selling_share_to_bank_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -558,6 +607,7 @@ class RedoTransferShareTests(TestCase):
         self.player.refresh_from_db()
         self.assertEqual(affected['game'], self.game)
         self.assertEqual(affected['players'], [self.player])
+        self.assertEqual(affected['shares'], [self.player_share])
 
     def test_redo_player_selling_share_to_company_returns_affected(self,
             mock):
@@ -570,16 +620,20 @@ class RedoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.company_share])
 
     def test_redo_player_selling_share_to_player_returns_affected(self, mock):
-        extra_player = factories.PlayerFactory(game=self.game)
         self.create_entry(buyer='player', player_buyer=self.player,
-            source='player', player_source=extra_player, price=317811,
+            source='player', player_source=self.other_player, price=317811,
             shares=-4)
         affected = utils.redo(self.game)
         self.player.refresh_from_db()
         self.assertNotIn('game', affected.keys())
-        self.assertCountEqual(affected['players'], [self.player, extra_player])
+        self.assertCountEqual(affected['players'],
+            [self.player, self.other_player])
+        self.assertCountEqual(affected['shares'],
+            [self.player_share, self.other_player_share])
 
     def test_redo_company_selling_share_to_ipo_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -590,6 +644,7 @@ class RedoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_redo_company_selling_share_to_bank_returns_affected(self, mock):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -600,20 +655,21 @@ class RedoTransferShareTests(TestCase):
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertEqual(affected['shares'], [self.company_share])
 
     def test_redo_company_selling_share_to_company_returns_affected(self,
             mock):
-        extra_company = factories.CompanyFactory(game=self.game)
         self.create_entry(buyer='company', company_buyer=self.buy_company,
-            source='company', company_source=extra_company, price=1346269,
-            shares=-7)
+            source='company', company_source=self.source_company,
+            price=1346269, shares=-7)
         affected = utils.redo(self.game)
         self.buy_company.refresh_from_db()
-        extra_company.refresh_from_db()
         self.assertNotIn('game', affected.keys())
         self.assertNotIn('players', affected.keys())
         self.assertCountEqual(affected['companies'],
-            [self.buy_company, extra_company])
+            [self.buy_company, self.source_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.source_company_share])
 
     def test_redo_company_selling_share_to_player_returns_affected(self,
             mock):
@@ -626,3 +682,5 @@ class RedoTransferShareTests(TestCase):
         self.assertNotIn('game', affected.keys())
         self.assertEqual(affected['players'], [self.player])
         self.assertEqual(affected['companies'], [self.buy_company])
+        self.assertCountEqual(affected['shares'],
+            [self.company_share, self.player_share])
