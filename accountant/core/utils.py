@@ -212,19 +212,25 @@ def undo(game):
         transfer_money(receiving, acting, entry.amount)
     elif entry.action == models.LogEntry.TRANSFER_SHARE:
         # determine who bought the share
-        buyer = Share.IPO
         if entry.buyer == 'player':
             buyer = entry.player_buyer
+            affected['players'].append(entry.player_buyer)
         elif entry.buyer == 'company':
             buyer = entry.company_buyer
+            affected['companies'].append(entry.company_buyer)
         # determine where the share came from
-        source = Share.IPO
-        if entry.source == 'bank':
+        if entry.source == 'ipo':
+            source = Share.IPO
+            affected['game'] = game
+        elif entry.source == 'bank':
             source = Share.BANK
+            affected['game'] = game
         elif entry.source == 'player':
             source = entry.player_source
+            affected['players'].append(entry.player_source)
         elif entry.source == 'company':
             source = entry.company_source
+            affected['companies'].append(entry.company_source)
         buy_share(buyer, entry.company, source, entry.price, -entry.shares)
 
     # Remove empty items from affected
@@ -268,16 +274,23 @@ def redo(game):
         # Determine who bought the share
         if entry.buyer == 'player':
             buyer = entry.player_buyer
+            affected['players'].append(entry.player_buyer)
         elif entry.buyer == 'company':
             buyer = entry.company_buyer
+            affected['companies'].append(entry.company_buyer)
         # Determine where the share came from
-        source = Share.IPO
-        if entry.source == 'bank':
+        if entry.source == 'ipo':
+            source = Share.IPO
+            affected['game'] = game
+        elif entry.source == 'bank':
             source = Share.BANK
+            affected['game'] = game
         elif entry.source == 'player':
             source = entry.player_source
+            affected['players'].append(entry.player_source)
         elif entry.source == 'company':
             source = entry.company_source
+            affected['companies'].append(entry.company_source)
         buy_share(buyer, entry.company, source, entry.price, -entry.shares)
 
     # Remove empty items from affected
