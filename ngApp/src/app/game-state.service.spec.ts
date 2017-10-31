@@ -493,6 +493,18 @@ describe('GameStateService', () => {
 		expect(service.companies['company-uuid-0']).toBe(newCompany);
 	}));
 
+	it('undo() should update shares when affected', fakeAsync(() => {
+		let newShare = new Share('share-uuid-0', 'player-uuid-0',
+								 'company-uuid-1', 4);
+		undoService.undo
+			.and.callFake(() => Promise.resolve({shares: [newShare]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.undo();
+		tick();
+		expect(service.shares['share-uuid-0']).toBe(newShare);
+	}));
+
 	it('undo() should remove the last log item', fakeAsync(() => {
 		undoService.undo.and.callFake(() => Promise.resolve({}));
 		service.loadGame('game-uuid');
@@ -541,6 +553,18 @@ describe('GameStateService', () => {
 		service.redo();
 		tick();
 		expect(service.companies['company-uuid-0']).toBe(newCompany);
+	}));
+
+	it('redo() should update shares when affected', fakeAsync(() => {
+		let newShare = new Share('share-uuid-1', 'player-uuid-0',
+								 'company-uuid-0', 0);
+		undoService.redo
+			.and.callFake(() => Promise.resolve({shares: [newShare]}));
+		service.loadGame('game-uuid');
+		tick();
+		service.redo();
+		tick();
+		expect(service.shares['share-uuid-1']).toBe(newShare);
 	}));
 
 	it('redo() should add log entry in response to log', fakeAsync(() => {

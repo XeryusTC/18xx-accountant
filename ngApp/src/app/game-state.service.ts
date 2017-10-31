@@ -203,6 +203,11 @@ export class GameStateService {
 						this.updateCompany(company);
 					}
 				}
+				if ('shares' in result) {
+					for (let share of result.shares) {
+						this.updateShare(share);
+					}
+				}
 			});
 	}
 
@@ -220,6 +225,11 @@ export class GameStateService {
 				if ('companies' in result) {
 					for (let company of result.companies) {
 						this.updateCompany(company);
+					}
+				}
+				if ('shares' in result) {
+					for (let share of result.shares) {
+						this.updateShare(share);
 					}
 				}
 				if ('log' in result) {
