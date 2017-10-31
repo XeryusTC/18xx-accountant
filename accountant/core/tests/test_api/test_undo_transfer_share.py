@@ -19,10 +19,14 @@ class UndoTests(APITestCase):
         self.buy_company = factories.CompanyFactory(game=self.game, cash=100)
         self.share_company = factories.CompanyFactory(game=self.game, cash=0)
         self.source_company = factories.CompanyFactory(game=self.game, cash=0)
-        factories.CompanyShareFactory(owner=self.buy_company,
-            company=self.share_company, shares=10)
-        factories.CompanyShareFactory(owner=self.source_company,
-            company=self.share_company, shares=10)
+        self.player_share = factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=0)
+        self.other_player_share = factories.PlayerShareFactory(
+            owner=self.other_player, company=self.share_company, shares=0)
+        self.company_share = factories.CompanyShareFactory(
+            owner=self.buy_company, company=self.share_company, shares=10)
+        self.source_company_share = factories.CompanyShareFactory(
+            owner=self.source_company, company=self.share_company, shares=10)
         self.url = reverse('undo')
 
     def create_entry(self, **kwargs):
@@ -42,6 +46,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_undoing_player_buying_share_from_bank_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -53,6 +59,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_undoing_player_buying_share_from_company_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -66,6 +74,8 @@ class UndoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.company_share.pk)])
 
     def test_undoing_player_buying_share_from_player_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -78,6 +88,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(self.other_player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.other_player_share.pk)])
 
     def test_undoing_company_buying_share_from_ipo_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -89,6 +101,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_undoing_company_buying_share_from_bank_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -100,6 +114,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_undoing_company_buying_share_from_company_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -112,6 +128,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk), str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.source_company_share.pk)])
 
     def test_undoing_company_buying_share_from_player_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -124,6 +142,8 @@ class UndoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.player_share.pk)])
 
     def test_undoing_player_selling_share_to_ipo_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -135,6 +155,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_undoing_player_selling_share_to_bank_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -146,6 +168,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_undoing_player_selling_share_to_company_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -159,6 +183,8 @@ class UndoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.source_company_share.pk)])
 
     def test_undoing_player_selling_share_to_player_includes_data(self):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -171,6 +197,8 @@ class UndoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(self.other_player.pk)])
         self.assertNotIn('companies', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.other_player_share.pk)])
 
     def test_undoing_company_selling_share_to_ipo_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -182,6 +210,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_undoing_company_selling_share_to_bank_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -193,6 +223,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_undoing_company_selling_share_to_company_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -205,6 +237,8 @@ class UndoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk), str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.source_company_share.pk)])
 
     def test_undoing_company_selling_share_to_player_includes_data(self):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
@@ -217,6 +251,8 @@ class UndoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.player_share.pk)])
 
 
 class RedoTests(APITestCase):
@@ -231,8 +267,14 @@ class RedoTests(APITestCase):
         self.buy_company = factories.CompanyFactory(game=self.game, cash=100)
         self.share_company = factories.CompanyFactory(game=self.game, cash=0)
         self.source_company = factories.CompanyFactory(game=self.game, cash=0)
-        factories.CompanyShareFactory(owner=self.source_company,
-            company=self.share_company, shares=10)
+        self.player_share = factories.PlayerShareFactory(owner=self.player,
+            company=self.share_company, shares=0)
+        self.other_player_share = factories.PlayerShareFactory(
+            owner=self.other_player, company=self.share_company, shares=0)
+        self.company_share = factories.CompanyShareFactory(
+            owner=self.buy_company, company=self.share_company, shares=10)
+        self.source_company_share = factories.CompanyShareFactory(
+            owner=self.source_company, company=self.share_company, shares=10)
         self.url = reverse('undo')
 
     def create_entry(self, **kwargs):
@@ -249,6 +291,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_redoing_player_buying_share_from_bank_includes_data(self):
         self.create_entry(price=2, amount=7, buyer='player',
@@ -260,6 +304,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_redoing_player_buying_share_from_company_includes_data(self):
         self.create_entry(price=3, amount=6, buyer='player',
@@ -273,6 +319,8 @@ class RedoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.source_company_share.pk)])
 
     def test_redoing_player_buying_share_from_player_includes_data(self):
         self.create_entry(price=4, amount=5, buyer='player',
@@ -285,6 +333,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(self.other_player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.other_player_share.pk)])
 
     def test_redoing_company_buying_share_from_ipo_includes_data(self):
         self.create_entry(price=5, amount=4, buyer='company',
@@ -296,6 +346,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_redoing_company_buying_share_from_bank_includes_data(self):
         self.create_entry(price=6, amount=3, buyer='company',
@@ -307,6 +359,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_redoing_company_buying_share_from_company_includes_data(self):
         self.create_entry(price=7, amount=2, buyer='company',
@@ -319,6 +373,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk), str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.source_company_share.pk)])
 
     def test_redoing_company_buying_share_from_player_includes_data(self):
         self.create_entry(price=8, amount=1, buyer='company',
@@ -332,6 +388,8 @@ class RedoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.player_share.pk)])
 
     def test_redoing_player_selling_share_to_ipo_includes_data(self):
         self.create_entry(price=9, amount=-1, buyer='player',
@@ -343,6 +401,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_redoing_player_selling_share_to_bank_includes_data(self):
         self.create_entry(price=10, amount=-2, buyer='player',
@@ -354,6 +414,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk)])
 
     def test_redoing_player_selling_share_to_company_includes_data(self):
         self.create_entry(price=11, amount=-3, buyer='player',
@@ -367,6 +429,8 @@ class RedoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.source_company_share.pk)])
 
     def test_redoing_player_selling_share_to_player_includes_data(self):
         self.create_entry(price=12, amount=-4, buyer='player',
@@ -379,6 +443,8 @@ class RedoTests(APITestCase):
         self.assertCountEqual([p['uuid'] for p in response.data['players']],
             [str(self.player.pk), str(self.other_player.pk)])
         self.assertNotIn('company', response.data.keys())
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.player_share.pk), str(self.other_player_share.pk)])
 
     def test_redoing_company_selling_share_to_ipo_includes_data(self):
         self.create_entry(price=13, amount=-5, buyer='company',
@@ -390,6 +456,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_redoing_company_selling_share_to_bank_includes_data(self):
         self.create_entry(price=14, amount=-6, buyer='company',
@@ -401,6 +469,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk)])
 
     def test_redoing_company_selling_share_to_company_includes_data(self):
         self.create_entry(price=15, amount=-7, buyer='company',
@@ -413,6 +483,8 @@ class RedoTests(APITestCase):
         self.assertNotIn('players', response.data.keys())
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk), str(self.source_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.source_company_share.pk)])
 
     def test_redoing_company_selling_share_to_player_includes_data(self):
         self.create_entry(price=16, amount=-8, buyer='company',
@@ -426,3 +498,5 @@ class RedoTests(APITestCase):
             [str(self.player.pk)])
         self.assertCountEqual([c['uuid'] for c in response.data['companies']],
             [str(self.buy_company.pk)])
+        self.assertCountEqual([s['uuid'] for s in response.data['shares']],
+            [str(self.company_share.pk), str(self.player_share.pk)])
