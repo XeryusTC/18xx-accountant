@@ -306,7 +306,7 @@ def redo(game):
         elif entry.source == 'company':
             source = entry.company_source
             affected['companies'].append(entry.company_source)
-        buy_share(buyer, entry.company, source, entry.price, -entry.shares)
+        buy_share(buyer, entry.company, source, entry.price, entry.shares)
         # Get affected shares (after transfer so they're up to date)
         if isinstance(buyer, models.Player):
             affected['shares'].append(models.PlayerShare.objects.get(
