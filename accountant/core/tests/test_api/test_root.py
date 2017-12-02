@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 
 from ... import models
 from ... import factories
-from ... import utils
 
 class ApiRootTests(APITestCase):
     def setUp(self):

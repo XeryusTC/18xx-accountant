@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 
 from ... import models
 from ... import factories
-from ... import utils
 
 class UndoTests(APITestCase):
     def setUp(self):
@@ -88,7 +87,7 @@ class redoTests(APITestCase):
         self.url = reverse('undo')
 
     def create_entry(self, **kwargs):
-        entry = models.LogEntry.objects.create(
+        models.LogEntry.objects.create(
             action=models.LogEntry.OPERATE, game=self.game,
             company=self.company, **kwargs)
 

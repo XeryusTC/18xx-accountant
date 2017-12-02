@@ -385,7 +385,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_bank_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY,
             receiving_player=self.player, amount=3)
 
@@ -401,7 +401,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_bank_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY,
             receiving_company=self.company, amount=4)
 
@@ -417,7 +417,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_player_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, acting_player=self.player,
             amount=70)
 
@@ -433,7 +433,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_company_transfer_money_to_bank_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, acting_company=self.company,
             amount=80)
 
@@ -450,7 +450,7 @@ class RedoTransferMoneyTests(TestCase):
     def test_redo_player_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
         other_player = factories.PlayerFactory(game=self.game)
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, amount=90,
             acting_player=self.player, receiving_player=other_player)
 
@@ -466,7 +466,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_player_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, amount=90,
             acting_player=self.player, receiving_company=self.company)
 
@@ -482,7 +482,7 @@ class RedoTransferMoneyTests(TestCase):
 
     def test_redo_company_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, amount=90,
             acting_company=self.company, receiving_player=self.player)
 
@@ -499,7 +499,7 @@ class RedoTransferMoneyTests(TestCase):
     def test_redo_company_transfer_money_to_company_returns_affected_instances(
             self, mock_transfer_money):
         other_company = factories.CompanyFactory(game=self.game)
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_MONEY, amount=90,
             acting_company=self.company, receiving_company=other_company)
 

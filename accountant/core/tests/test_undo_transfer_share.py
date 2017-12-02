@@ -350,7 +350,7 @@ class RedoTransferShareTests(TestCase):
             owner=self.source_company, company=self.share_company, shares=0)
 
     def create_entry(self, **kwargs):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.TRANSFER_SHARE, company=self.share_company,
             **kwargs)
 

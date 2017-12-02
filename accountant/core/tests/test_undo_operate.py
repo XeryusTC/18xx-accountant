@@ -92,7 +92,7 @@ class RedoOperateTests(TestCase):
             company=self.company, shares=1)
 
     def create_entry(self, **kwargs):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             action=models.LogEntry.OPERATE, company=self.company, **kwargs)
 
     def test_can_redo_company_operating_full(self, mock_operate):

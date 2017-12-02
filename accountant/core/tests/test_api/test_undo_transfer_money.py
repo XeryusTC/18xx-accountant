@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 
 from ... import models
 from ... import factories
-from ... import utils
 
 class UndoTests(APITestCase):
     def setUp(self):
@@ -208,7 +207,7 @@ class RedoTests(APITestCase):
         self.assertIsNone(response.data)
 
     def test_redoing_bank_to_player_money_transfer_includes_data(self):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             receiving_player=self.player, amount=25,
             action=models.LogEntry.TRANSFER_MONEY)
 
@@ -226,7 +225,7 @@ class RedoTests(APITestCase):
         self.assertNotIn('shares', response.data.keys())
 
     def test_redoing_bank_to_company_money_transfer_includes_data(self):
-        entry = models.LogEntry.objects.create(game=self.game,
+        models.LogEntry.objects.create(game=self.game,
             receiving_company=self.company, amount=26,
             action=models.LogEntry.TRANSFER_MONEY)
 
