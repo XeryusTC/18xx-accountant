@@ -539,3 +539,44 @@ class UndoTests(FunctionalTestCase):
         edit_company.name.clear()
         edit_company.name.send_keys('CPR\n')
         self.assertFalse(game_page.undo.is_enabled())
+
+    def test_undone_actions_not_in_log_after_doing_new_action(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        self.create_player(game_uuid, 'Alice', cash=100)
+        self.create_player(game_uuid, 'Bob', cash=100)
+
+        self.story('Alice transfers some money to the bank')
+        game_page = game.GamePage(self.browser)
+        game_page.reload_game.click()
+        transfer_form = game.TransferForm(self.browser)
+        alice, bob = game_page.get_players()
+        alice['row'].click()
+        transfer_form.amount(alice['detail']).send_keys('60\n')
+
+        self.story('The transfer action has been done')
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story('Undo the transfer action because Bob was meant to do it')
+        game_page.undo.click()
+        alice, bob = game_page.get_players()
+        bob['row'].click()
+        transfer_form.amount(bob['detail']).send_keys('60\n')
+
+        self.story("Alice's action doesn't show in the log")
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'New game started')
+        self.assertRegex(game_page.log[1].text,
+            DATE_REGEX + 'Bob transfered 60 to the bank')
+        self.assertEqual(len(game_page.log), 2)
+
+        self.story("After soft refresh it still doesn't show")
+        game_page.reload_game.click()
+        self.assertRegex(game_page.log[0].text,
+            DATE_REGEX + 'New game started')
+        self.assertRegex(game_page.log[1].text,
+            DATE_REGEX + 'Bob transfered 60 to the bank')
+        self.assertEqual(len(game_page.log), 2)
