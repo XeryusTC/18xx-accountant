@@ -185,6 +185,54 @@ def _distribute_dividends(company, amount):
                 result[company] = dividend
     return result
 
+def create_log_entry(game, action, **kwargs):
+    entry = models.LogEntry.objects.create(game=game, action=action)
+    if action == models.LogEntry.TRANSFER_MONEY:
+        entry.amount = kwargs['amount']
+        if isinstance(kwargs['acting'], models.Player):
+            entry.acting_player = kwargs['acting']
+        elif isinstance(kwargs['acting'], models.Company):
+            entry.acting_company = kwargs['acting']
+        if 'receiving' in kwargs.keys():
+            if isinstance(kwargs['receiving'], models.Player):
+                entry.receiving_player = kwargs['receiving']
+            elif isinstance(kwargs['receiving'], models.Company):
+                entry.receiving_company = kwargs['receiving']
+    elif action == models.LogEntry.TRANSFER_SHARE:
+        entry.shares = kwargs['shares']
+        entry.price = kwargs['price']
+        entry.company = kwargs['company']
+        if isinstance(kwargs['buyer'], models.Player):
+            entry.buyer = 'player'
+            entry.player_buyer = kwargs['buyer']
+        elif isinstance(kwargs['buyer'], models.Company):
+            entry.buyer = 'company'
+            entry.company_buyer = kwargs['buyer']
+            entry.acting_company = kwargs['buyer']
+        if kwargs['source'] == Share.IPO:
+            entry.source = 'ipo'
+        elif kwargs['source'] == Share.BANK:
+            entry.source = 'bank'
+        elif isinstance(kwargs['source'], models.Player):
+            entry.source = 'player'
+            entry.player_source = kwargs['source']
+        elif isinstance(kwargs['source'], models.Company):
+            entry.source = 'company'
+            entry.company_source = kwargs['source']
+    elif action == models.LogEntry.OPERATE:
+        entry.revenue = kwargs['amount']
+        entry.acting_company = kwargs['company']
+        entry.company = kwargs['company']
+        entry.mode = kwargs['mode']
+    if 'text' in kwargs.keys():
+        entry.text = kwargs['text']
+    if 'acting_company' in kwargs.keys():
+        entry.acting_company = kwargs['acting_company']
+    entry.save()
+    game.log_cursor = entry
+    game.save()
+    return entry
+
 def undo(game):
     affected = {'players': [], 'companies': []}
     entry = game.log_cursor
