@@ -508,3 +508,34 @@ class UndoTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 2)
         self.assertRegex(game_page.log[-1].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
+
+    def test_undo_button_disabled_when_action_cant_be_undone(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+
+        self.story("The game creating can't be undone")
+        game_page = game.GamePage(self.browser)
+        self.assertFalse(game_page.undo.is_enabled())
+
+        self.story("Can't undo player creation")
+        game_page.add_player_link.click()
+        add_player = game.AddPlayerPage(self.browser)
+        add_player.name.send_keys('Alice\n')
+        self.assertFalse(game_page.undo.is_enabled())
+
+        self.story("Can't undo company creation")
+        game_page.add_company_link.click()
+        add_company = game.AddCompanyPage(self.browser)
+        add_company.name.send_keys('B&M\n')
+        self.assertFalse(game_page.undo.is_enabled())
+
+        self.story("Can't undo editing a company")
+        bm = game_page.get_companies()[0]
+        bm['elem'].click()
+        bm['edit'].click()
+        edit_company = game.EditCompanyPage(self.browser)
+        edit_company.name.clear()
+        edit_company.name.send_keys('CPR\n')
+        self.assertFalse(game_page.undo.is_enabled())
