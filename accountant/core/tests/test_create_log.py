@@ -179,3 +179,16 @@ class CreateLogEntryTests(TestCase):
         self.verify_entry(self.game.log_cursor, models.LogEntry.OPERATE,
             mode=models.LogEntry.WITHHOLD, revenue=25,
             acting_company=self.company, company=self.company)
+
+    def test_clears_redo_stack_when_adding_new_entry(self):
+        entry1 = models.LogEntry.objects.create(game=self.game)
+        entry2 = models.LogEntry.objects.create(game=self.game)
+        self.game.log_cursor = entry1
+        self.game.save()
+
+        entry3 = utils.create_log_entry(self.game, None)
+
+        self.game.refresh_from_db()
+        self.assertEqual(list(self.game.log.all()), [entry1, entry3])
+        with self.assertRaises(models.LogEntry.DoesNotExist):
+            entry2.refresh_from_db()

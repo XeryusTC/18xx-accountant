@@ -186,6 +186,11 @@ def _distribute_dividends(company, amount):
     return result
 
 def create_log_entry(game, action, **kwargs):
+    # Delete all entries that are on the redo stack
+    if game.log_cursor:
+        game.log.filter(time__gt=game.log_cursor.time).delete()
+
+    # Create new entry
     entry = models.LogEntry.objects.create(game=game, action=action)
     if action == models.LogEntry.TRANSFER_MONEY:
         entry.amount = kwargs['amount']
