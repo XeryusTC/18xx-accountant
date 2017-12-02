@@ -112,9 +112,20 @@ class CompanyShare(models.Model):
 class LogEntry(models.Model):
     TRANSFER_MONEY = 0
     TRANSFER_SHARE = 1
+    OPERATE = 2
     ACTION_CHOICES = (
         (TRANSFER_MONEY, 'Money transfer'),
         (TRANSFER_SHARE, 'Buy/sell share'),
+        (OPERATE, 'Company operates'),
+    )
+
+    FULL = 0
+    HALF = 1
+    WITHHOLD = 2
+    OPERATE_CHOICES = (
+        (FULL, 'Pay full dividends'),
+        (HALF, 'Pay half dividends'),
+        (WITHHOLD, 'Withhold dividends'),
     )
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
@@ -152,6 +163,11 @@ class LogEntry(models.Model):
         default=None)
     company_source = models.ForeignKey(Company, related_name='+', null=True,
         default=None)
+
+    # Operate related
+    mode = models.IntegerField(default=None, choices=OPERATE_CHOICES,
+        null=True, blank=True)
+    revenue = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['time']

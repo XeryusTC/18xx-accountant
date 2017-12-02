@@ -310,6 +310,9 @@ class LogEntryTests(TestCase):
     def test_action_field_can_be_TRANSFER_SHARE(self):
         LogEntry.objects.create(game=self.game, action=LogEntry.TRANSFER_SHARE)
 
+    def test_action_field_can_be_OPERATE(self):
+        LogEntry.objects.create(game=self.game, action=LogEntry.OPERATE)
+
     def test_acting_player_field_is_None_by_default(self):
         self.assertIsNone(self.entry.acting_player)
 
@@ -378,6 +381,21 @@ class LogEntryTests(TestCase):
 
     def test_company_field_points_to_Company(self):
         LogEntry.objects.create(game=self.game, company=self.company)
+
+    def test_mode_field_is_None_by_default(self):
+        self.assertIsNone(self.entry.mode)
+
+    def test_mode_field_can_be_FULL(self):
+        LogEntry.objects.create(game=self.game, mode=LogEntry.FULL)
+
+    def test_mode_field_can_be_HALF(self):
+        LogEntry.objects.create(game=self.game, mode=LogEntry.HALF)
+
+    def test_mode_field_can_be_WITHHOLD(self):
+        LogEntry.objects.create(game=self.game, mode=LogEntry.WITHHOLD)
+
+    def test_revenue_field_is_0_by_default(self):
+        self.assertEqual(self.entry.revenue, 0)
 
     def test_are_sorted_chronological(self):
         self.entry.delete()
