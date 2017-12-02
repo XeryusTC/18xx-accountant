@@ -249,20 +249,24 @@ def undo(game):
             affected['shares'].append(models.CompanyShare.objects.get(
                 owner=source, company=entry.company))
     elif entry.action == models.LogEntry.OPERATE:
-        affected['game'] = game
-        affected['players'] = entry.company.player_owners.all()
-        affected['companies'] = list(entry.company.company_owners.all())
         if entry.mode == models.LogEntry.FULL:
             method = OperateMethod.FULL
         elif entry.mode == models.LogEntry.HALF:
             method = OperateMethod.HALF
-            if entry.company not in affected['companies']:
-                affected['companies'].append(entry.company)
         else:
             method = OperateMethod.WITHHOLD
+        operate(entry.company, -entry.revenue, method)
+        # Get affected instances after undoing so they're up to date
+        affected['game'] = game
+        affected['players'] = entry.company.player_owners.all()
+        affected['companies'] = entry.company.company_owners.all()
+        if entry.mode == models.LogEntry.HALF and \
+                entry.company not in affected['companies']:
+            affected['companies'] = list(affected['companies']) + \
+                [entry.company]
+        if entry.mode == models.LogEntry.WITHHOLD:
             affected['players'] = []
             affected['companies'] = [entry.company]
-        operate(entry.company, -entry.revenue, method)
 
     # Remove empty items from affected
     if not affected['players']:
@@ -340,21 +344,24 @@ def redo(game):
             affected['shares'].append(models.CompanyShare.objects.get(
                 owner=source, company=entry.company))
     elif entry.action == models.LogEntry.OPERATE:
-        affected['game'] = game
-        affected['players'] = entry.company.player_owners.all()
-        affected['companies'] = list(entry.company.company_owners.all())
         if entry.mode == models.LogEntry.FULL:
             method = OperateMethod.FULL
         elif entry.mode == models.LogEntry.HALF:
             method = OperateMethod.HALF
-            if entry.company not in affected['companies']:
-                affected['companies'].append(entry.company)
         else:
             method = OperateMethod.WITHHOLD
+        operate(entry.company, entry.revenue, method)
+        # Get affected instances after undoing so they're up to date
+        affected['game'] = game
+        affected['players'] = entry.company.player_owners.all()
+        affected['companies'] = entry.company.company_owners.all()
+        if entry.mode == models.LogEntry.HALF and \
+                entry.company not in affected['companies']:
+            affected['companies'] = list(affected['companies']) + \
+                [entry.company]
+        if entry.mode == models.LogEntry.WITHHOLD:
             affected['players'] = []
             affected['companies'] = [entry.company]
-        operate(entry.company, entry.revenue, method)
-
 
     # Remove empty items from affected
     if not affected['players']:
