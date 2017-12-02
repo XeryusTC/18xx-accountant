@@ -154,3 +154,34 @@ class OperateTests(APITestCase):
             '{} withholds 140'.format(
                 self.company.name))
         self.assertEqual(self.game.log.last().acting_company, self.company)
+
+    def test_operating_full_creates_log_entry_with_data(self, mock):
+        data = {'company': self.company.pk, 'amount': 150, 'method': 'full'}
+        response = self.client.post(self.url, data)
+        self.game.refresh_from_db()
+        entry = self.game.log_cursor
+        self.assertEqual(entry.action, models.LogEntry.OPERATE)
+        self.assertEqual(entry.company, self.company)
+        self.assertEqual(entry.revenue, 150)
+        self.assertEqual(entry.mode, models.LogEntry.FULL)
+
+    def test_operating_half_creates_log_entry_with_data(self, mock):
+        data = {'company': self.company.pk, 'amount': 160, 'method': 'half'}
+        response = self.client.post(self.url, data)
+        self.game.refresh_from_db()
+        entry = self.game.log_cursor
+        self.assertEqual(entry.action, models.LogEntry.OPERATE)
+        self.assertEqual(entry.company, self.company)
+        self.assertEqual(entry.revenue, 160)
+        self.assertEqual(entry.mode, models.LogEntry.HALF)
+
+    def test_withholding_creates_log_entry_with_data(self, mock):
+        data = {'company': self.company.pk, 'amount': 170,
+            'method': 'withhold'}
+        response = self.client.post(self.url, data)
+        self.game.refresh_from_db()
+        entry = self.game.log_cursor
+        self.assertEqual(entry.action, models.LogEntry.OPERATE)
+        self.assertEqual(entry.company, self.company)
+        self.assertEqual(entry.revenue, 170)
+        self.assertEqual(entry.mode, models.LogEntry.WITHHOLD)

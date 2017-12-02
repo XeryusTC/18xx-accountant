@@ -337,7 +337,15 @@ class OperateView(APIView):
             # Create log entry
             entry = models.LogEntry.objects.create(game=company.game,
                 text=log_text.format(company=company.name, amount=amount),
-                acting_company=company)
+                acting_company=company, action=models.LogEntry.OPERATE,
+                revenue=amount, company=company)
+            if method == utils.OperateMethod.FULL:
+                entry.mode = models.LogEntry.FULL
+            elif method == utils.OperateMethod.HALF:
+                entry.mode = models.LogEntry.HALF
+            else:
+                entry.mode = models.LogEntry.WITHHOLD
+            entry.save()
             company.game.log_cursor = entry
             company.game.save()
 
