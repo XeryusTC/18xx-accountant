@@ -1,7 +1,10 @@
 <div class="section" id="log">
 	<h4>Log</h4>
-	<a (click)="gameState.undo()" class="button" id="undo">Undo</a>
-	<a (click)="gameState.redo()" class="button" id="redo">Redo</a>
+	<button class="button" id="undo" (click)="gameState.undo()"
+		[disabled]="!gameState.log[gameState.log.length - 1].is_undoable">
+		Undo
+	</button>
+	<button (click)="gameState.redo()" class="button" id="redo">Redo</button>
 	<div class="log-container"
 		#logScroll [scrollTop]="logScroll.scrollHeight">
 		<div class="entry {{ entryColorClass(entry) }}"
