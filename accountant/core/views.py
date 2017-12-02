@@ -116,23 +116,14 @@ class TransferMoneyView(APIView):
                 dest_name = serializer.dest_instance.name
             else:
                 dest_name = 'the bank'
-            entry = models.LogEntry.objects.create(game=game,
+            entry = utils.create_log_entry(game,
+                models.LogEntry.TRANSFER_MONEY,
+                acting=serializer.source_instance,
+                receiving=serializer.dest_instance,
                 amount=serializer.validated_data['amount'],
                 text='{source} transfered {cash} to {dest}'.format(
                     source=source_name, dest=dest_name,
-                    cash=serializer.validated_data['amount']),
-                action=models.LogEntry.TRANSFER_MONEY)
-            if isinstance(serializer.source_instance, models.Player):
-                entry.acting_player = serializer.source_instance
-            elif isinstance(serializer.source_instance, models.Company):
-                entry.acting_company = serializer.source_instance
-            if isinstance(serializer.dest_instance, models.Player):
-                entry.receiving_player = serializer.dest_instance
-            if isinstance(serializer.dest_instance, models.Company):
-                entry.receiving_company = serializer.dest_instance
-            entry.save()
-            game.log_cursor = entry
-            game.save()
+                    cash=serializer.validated_data['amount']))
 
             # Construct the response, starting with the game
             context = {'request': self.request}
@@ -227,33 +218,19 @@ class TransferShareView(APIView):
                     status=status.HTTP_400_BAD_REQUEST)
 
             # create log entry
+            share.game.refresh_from_db()
             if amount > 0:
                 log_string = '{buyer} bought {amount} shares {company} ' + \
                              'from {source} for {price} each'
             else:
                 log_string = '{buyer} sold {amount} shares {company} ' + \
                              'to {source} for {price} each'
-            entry = models.LogEntry.objects.create(game=share.game,
+            entry = utils.create_log_entry(share.game,
+                models.LogEntry.TRANSFER_SHARE, shares=amount, price=price,
+                buyer=buyer, source=source, company=share,
                 text=log_string.format(buyer=buyer_name, amount=abs(amount),
                                        company=share.name, source=source_name,
-                                       price=price),
-                action=models.LogEntry.TRANSFER_SHARE, shares=amount,
-                price=price, buyer=serializer.validated_data['buyer_type'],
-                source=serializer.validated_data['source_type'],
-                company=share)
-            if isinstance(buyer, models.Player):
-                entry.player_buyer = buyer
-            elif isinstance(buyer, models.Company):
-                entry.company_buyer = buyer
-                entry.acting_company = buyer
-            if isinstance(source, models.Player):
-                entry.player_source = source
-            elif isinstance(source, models.Company):
-                entry.company_source = source
-            entry.save()
-            share.game.refresh_from_db()
-            share.game.log_cursor = entry
-            share.game.save()
+                                       price=price))
 
             # Construct the response, starting with the game
             context = {'request': request}
@@ -335,19 +312,16 @@ class OperateView(APIView):
             company.game.refresh_from_db()
 
             # Create log entry
-            entry = models.LogEntry.objects.create(game=company.game,
-                text=log_text.format(company=company.name, amount=amount),
-                acting_company=company, action=models.LogEntry.OPERATE,
-                revenue=amount, company=company)
             if method == utils.OperateMethod.FULL:
-                entry.mode = models.LogEntry.FULL
+                mode = models.LogEntry.FULL
             elif method == utils.OperateMethod.HALF:
-                entry.mode = models.LogEntry.HALF
+                mode = models.LogEntry.HALF
             else:
-                entry.mode = models.LogEntry.WITHHOLD
-            entry.save()
-            company.game.log_cursor = entry
-            company.game.save()
+                mode = models.LogEntry.WITHHOLD
+            entry = utils.create_log_entry(company.game,
+                models.LogEntry.OPERATE, amount=amount, company=company,
+                mode=mode,
+                text=log_text.format(company=company.name, amount=amount))
 
             # Construct response
             context = {'request': request}

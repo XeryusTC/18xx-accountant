@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
 
-from . import models
+from . import models, utils
 
 SOURCE_OR_DEST_REQUIRED_ERROR = \
     _('You cannot transfer money from the bank to the bank.')
@@ -26,10 +26,7 @@ class GameSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         game = models.Game.objects.create(**validated_data)
-        entry = models.LogEntry.objects.create(game=game,
-            text='New game started')
-        game.log_cursor = entry
-        game.save()
+        utils.create_log_entry(game, None, text='New game started')
         return game
 
 
@@ -51,11 +48,9 @@ class PlayerSerializer(serializers.ModelSerializer):
         game = player.game
         game.cash -= validated_data['cash']
         # Create log entry
-        entry = models.LogEntry.objects.create(game=player.game,
+        utils.create_log_entry(game, None,
             text='Added player {name} with {cash} starting cash'.format(
                 name=validated_data['name'], cash=validated_data['cash']))
-        game.log_cursor = entry
-        game.save()
         return player
 
 
@@ -78,13 +73,11 @@ class CompanySerializer(serializers.ModelSerializer):
         company = models.Company.objects.create(**validated_data)
         game = company.game
         game.cash -= validated_data['cash']
-        entry = models.LogEntry.objects.create(game=game,
+        utils.create_log_entry(game, None,
             text='Added {}-share company {} with {} starting cash'.format(
                 validated_data['share_count'], validated_data['name'],
                 validated_data['cash']),
             acting_company=company)
-        game.log_cursor = entry
-        game.save()
         return company
 
     def update(self, instance, validated_data):
@@ -100,11 +93,9 @@ class CompanySerializer(serializers.ModelSerializer):
         company = super(CompanySerializer, self).update(instance,
             validated_data)
         game = company.game
-        entry = models.LogEntry.objects.create(game=game,
+        utils.create_log_entry(game, None,
             text='Company {} has been edited'.format(company.name),
             acting_company=company)
-        game.log_cursor = entry
-        game.save()
         return company
 
 
