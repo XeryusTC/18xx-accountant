@@ -303,6 +303,156 @@ class UndoTests(FunctionalTestCase):
         self.verify_player(alice, cash=120, shares=['C&O 60%'])
         self.verify_company(co, cash=180, shares=['C&O 40%'])
 
+    def test_can_undo_company_paying_dividends(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        alice_uuid = self.create_player(game_uuid, 'Alice', cash=0)
+        bob_uuid = self.create_player(game_uuid, 'Bob', cash=0)
+        bo_uuid = self.create_company(game_uuid, 'B&O', cash=0, bank_shares=0,
+            ipo_shares=2)
+        self.create_company_share(bo_uuid, bo_uuid, shares=1)
+        self.create_player_share(alice_uuid, bo_uuid, shares=4)
+        self.create_player_share(bob_uuid, bo_uuid, shares=3)
+
+        self.story('The B&O operates and pays dividends')
+        game_page = game.GamePage(self.browser)
+        operate_form = game.OperateForm(self.browser)
+        game_page.reload_game.click()
+        bo = game_page.get_companies()[0]
+        bo['elem'].click()
+        operate_form.revenue(bo['detail']).clear()
+        operate_form.revenue(bo['detail']).send_keys('80')
+        operate_form.full(bo['detail']).click()
+
+        self.story('Verify that everyone has received money')
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=32)
+        self.verify_player(bob, cash=24)
+        self.verify_company(bo, cash=8)
+        self.assertEqual(game_page.bank_cash.text, '11936')
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(bo, cash=0)
+        self.assertEqual(game_page.bank_cash.text, '12000')
+
+        self.story('Click the redo button, the operation is done again')
+        game_page.redo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=32)
+        self.verify_player(bob, cash=24)
+        self.verify_company(bo, cash=8)
+        self.assertEqual(game_page.bank_cash.text, '11936')
+
+    def test_can_undo_company_withholding_dividends(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        alice_uuid = self.create_player(game_uuid, 'Alice', cash=0)
+        bob_uuid = self.create_player(game_uuid, 'Bob', cash=0)
+        bo_uuid = self.create_company(game_uuid, 'B&O', cash=0, bank_shares=0,
+            ipo_shares=2)
+        self.create_company_share(bo_uuid, bo_uuid, shares=1)
+        self.create_player_share(alice_uuid, bo_uuid, shares=4)
+        self.create_player_share(bob_uuid, bo_uuid, shares=3)
+
+        self.story('The B&O operates and withholds dividends')
+        game_page = game.GamePage(self.browser)
+        operate_form = game.OperateForm(self.browser)
+        game_page.reload_game.click()
+        bo = game_page.get_companies()[0]
+        bo['elem'].click()
+        operate_form.revenue(bo['detail']).clear()
+        operate_form.revenue(bo['detail']).send_keys('90')
+        operate_form.withhold(bo['detail']).click()
+
+        self.story('Verify that only the B&O has received money')
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(bo, cash=90)
+        self.assertEqual(game_page.bank_cash.text, '11910')
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(bo, cash=0)
+        self.assertEqual(game_page.bank_cash.text, '12000')
+
+        self.story('Click the redo button, the withholding is done again')
+        game_page.redo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(bo, cash=90)
+        self.assertEqual(game_page.bank_cash.text, '11910')
+
+    def test_can_undo_company_paying_half_dividends(self):
+        self.story('Alice is a user who has a game')
+        self.browser.get(self.server_url)
+        homepage = game.Homepage(self.browser)
+        homepage.start_button.click()
+        game_uuid = self.browser.current_url[-36:]
+        alice_uuid = self.create_player(game_uuid, 'Alice', cash=0)
+        bob_uuid = self.create_player(game_uuid, 'Bob', cash=0)
+        bo_uuid = self.create_company(game_uuid, 'B&O', cash=0, bank_shares=0,
+            ipo_shares=2)
+        self.create_company_share(bo_uuid, bo_uuid, shares=1)
+        self.create_player_share(alice_uuid, bo_uuid, shares=4)
+        self.create_player_share(bob_uuid, bo_uuid, shares=3)
+
+        self.story('The B&O operates and pays half dividends')
+        game_page = game.GamePage(self.browser)
+        operate_form = game.OperateForm(self.browser)
+        game_page.reload_game.click()
+        bo = game_page.get_companies()[0]
+        bo['elem'].click()
+        operate_form.revenue(bo['detail']).clear()
+        operate_form.revenue(bo['detail']).send_keys('100')
+        operate_form.half(bo['detail']).click()
+
+        self.story('Verify that everyone received the correct amounts')
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=20)
+        self.verify_player(bob, cash=15)
+        self.verify_company(bo, cash=55)
+        self.assertEqual(game_page.bank_cash.text, '11910')
+
+        self.story('Click the undo button, the game state is reverted')
+        game_page.undo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=0)
+        self.verify_player(bob, cash=0)
+        self.verify_company(bo, cash=0)
+        self.assertEqual(game_page.bank_cash.text, '12000')
+
+        self.story('Click the redo button, the split payment is done again')
+        game_page.redo.click()
+        alice, bob = game_page.get_players()
+        bo = game_page.get_companies()[0]
+        self.verify_player(alice, cash=20)
+        self.verify_player(bob, cash=15)
+        self.verify_company(bo, cash=55)
+        self.assertEqual(game_page.bank_cash.text, '11910')
+
     def test_log_does_not_show_undone_log_actions(self):
         self.story('Alice is a user who has a game with a player')
         self.browser.get(self.server_url)
