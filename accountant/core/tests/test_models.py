@@ -411,3 +411,18 @@ class LogEntryTests(TestCase):
         entry = LogEntry(game=self.game, text='Test log entry')
         self.assertIn('Test log entry', str(entry))
         self.assertIn(str(entry.time), str(entry))
+
+    def test_is_undoable_is_false_by_default(self):
+        self.assertFalse(self.entry.is_undoable)
+
+    def test_transfer_money_is_undoable(self):
+        self.entry.action = LogEntry.TRANSFER_MONEY
+        self.assertTrue(self.entry.is_undoable)
+
+    def test_transfer_share_is_undoable(self):
+        self.entry.action = LogEntry.TRANSFER_SHARE
+        self.assertTrue(self.entry.is_undoable)
+
+    def test_operate_is_undoable(self):
+        self.entry.action = LogEntry.OPERATE
+        self.assertTrue(self.entry.is_undoable)

@@ -174,3 +174,7 @@ class LogEntry(models.Model):
 
     def __str__(self):
         return '[{}] {}'.format(self.time, self.text)
+
+    @property
+    def is_undoable(self):
+        return self.action != None
