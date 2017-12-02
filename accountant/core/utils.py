@@ -248,6 +248,21 @@ def undo(game):
         elif isinstance(source, models.Company):
             affected['shares'].append(models.CompanyShare.objects.get(
                 owner=source, company=entry.company))
+    elif entry.action == models.LogEntry.OPERATE:
+        affected['game'] = game
+        affected['players'] = entry.company.player_owners.all()
+        affected['companies'] = list(entry.company.company_owners.all())
+        if entry.mode == models.LogEntry.FULL:
+            method = OperateMethod.FULL
+        elif entry.mode == models.LogEntry.HALF:
+            method = OperateMethod.HALF
+            if entry.company not in affected['companies']:
+                affected['companies'].append(entry.company)
+        else:
+            method = OperateMethod.WITHHOLD
+            affected['players'] = []
+            affected['companies'] = [entry.company]
+        operate(entry.company, -entry.revenue, method)
 
     # Remove empty items from affected
     if not affected['players']:
