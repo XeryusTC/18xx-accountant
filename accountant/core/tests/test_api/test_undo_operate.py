@@ -33,6 +33,10 @@ class UndoTests(APITestCase):
         self.game.log_cursor = entry
         self.game.save()
 
+    def test_requires_redo_undo_option_to_be_set(self):
+        response = self.client.post(self.url, {'game': str(self.game.pk)})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_undoing_company_paying_full_includes_data(self):
         self.create_entry(mode=models.LogEntry.FULL, amount=10)
         response = self.client.post(self.url, {'game': str(self.game.pk),
