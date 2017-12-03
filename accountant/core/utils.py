@@ -240,12 +240,7 @@ def create_log_entry(game, action, **kwargs):
 def undo(game):
     entry = game.log_cursor
     f, kwargs, affected = _action_call(entry)
-
-    if entry.action == models.LogEntry.TRANSFER_MONEY:
-        kwargs['amount'] *= -1
-    elif entry.action == models.LogEntry.TRANSFER_SHARE:
-        kwargs['amount'] *= -1
-
+    kwargs['amount'] *= -1
     f(**kwargs)
 
     if 'game' in affected:
@@ -264,7 +259,6 @@ def undo(game):
 def redo(game):
     entry = game.log.filter(time__gt=game.log_cursor.time).first()
     f, kwargs, affected = _action_call(entry)
-
     f(**kwargs)
 
     for name in ('companies', 'players', 'shares'):
@@ -340,6 +334,20 @@ def _action_call(entry):
                 company=entry.company))
     elif entry.action == models.LogEntry.OPERATE:
         f = operate
+        affected['game'] = entry.game
+        affected['players'] = list(entry.acting_company.player_owners.all())
+        affected['companies'] = list(entry.acting_company.company_owners.all())
+        kwargs['company'] = entry.acting_company
+        kwargs['amount'] = entry.amount
+        if entry.mode == models.LogEntry.FULL:
+            kwargs['method'] = OperateMethod.FULL
+        elif entry.mode == models.LogEntry.HALF:
+            kwargs['method'] = OperateMethod.HALF
+            affected['companies'].append(entry.acting_company)
+        else:
+            kwargs['method'] = OperateMethod.WITHHOLD
+            affected['players'] = []
+            affected['companies'] = [entry.acting_company]
 
     # Remove empty items from affected
     if not affected['players']:

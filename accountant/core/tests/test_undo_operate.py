@@ -35,20 +35,20 @@ class UndoOperateTests(TestCase):
     def test_can_undo_company_operating_full(self, mock_operate):
         self.create_entry(mode=models.LogEntry.FULL, amount=10)
         utils.undo(self.game)
-        mock_operate.assert_called_once_with(self.company, -10,
-            utils.OperateMethod.FULL)
+        mock_operate.assert_called_once_with(company=self.company, amount=-10,
+            method=utils.OperateMethod.FULL)
 
     def test_can_undo_company_operating_half(self, mock_operate):
         self.create_entry(mode=models.LogEntry.HALF, amount=20)
         utils.undo(self.game)
-        mock_operate.assert_called_once_with(self.company, -20,
-            utils.OperateMethod.HALF)
+        mock_operate.assert_called_once_with(company=self.company, amount=-20,
+            method=utils.OperateMethod.HALF)
 
     def test_can_undo_company_withholding(self, mock_operate):
         self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         utils.undo(self.game)
-        mock_operate.assert_called_once_with(self.company, -30,
-            utils.OperateMethod.WITHHOLD)
+        mock_operate.assert_called_once_with(company=self.company, amount=-30,
+            method=utils.OperateMethod.WITHHOLD)
 
     def test_undoing_company_operating_full_returns_affected(self, mock):
         self.create_entry(mode=models.LogEntry.FULL, amount=40)
@@ -100,20 +100,20 @@ class RedoOperateTests(TestCase):
     def test_can_redo_company_operating_full(self, mock_operate):
         self.create_entry(mode=models.LogEntry.FULL, amount=10)
         utils.redo(self.game)
-        mock_operate.assert_called_once_with(self.company, 10,
-            utils.OperateMethod.FULL)
+        mock_operate.assert_called_once_with(company=self.company, amount=10,
+            method=utils.OperateMethod.FULL)
 
     def test_can_redo_company_operating_half(self, mock_operate):
         self.create_entry(mode=models.LogEntry.HALF, amount=20)
         utils.redo(self.game)
-        mock_operate.assert_called_once_with(self.company, 20,
-            utils.OperateMethod.HALF)
+        mock_operate.assert_called_once_with(company=self.company, amount=20,
+            method=utils.OperateMethod.HALF)
 
     def test_can_redo_company_withholding(self, mock_operate):
         self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         utils.redo(self.game)
-        mock_operate.assert_called_once_with(self.company, 30,
-            utils.OperateMethod.WITHHOLD)
+        mock_operate.assert_called_once_with(company=self.company, amount=30,
+            method=utils.OperateMethod.WITHHOLD)
 
     def test_redoing_company_operating_full_returns_affected(self, mock):
         self.create_entry(mode=models.LogEntry.FULL, amount=40)
