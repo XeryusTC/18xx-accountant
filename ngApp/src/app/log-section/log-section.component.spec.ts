@@ -10,7 +10,8 @@ describe('LogSectionComponent', () => {
 	let gameStateStub = {
 		companies: {
 			'company-uuid': {text_color: 'red-50', background_color: 'red-900'}
-		}
+		},
+		is_undoable: () => true
 	};
 
 	beforeEach(async(() => {
