@@ -238,6 +238,70 @@ def create_log_entry(game, action, **kwargs):
     return entry
 
 def undo(game):
+    entry = game.log_cursor
+    f, kwargs, affected = _action_call(entry)
+
+    if entry.action == models.LogEntry.TRANSFER_MONEY:
+        kwargs['amount'] *= -1
+    f(**kwargs)
+
+    if 'game' in affected:
+        affected['game'].refresh_from_db()
+
+    game.refresh_from_db()
+    game.log_cursor = game.log.filter(time__lt=entry.time).last()
+    game.save()
+    return affected
+
+def redo(game):
+    entry = game.log.filter(time__gt=game.log_cursor.time).first()
+    f, kwargs, affected = _action_call(entry)
+
+    f(**kwargs)
+
+    game.refresh_from_db()
+    game.log_cursor = entry
+    game.save()
+    affected['log'] = entry
+    return affected
+
+def _action_call(entry):
+    affected = {'players': [], 'companies': []}
+    kwargs = {}
+    if entry.action == models.LogEntry.TRANSFER_MONEY:
+        f = transfer_money
+        kwargs = {'sender': None, 'receiver': None, 'amount': entry.amount}
+        # Determine who originally send money
+        if entry.acting_player is not None:
+            kwargs['sender'] = entry.acting_player
+            affected['players'].append(entry.acting_player)
+        elif entry.acting_company is not None:
+            kwargs['sender'] = entry.acting_company
+            affected['companies'].append(entry.acting_company)
+        else:
+            affected['game'] = entry.game
+        # Determine who originally received money
+        if entry.receiving_player is not None:
+            kwargs['receiver'] = entry.receiving_player
+            affected['players'].append(entry.receiving_player)
+        elif entry.receiving_company is not None:
+            kwargs['receiver'] = entry.receiving_company
+            affected['companies'].append(entry.receiving_company)
+        else:
+            affected['game'] = entry.game
+    elif entry.action == models.LogEntry.TRANSFER_SHARE:
+        f = buy_share
+    elif entry.action == models.LogEntry.OPERATE:
+        f = operate
+
+    # Remove empty items from affected
+    if not affected['players']:
+        del affected['players']
+    if not affected['companies']:
+        del affected['companies']
+    return f, kwargs, affected
+
+def undo(game):
     affected = {'players': [], 'companies': []}
     entry = game.log_cursor
     if entry.action == models.LogEntry.TRANSFER_MONEY:

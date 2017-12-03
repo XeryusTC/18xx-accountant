@@ -28,7 +28,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.player, None, 1)
+        mock_transfer_money.assert_called_once_with(receiver=self.player,
+            sender=None, amount=-1)
         self.assertEqual(self.game.log_cursor, self.start_entry)
 
     def test_can_undo_bank_transfering_money_to_company(self,
@@ -42,7 +43,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.company, None, 2)
+        mock_transfer_money.assert_called_once_with(receiver=self.company,
+            sender=None, amount=-2)
         self.assertEqual(self.game.log_cursor, self.start_entry)
 
     def test_can_undo_player_transfering_money_to_bank(self,
@@ -56,7 +58,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(None, self.player, 10)
+        mock_transfer_money.assert_called_once_with(receiver=None,
+            sender=self.player, amount=-10)
         self.assertEqual(self.game.log_cursor, self.start_entry)
 
     def test_can_undo_company_transfering_money_to_bank(self,
@@ -70,7 +73,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(None, self.company, 20)
+        mock_transfer_money.assert_called_once_with(receiver=None,
+            sender=self.company, amount=-20)
         self.assertEqual(self.game.log_cursor, self.start_entry)
 
     def test_can_undo_player_transfering_money_to_other_player(self,
@@ -85,8 +89,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(other_player, self.player,
-            30)
+        mock_transfer_money.assert_called_once_with(receiver=other_player,
+            sender=self.player, amount=-30)
 
     def test_can_undo_player_transfering_money_to_company(self,
             mock_transfer_money):
@@ -99,8 +103,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.company, self.player,
-            40)
+        mock_transfer_money.assert_called_once_with(receiver=self.company,
+            sender=self.player, amount=-40)
 
     def test_can_undo_company_transfering_money_to_player(self,
             mock_transfer_money):
@@ -113,8 +117,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.player, self.company,
-            50)
+        mock_transfer_money.assert_called_once_with(receiver=self.player,
+            sender=self.company, amount=-50)
 
     def test_can_undo_company_transfering_money_to_other_company(self,
             mock_transfer_money):
@@ -128,8 +132,8 @@ class UndoTransferMoneyTests(TestCase):
         utils.undo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(other_company,
-            self.company, 60)
+        mock_transfer_money.assert_called_once_with(receiver=other_company,
+            sender=self.company, amount=-60)
 
     def test_undo_bank_transfer_money_to_player_returns_affected_instances(
             self, mock_transfer_money):
@@ -290,7 +294,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(None, self.player, 1)
+        mock_transfer_money.assert_called_once_with(sender=None,
+            receiver=self.player, amount=1)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_bank_transfering_money_to_company(self,
@@ -302,7 +307,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(None, self.company, 2)
+        mock_transfer_money.assert_called_once_with(sender=None,
+            receiver=self.company, amount=2)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_player_transfering_money_to_bank(self,
@@ -314,7 +320,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.player, None, 10)
+        mock_transfer_money.assert_called_once_with(sender=self.player,
+            receiver=None, amount=10)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_company_transfer_money_to_bank(self,
@@ -326,7 +333,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.company, None, 20)
+        mock_transfer_money.assert_called_once_with(sender=self.company,
+            receiver=None, amount=20)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_player_transfering_money_to_player(self,
@@ -339,8 +347,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.player, other_player,
-            30)
+        mock_transfer_money.assert_called_once_with(sender=self.player,
+            receiver=other_player, amount=30)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_player_transfering_money_to_company(self,
@@ -352,8 +360,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.player, self.company,
-            40)
+        mock_transfer_money.assert_called_once_with(sender=self.player,
+            receiver=self.company, amount=40)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_company_transfering_money_to_player(self,
@@ -365,8 +373,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.company, self.player,
-            50)
+        mock_transfer_money.assert_called_once_with(sender=self.company,
+            receiver=self.player, amount=50)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_can_redo_company_transfering_money_to_company(self,
@@ -379,8 +387,8 @@ class RedoTransferMoneyTests(TestCase):
         utils.redo(self.game)
 
         self.game.refresh_from_db()
-        mock_transfer_money.assert_called_once_with(self.company,
-            other_company, 60)
+        mock_transfer_money.assert_called_once_with(sender=self.company,
+            receiver=other_company, amount=60)
         self.assertEqual(self.game.log_cursor, entry)
 
     def test_redo_bank_transfer_money_to_player_returns_affected_instances(
