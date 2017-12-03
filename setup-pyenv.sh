@@ -18,7 +18,7 @@ if [ ! -d ".pyenv" ]; then
 	pyenv install 3.6.1
 	pyenv virtualenv 3.6.1 ansible
 	pyenv activate ansible
-	pip install ansible
+	pip install ansible==2.3.2.0
 	pip install -r /vagrant/requirements/dev.txt
 	pyenv deactivate
 fi
