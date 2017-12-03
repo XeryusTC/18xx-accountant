@@ -237,4 +237,11 @@ export class GameStateService {
 				}
 			});
 	}
+
+	is_undoable(): boolean {
+		if (this.log.length == 0) {
+			return false;
+		}
+		return this.log[this.log.length - 1].is_undoable;
+	}
 }

@@ -578,4 +578,25 @@ describe('GameStateService', () => {
 		expect(service.log.length).toBe(4);
 		expect(service.log[3]).toBe(entry);
 	}));
+
+	it('is_undoable() returns false when log is empty', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.log = [];
+		expect(service.is_undoable()).toBe(false);
+	}));
+
+	it('is_undoable() is false when last log entry is false', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.log[2].is_undoable = false;
+		expect(service.is_undoable()).toBe(false);
+	}));
+
+	it('is_undoable() is true when last log entry is true', fakeAsync(() => {
+		service.loadGame('game-uuid');
+		tick();
+		service.log[2].is_undoable = true;
+		expect(service.is_undoable()).toBe(true);
+	}));
 });

@@ -1,7 +1,7 @@
 <div class="section" id="log">
 	<h4>Log</h4>
 	<button class="button" id="undo" (click)="gameState.undo()"
-		[disabled]="!gameState.log[gameState.log.length - 1].is_undoable">
+		[disabled]="gameState.is_undoable()">
 		Undo
 	</button>
 	<button (click)="gameState.redo()" class="button" id="redo">Redo</button>
