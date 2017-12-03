@@ -39,120 +39,128 @@ class UndoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=1, shares=9)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.IPO, 1, -9)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-9,
+            company=self.share_company, source=utils.Share.IPO, price=1)
 
     def test_can_undo_player_buying_share_from_bank(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=2, shares=8)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.BANK, 2, -8)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-8,
+            company=self.share_company, source=utils.Share.BANK, price=2)
 
     def test_can_undo_player_buying_share_from_company(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='company', company_source=self.buy_company, price=3,
             shares=7)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.buy_company, 3, -7)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-7,
+            company=self.share_company, source=self.buy_company, price=3)
 
     def test_can_undo_player_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='player', player_source=self.other_player, price=4,
             shares=6)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.other_player, 4, -6)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-6,
+            company=self.share_company, source=self.other_player, price=4)
 
     def test_can_undo_company_buying_share_from_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=5, shares=5)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.IPO, 5, -5)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.IPO, price=5,
+            amount=-5)
 
     def test_can_undo_company_buying_share_from_bank(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=6, shares=4)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.BANK, 6, -4)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.BANK, price=6,
+            amount=-4)
 
     def test_can_undo_company_buying_share_from_company(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='company', company_source=self.source_company, price=7,
             shares=3)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.source_company, 7, -3)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.source_company, price=7,
+            amount=-3)
 
     def test_can_undo_company_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='player', player_source=self.player, price=8, shares=2)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.player, 8, -2)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.player, price=8,
+            amount=-2)
 
     def test_can_undo_player_selling_shares_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=9, shares=-1)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.IPO, 9, 1)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=1,
+            company=self.share_company, source=utils.Share.IPO, price=9)
 
     def test_can_undo_player_selling_shares_to_bank(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=10, shares=-3)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.BANK, 10, 3)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=3,
+            company=self.share_company, source=utils.Share.BANK, price=10)
 
     def test_can_undo_player_selling_shares_to_company(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='company', company_source=self.buy_company, price=11,
             shares=-3)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.buy_company, 11, 3)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=3,
+            company=self.share_company, source=self.buy_company, price=11)
 
     def test_can_undo_player_selling_shares_to_player(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='player', player_source=self.other_player, price=12,
             shares=-5)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.other_player, 12, 5)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=5,
+            company=self.share_company, source=self.other_player, price=12)
 
     def test_can_undo_company_selling_shares_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=13, shares=-2)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.IPO, 13, 2)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.IPO, price=13,
+            amount=2)
 
     def test_can_undo_company_selling_shares_to_bank(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=14, shares=-4)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.BANK, 14, 4)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.BANK, price=14,
+            amount=4)
 
     def test_can_undo_company_selling_shares_to_company(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='company', company_source=self.source_company, price=15,
             shares=-6)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.source_company, 15, 6)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.source_company, price=15,
+            amount=6)
 
     def test_can_undo_company_selling_shares_to_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='player', player_source=self.player, price=16,
             shares=-8)
         utils.undo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.player, 16, 8)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.player, price=16,
+            amount=8)
 
     def test_undo_player_buying_share_from_ipo_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,
@@ -358,119 +366,127 @@ class RedoTransferShareTests(TestCase):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=1, shares=2)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.IPO, 1, 2)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=2,
+            company=self.share_company, source=utils.Share.IPO, price=1)
 
     def test_can_redo_player_buying_share_from_bank(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=1, shares=5)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.BANK, 1, 5)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=5,
+            company=self.share_company, source=utils.Share.BANK, price=1)
 
     def test_can_redo_player_buying_share_from_company(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='company', company_source=self.buy_company, price=2,
             shares=1)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-           self.buy_company, 2, 1)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=1,
+            company=self.share_company, source=self.buy_company, price=2)
 
     def test_can_redo_player_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='player', player_source=self.other_player, price=3,
             shares=4)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.other_player, 3, 4)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=4,
+            company=self.share_company, source=self.other_player, price=3)
 
     def test_can_redo_company_buying_share_from_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=5, shares=1)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.IPO, 5, 1)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.IPO, price=5,
+            amount=1)
 
     def test_can_redo_company_buying_share_from_bank(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=8, shares=6)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.BANK, 8, 6)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.BANK, price=8,
+            amount=6)
 
     def test_can_redo_company_buying_share_from_company(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='company', company_source=self.source_company, price=13,
             shares=7)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.source_company, 13, 7)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.source_company, price=13,
+            amount=7)
 
     def test_can_redo_company_buying_share_from_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='player', player_source=self.player, price=21, shares=4)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.player, 21, 4)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.player, price=21,
+            amount=4)
 
     def test_can_redo_player_selling_share_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='ipo', price=34, shares=-2)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.IPO, 34, -2)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-2,
+            company=self.share_company, source=utils.Share.IPO, price=34)
 
     def test_can_redo_player_selling_share_to_bank(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='bank', price=55, shares=-5)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            utils.Share.BANK, 55, -5)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-5,
+            company=self.share_company, source=utils.Share.BANK, price=55)
 
     def test_can_redo_player_selling_share_to_company(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='company', company_source=self.buy_company, price=89,
             shares=-3)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-           self.buy_company, 89, -3)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-3,
+            company=self.share_company, source=self.buy_company, price=89)
 
     def test_can_redo_player_selling_share_to_player(self, mock_buy_share):
         self.create_entry(buyer='player', player_buyer=self.player,
             source='player', player_source=self.other_player, price=144,
             shares=-2)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.player, self.share_company,
-            self.other_player, 144, -2)
+        mock_buy_share.assert_called_once_with(buyer=self.player, amount=-2,
+            company=self.share_company, source=self.other_player, price=144)
 
     def test_can_redo_company_selling_share_to_ipo(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='ipo', price=233, shares=-9)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.IPO, 233, -9)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.IPO, price=233,
+            amount=-9)
 
     def test_can_redo_company_selling_share_to_bank(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='bank', price=377, shares=-2)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, utils.Share.BANK, 377, -2)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=utils.Share.BANK, price=377,
+            amount=-2)
 
     def test_can_redo_company_selling_share_to_company(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='company', company_source=self.source_company, price=610,
             shares=-3)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.source_company, 610, -3)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.source_company, price=610,
+            amount=-3)
 
     def test_can_redo_company_selling_share_to_player(self, mock_buy_share):
         self.create_entry(buyer='company', company_buyer=self.buy_company,
             source='player', player_source=self.player, price=987, shares=-7)
         utils.redo(self.game)
-        mock_buy_share.assert_called_once_with(self.buy_company,
-            self.share_company, self.player, 987, -7)
+        mock_buy_share.assert_called_once_with(buyer=self.buy_company,
+            company=self.share_company, source=self.player, price=987,
+            amount=-7)
 
     def test_redo_player_buying_share_from_ipo_returns_affected(self, mock):
         self.create_entry(buyer='player', player_buyer=self.player,

@@ -243,10 +243,18 @@ def undo(game):
 
     if entry.action == models.LogEntry.TRANSFER_MONEY:
         kwargs['amount'] *= -1
+    elif entry.action == models.LogEntry.TRANSFER_SHARE:
+        kwargs['amount'] *= -1
+
     f(**kwargs)
 
     if 'game' in affected:
         affected['game'].refresh_from_db()
+    for name in ('companies', 'players', 'shares'):
+        if name in affected:
+            for i, inst in enumerate(affected[name]):
+                inst.refresh_from_db()
+                affected[name][i] = inst
 
     game.refresh_from_db()
     game.log_cursor = game.log.filter(time__lt=entry.time).last()
@@ -258,6 +266,12 @@ def redo(game):
     f, kwargs, affected = _action_call(entry)
 
     f(**kwargs)
+
+    for name in ('companies', 'players', 'shares'):
+        if name in affected:
+            for i, inst in enumerate(affected[name]):
+                inst.refresh_from_db()
+                affected[name][i] = inst
 
     game.refresh_from_db()
     game.log_cursor = entry
@@ -291,6 +305,39 @@ def _action_call(entry):
             affected['game'] = entry.game
     elif entry.action == models.LogEntry.TRANSFER_SHARE:
         f = buy_share
+        kwargs = {'price': entry.price, 'amount': entry.shares,
+            'company': entry.company}
+        affected['shares'] = []
+        # Determine who bought the share
+        if entry.buyer == 'player':
+            kwargs['buyer'] = entry.player_buyer
+            affected['players'].append(entry.player_buyer)
+            affected['shares'].append(entry.player_buyer.share_set.get(
+                company=entry.company))
+        elif entry.buyer == 'company':
+            kwargs['buyer'] = entry.company_buyer
+            affected['companies'].append(entry.company_buyer)
+            affected['shares'].append(entry.company_buyer.share_set.get(
+                company=entry.company))
+        # Determine where the share came from
+        if entry.source == 'ipo':
+            kwargs['source'] = Share.IPO
+            affected['game'] = entry.game
+            affected['companies'].append(entry.company)
+        elif entry.source == 'bank':
+            kwargs['source'] = Share.BANK
+            affected['game'] = entry.game
+            affected['companies'].append(entry.company)
+        elif entry.source == 'player':
+            kwargs['source'] = entry.player_source
+            affected['players'].append(entry.player_source)
+            affected['shares'].append(entry.player_source.share_set.get(
+                company=entry.company))
+        elif entry.source == 'company':
+            kwargs['source'] = entry.company_source
+            affected['companies'].append(entry.company_source)
+            affected['shares'].append(entry.company_source.share_set.get(
+                company=entry.company))
     elif entry.action == models.LogEntry.OPERATE:
         f = operate
 
