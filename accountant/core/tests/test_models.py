@@ -394,9 +394,6 @@ class LogEntryTests(TestCase):
     def test_mode_field_can_be_WITHHOLD(self):
         LogEntry.objects.create(game=self.game, mode=LogEntry.WITHHOLD)
 
-    def test_revenue_field_is_0_by_default(self):
-        self.assertEqual(self.entry.revenue, 0)
-
     def test_are_sorted_chronological(self):
         self.entry.delete()
         entry1 = LogEntry.objects.create(game=self.game,

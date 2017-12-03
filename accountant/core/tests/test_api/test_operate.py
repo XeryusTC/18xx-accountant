@@ -161,8 +161,8 @@ class OperateTests(APITestCase):
         self.game.refresh_from_db()
         entry = self.game.log_cursor
         self.assertEqual(entry.action, models.LogEntry.OPERATE)
-        self.assertEqual(entry.company, self.company)
-        self.assertEqual(entry.revenue, 150)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.amount, 150)
         self.assertEqual(entry.mode, models.LogEntry.FULL)
 
     def test_operating_half_creates_log_entry_with_data(self, mock):
@@ -171,8 +171,8 @@ class OperateTests(APITestCase):
         self.game.refresh_from_db()
         entry = self.game.log_cursor
         self.assertEqual(entry.action, models.LogEntry.OPERATE)
-        self.assertEqual(entry.company, self.company)
-        self.assertEqual(entry.revenue, 160)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.amount, 160)
         self.assertEqual(entry.mode, models.LogEntry.HALF)
 
     def test_withholding_creates_log_entry_with_data(self, mock):
@@ -182,6 +182,6 @@ class OperateTests(APITestCase):
         self.game.refresh_from_db()
         entry = self.game.log_cursor
         self.assertEqual(entry.action, models.LogEntry.OPERATE)
-        self.assertEqual(entry.company, self.company)
-        self.assertEqual(entry.revenue, 170)
+        self.assertEqual(entry.acting_company, self.company)
+        self.assertEqual(entry.amount, 170)
         self.assertEqual(entry.mode, models.LogEntry.WITHHOLD)

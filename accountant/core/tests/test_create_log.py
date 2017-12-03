@@ -35,7 +35,6 @@ class CreateLogEntryTests(TestCase):
         self.assertEqual(entry.company_source, company_source)
         self.assertEqual(entry.company, company)
         self.assertEqual(entry.mode, mode)
-        self.assertEqual(entry.revenue, revenue)
 
     def test_money_transfer_from_player_to_bank_creates_log_entry(self):
         utils.create_log_entry(self.game, models.LogEntry.TRANSFER_MONEY,
@@ -161,24 +160,24 @@ class CreateLogEntryTests(TestCase):
             mode=models.LogEntry.FULL, amount=23, company=self.company)
         self.game.refresh_from_db()
         self.verify_entry(self.game.log_cursor, models.LogEntry.OPERATE,
-            mode=models.LogEntry.FULL, revenue=23,
-            acting_company=self.company, company=self.company)
+            mode=models.LogEntry.FULL, amount=23,
+            acting_company=self.company)
 
     def test_company_paying_half_creates_log_entry(self):
         utils.create_log_entry(self.game, models.LogEntry.OPERATE,
             mode=models.LogEntry.HALF, amount=24, company=self.company)
         self.game.refresh_from_db()
         self.verify_entry(self.game.log_cursor, models.LogEntry.OPERATE,
-            mode=models.LogEntry.HALF, revenue=24,
-            acting_company=self.company, company=self.company)
+            mode=models.LogEntry.HALF, amount=24,
+            acting_company=self.company)
 
     def test_company_withholding_creates_log_entry(self):
         utils.create_log_entry(self.game, models.LogEntry.OPERATE,
             mode=models.LogEntry.WITHHOLD, amount=25, company=self.company)
         self.game.refresh_from_db()
         self.verify_entry(self.game.log_cursor, models.LogEntry.OPERATE,
-            mode=models.LogEntry.WITHHOLD, revenue=25,
-            acting_company=self.company, company=self.company)
+            mode=models.LogEntry.WITHHOLD, amount=25,
+            acting_company=self.company)
 
     def test_clears_redo_stack_when_adding_new_entry(self):
         entry1 = models.LogEntry.objects.create(game=self.game)

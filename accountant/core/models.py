@@ -167,7 +167,6 @@ class LogEntry(models.Model):
     # Operate related
     mode = models.IntegerField(default=None, choices=OPERATE_CHOICES,
         null=True, blank=True)
-    revenue = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['time']

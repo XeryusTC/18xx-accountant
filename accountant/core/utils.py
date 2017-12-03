@@ -225,9 +225,8 @@ def create_log_entry(game, action, **kwargs):
             entry.source = 'company'
             entry.company_source = kwargs['source']
     elif action == models.LogEntry.OPERATE:
-        entry.revenue = kwargs['amount']
+        entry.amount = kwargs['amount']
         entry.acting_company = kwargs['company']
-        entry.company = kwargs['company']
         entry.mode = kwargs['mode']
     if 'text' in kwargs.keys():
         entry.text = kwargs['text']
@@ -308,18 +307,19 @@ def undo(game):
             method = OperateMethod.HALF
         else:
             method = OperateMethod.WITHHOLD
-        operate(entry.company, -entry.revenue, method)
+        operate(entry.acting_company, -entry.amount, method)
         # Get affected instances after undoing so they're up to date
+        entry.acting_company.refresh_from_db()
         affected['game'] = game
-        affected['players'] = entry.company.player_owners.all()
-        affected['companies'] = entry.company.company_owners.all()
+        affected['players'] = entry.acting_company.player_owners.all()
+        affected['companies'] = entry.acting_company.company_owners.all()
         if entry.mode == models.LogEntry.HALF and \
                 entry.company not in affected['companies']:
             affected['companies'] = list(affected['companies']) + \
-                [entry.company]
+                [entry.acting_company]
         if entry.mode == models.LogEntry.WITHHOLD:
             affected['players'] = []
-            affected['companies'] = [entry.company]
+            affected['companies'] = [entry.acting_company]
 
     # Remove empty items from affected
     if not affected['players']:
@@ -403,18 +403,19 @@ def redo(game):
             method = OperateMethod.HALF
         else:
             method = OperateMethod.WITHHOLD
-        operate(entry.company, entry.revenue, method)
+        operate(entry.acting_company, entry.amount, method)
         # Get affected instances after undoing so they're up to date
+        entry.acting_company.refresh_from_db()
         affected['game'] = game
-        affected['players'] = entry.company.player_owners.all()
-        affected['companies'] = entry.company.company_owners.all()
+        affected['players'] = entry.acting_company.player_owners.all()
+        affected['companies'] = entry.acting_company.company_owners.all()
         if entry.mode == models.LogEntry.HALF and \
                 entry.company not in affected['companies']:
             affected['companies'] = list(affected['companies']) + \
-                [entry.company]
+                [entry.acting_company]
         if entry.mode == models.LogEntry.WITHHOLD:
             affected['players'] = []
-            affected['companies'] = [entry.company]
+            affected['companies'] = [entry.acting_company]
 
     # Remove empty items from affected
     if not affected['players']:

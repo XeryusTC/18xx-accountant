@@ -29,12 +29,12 @@ class UndoTests(APITestCase):
     def create_entry(self, **kwargs):
         entry = models.LogEntry.objects.create(
             action=models.LogEntry.OPERATE, game=self.game,
-            company=self.company, **kwargs)
+            acting_company=self.company, **kwargs)
         self.game.log_cursor = entry
         self.game.save()
 
     def test_undoing_company_paying_full_includes_data(self):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=10)
+        self.create_entry(mode=models.LogEntry.FULL, amount=10)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'undo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -45,7 +45,7 @@ class UndoTests(APITestCase):
             [str(self.other_company.pk)])
 
     def test_undoing_company_paying_half_includes_data(self):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=20)
+        self.create_entry(mode=models.LogEntry.HALF, amount=20)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'undo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -56,7 +56,7 @@ class UndoTests(APITestCase):
             [str(self.company.pk), str(self.other_company.pk)])
 
     def test_undoing_company_withholding_includes_data(self):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=30)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'undo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -89,10 +89,10 @@ class redoTests(APITestCase):
     def create_entry(self, **kwargs):
         models.LogEntry.objects.create(
             action=models.LogEntry.OPERATE, game=self.game,
-            company=self.company, **kwargs)
+            acting_company=self.company, **kwargs)
 
     def test_redoing_company_paying_full_includes_data(self):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=10)
+        self.create_entry(mode=models.LogEntry.FULL, amount=10)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'redo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,7 +103,7 @@ class redoTests(APITestCase):
             [str(self.other_company.pk)])
 
     def test_redoing_company_paying_half_includes_data(self):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=20)
+        self.create_entry(mode=models.LogEntry.HALF, amount=20)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'redo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -114,7 +114,7 @@ class redoTests(APITestCase):
             [str(self.company.pk), str(self.other_company.pk)])
 
     def test_redoing_company_withholding_includes_data(self):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=30)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         response = self.client.post(self.url, {'game': str(self.game.pk),
             'action': 'redo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

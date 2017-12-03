@@ -27,37 +27,38 @@ class UndoOperateTests(TestCase):
 
     def create_entry(self, **kwargs):
         entry = models.LogEntry.objects.create(game=self.game,
-            action=models.LogEntry.OPERATE, company=self.company, **kwargs)
+            action=models.LogEntry.OPERATE, acting_company=self.company,
+            **kwargs)
         self.game.log_cursor = entry
         self.game.save()
 
     def test_can_undo_company_operating_full(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=10)
+        self.create_entry(mode=models.LogEntry.FULL, amount=10)
         utils.undo(self.game)
         mock_operate.assert_called_once_with(self.company, -10,
             utils.OperateMethod.FULL)
 
     def test_can_undo_company_operating_half(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=20)
+        self.create_entry(mode=models.LogEntry.HALF, amount=20)
         utils.undo(self.game)
         mock_operate.assert_called_once_with(self.company, -20,
             utils.OperateMethod.HALF)
 
     def test_can_undo_company_withholding(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=30)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         utils.undo(self.game)
         mock_operate.assert_called_once_with(self.company, -30,
             utils.OperateMethod.WITHHOLD)
 
     def test_undoing_company_operating_full_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=40)
+        self.create_entry(mode=models.LogEntry.FULL, amount=40)
         affected = utils.undo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertCountEqual(affected['players'], [self.alice, self.bob])
         self.assertEqual(list(affected['companies']), [self.company2])
 
     def test_undoing_company_operating_half_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=50)
+        self.create_entry(mode=models.LogEntry.HALF, amount=50)
         affected = utils.undo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertCountEqual(affected['players'], [self.alice, self.bob])
@@ -65,7 +66,7 @@ class UndoOperateTests(TestCase):
             [self.company, self.company2])
 
     def test_undoing_company_withholding_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=60)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=60)
         affected = utils.undo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
@@ -93,35 +94,36 @@ class RedoOperateTests(TestCase):
 
     def create_entry(self, **kwargs):
         models.LogEntry.objects.create(game=self.game,
-            action=models.LogEntry.OPERATE, company=self.company, **kwargs)
+            action=models.LogEntry.OPERATE, acting_company=self.company,
+            **kwargs)
 
     def test_can_redo_company_operating_full(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=10)
+        self.create_entry(mode=models.LogEntry.FULL, amount=10)
         utils.redo(self.game)
         mock_operate.assert_called_once_with(self.company, 10,
             utils.OperateMethod.FULL)
 
     def test_can_redo_company_operating_half(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=20)
+        self.create_entry(mode=models.LogEntry.HALF, amount=20)
         utils.redo(self.game)
         mock_operate.assert_called_once_with(self.company, 20,
             utils.OperateMethod.HALF)
 
     def test_can_redo_company_withholding(self, mock_operate):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=30)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=30)
         utils.redo(self.game)
         mock_operate.assert_called_once_with(self.company, 30,
             utils.OperateMethod.WITHHOLD)
 
     def test_redoing_company_operating_full_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.FULL, revenue=40)
+        self.create_entry(mode=models.LogEntry.FULL, amount=40)
         affected = utils.redo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertCountEqual(affected['players'], [self.alice, self.bob])
         self.assertEqual(list(affected['companies']), [self.company2])
 
     def test_redoing_company_operating_half_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.HALF, revenue=50)
+        self.create_entry(mode=models.LogEntry.HALF, amount=50)
         affected = utils.redo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertCountEqual(affected['players'], [self.alice, self.bob])
@@ -129,7 +131,7 @@ class RedoOperateTests(TestCase):
             [self.company, self.company2])
 
     def test_redoing_company_withholding_returns_affected(self, mock):
-        self.create_entry(mode=models.LogEntry.WITHHOLD, revenue=60)
+        self.create_entry(mode=models.LogEntry.WITHHOLD, amount=60)
         affected = utils.redo(self.game)
         self.assertEqual(affected['game'], self.game)
         self.assertNotIn('players', affected.keys())
