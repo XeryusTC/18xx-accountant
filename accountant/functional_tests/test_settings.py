@@ -42,9 +42,9 @@ class SettingsTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('10')
-        operate_form.full(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('10')
+        operate_form.full.click()
 
         self.story('The page updates and the company has received some money')
         self.verify_company(game_page.get_companies()[0], cash=3)
@@ -76,9 +76,9 @@ class SettingsTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('20')
-        operate_form.full(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('20')
+        operate_form.full.click()
 
         self.story('The page updates and the company has received some money')
         self.verify_company(game_page.get_companies()[0], cash=14)
@@ -112,9 +112,9 @@ class SettingsTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('30')
-        operate_form.full(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('30')
+        operate_form.full.click()
 
         self.story('The page updates and the company has not received money')
         self.verify_company(game_page.get_companies()[0], cash=0)

@@ -393,13 +393,13 @@ class ManageCompanyTests(FunctionalTestCase):
 
         self.story('There is a form that allows her to send money')
         transfer_form = game.TransferForm(self.browser)
-        transfer_form.amount(company['detail']).clear()
-        transfer_form.amount(company['detail']).send_keys('100')
-        for radio in transfer_form.target(company['detail']):
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('100')
+        for radio in transfer_form.target:
             if radio.get_attribute('value') == 'bank':
                 radio.click()
                 break
-        transfer_form.transfer_button(company['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story("The page updates and the company's cash amount is lower")
         company = game_page.get_companies()[0]  # get DOM updates
@@ -409,11 +409,11 @@ class ManageCompanyTests(FunctionalTestCase):
         self.story('Alice goes to transfer money again')
         if company['detail'] == None:  # pragma: no cover
             company['elem'].click()
-        transfer_form.amount(company['detail']).clear()
-        transfer_form.amount(company['detail']).send_keys('50')
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('50')
         self.story("This time she doesn't select a target, the bank is the"
             "default target")
-        transfer_form.transfer_button(company['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('After the page updates the sees the amounts have changed')
         company = game_page.get_companies()[0]  # get DOM updates
@@ -441,14 +441,14 @@ class ManageCompanyTests(FunctionalTestCase):
 
         self.story('The form allows her to transfer funds to Alice')
         transfer_form = game.TransferForm(self.browser)
-        transfer_form.amount(company['detail']).send_keys('15')
-        for radio in transfer_form.target(company['detail']):
+        transfer_form.amount.send_keys('15')
+        for radio in transfer_form.target:
             if radio.get_attribute('id') == 'target-Alice':
                 radio.click()
                 break
         else:  # pragma: no cover
             self.fail('Could not find Alice in the transfer form')
-        transfer_form.transfer_button(company['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('Check final cash amounts')
         player = game_page.get_players()[0]
@@ -473,8 +473,8 @@ class ManageCompanyTests(FunctionalTestCase):
         cpr['elem'].click()
         cpr, nyc = game_page.get_companies()
         transfer_form = game.TransferForm(self.browser)
-        transfer_form.amount(cpr['detail']).send_keys(42)
-        for label in transfer_form.labels(cpr['detail']):
+        transfer_form.amount.send_keys(42)
+        for label in transfer_form.labels:
             if label.get_attribute('for') == 'target-NYC':
                 self.story('She sees that the label is in company colors')
                 self.assertIn('bg-black', label.get_attribute('class'))
@@ -483,7 +483,7 @@ class ManageCompanyTests(FunctionalTestCase):
                 break
         else:  # pragma: no cover
             self.fail('Could not find the NYC in the transfer form')
-        transfer_form.transfer_button(cpr['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('Money has been transfered between the players')
         cpr, nyc = game_page.get_companies()
@@ -505,7 +505,7 @@ class ManageCompanyTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         bno = game_page.get_companies()[0]  # Get DOM updates
         self.assertEqual(['Bank'],
-            [label.text for label in transfer_form.labels(bno['detail'])])
+            [label.text for label in transfer_form.labels])
 
     def test_after_company_transfers_money_detail_section_remains_open(self):
         self.story('Alice is a user who starts a new game with a company')
@@ -520,7 +520,7 @@ class ManageCompanyTests(FunctionalTestCase):
 
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
-        transfer_form.amount(company['detail']).send_keys('3\n')
+        transfer_form.amount.send_keys('3\n')
 
         self.story('Money has been transfered')
         company = game_page.get_companies()[0]

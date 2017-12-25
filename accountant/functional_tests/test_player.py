@@ -261,13 +261,13 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('There is a form that allows her to send money')
         transfer_form = game.TransferForm(self.browser)
-        transfer_form.amount(player['detail']).clear()
-        transfer_form.amount(player['detail']).send_keys('100')
-        for radio in transfer_form.target(player['detail']):
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('100')
+        for radio in transfer_form.target:
             if radio.get_attribute('value') == 'bank':
                 radio.click()
                 break
-        transfer_form.transfer_button(player['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story("The page reloads and the player's cash amount has lowered")
         player = game_page.get_players()[0]
@@ -277,11 +277,11 @@ class ManagePlayerTests(FunctionalTestCase):
         self.story('Alice goes to transfer money again')
         player['row'].click()
         player = game_page.get_players()[0]  # Get DOM updates
-        transfer_form.amount(player['detail']).clear()
-        transfer_form.amount(player['detail']).send_keys('10')
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('10')
         self.story("This time she doesn't select a target, the bank should be"
             ' default')
-        transfer_form.transfer_button(player['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('After the page reloads she has found that the amount has'
             'changed again')
@@ -310,19 +310,19 @@ class ManagePlayerTests(FunctionalTestCase):
 
         self.story('The form allows her to transfer funds to the CPR')
         transfer_form = game.TransferForm(self.browser)
-        transfer_form.amount(player['detail']).clear()
-        transfer_form.amount(player['detail']).send_keys('19')
-        for label in transfer_form.labels(player['detail']):
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('19')
+        for label in transfer_form.labels:
             if label.get_attribute('for') == 'target-CPR':
                 self.story('She sees that the label is in company colors')
                 self.assertIn('fg-white', label.get_attribute('class'))
                 self.assertIn('bg-red-700', label.get_attribute('class'))
                 self.story('She then selects the company')
-                transfer_form.target(label)[0].click()
+                label.click()
                 break
         else:  # pragma: no cover
             self.fail('No company called CPR found in transfer form')
-        transfer_form.transfer_button(player['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('The Page reloads and money has changed hands')
         player = game_page.get_players()[0]
@@ -344,15 +344,15 @@ class ManagePlayerTests(FunctionalTestCase):
 
         transfer_form = game.TransferForm(self.browser)
         alice, bob = game_page.get_players()
-        transfer_form.amount(alice['detail']).clear()
-        transfer_form.amount(alice['detail']).send_keys(67)
-        for radio in transfer_form.target(alice['detail']):
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys(67)
+        for radio in transfer_form.target:
             if radio.get_attribute('id') == 'target-Bob':
                 radio.click()
                 break
         else:  # pragma: no cover
             self.fail('Could not find Bob in the transfer form')
-        transfer_form.transfer_button(alice['detail']).click()
+        transfer_form.transfer_button.click()
 
         self.story('Money has been transfered between the players')
         players = game_page.get_players()
@@ -377,7 +377,7 @@ class ManagePlayerTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         self.assertEqual(['Bank'],
-            [label.text for label in transfer_form.labels(alice['detail'])])
+            [label.text for label in transfer_form.labels])
 
     def test_after_player_transfers_money_detail_section_is_still_open(self):
         self.story('Alice is a user who starts a new game')
@@ -392,7 +392,7 @@ class ManagePlayerTests(FunctionalTestCase):
 
         transfer_form = game.TransferForm(self.browser)
         player = game_page.get_players()[0]
-        transfer_form.amount(player['detail']).send_keys('3\n')
+        transfer_form.amount.send_keys('3\n')
 
         self.story('Money has been transfered')
         player = game_page.get_players()[0]

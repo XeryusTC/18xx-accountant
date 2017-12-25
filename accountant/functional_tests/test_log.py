@@ -78,8 +78,8 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         player = game_page.get_players()[0]
         player['row'].click()
-        transfer_form.amount(player['detail']).clear()
-        transfer_form.amount(player['detail']).send_keys('50\n')
+        transfer_form.amount.clear()
+        transfer_form.amount.send_keys('50\n')
 
         self.story('The page reloads and she sees money has changed hands')
         player = game_page.get_players()[0]
@@ -103,8 +103,8 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        transfer_form.select_target('Bob', alice['detail'])
-        transfer_form.amount(alice['detail']).send_keys('60\n')
+        transfer_form.select_target('Bob')
+        transfer_form.amount.send_keys('60\n')
 
         self.story('There is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -124,8 +124,8 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        transfer_form.select_target('NNH', alice['detail'])
-        transfer_form.amount(alice['detail']).send_keys('70\n')
+        transfer_form.select_target('NNH')
+        transfer_form.amount.send_keys('70\n')
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -145,7 +145,7 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        transfer_form.amount(company['detail']).send_keys('80\n')
+        transfer_form.amount.send_keys('80\n')
 
         self.story('The page reloads and there is a new log entry')
         self.assertEqual(len(game_page.log), 1)
@@ -169,8 +169,8 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        transfer_form.select_target('NYC', company['detail'])
-        transfer_form.amount(company['detail']).send_keys('90\n')
+        transfer_form.select_target('NYC')
+        transfer_form.amount.send_keys('90\n')
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -192,8 +192,8 @@ class LogTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         company = game_page.get_companies()[0]
         company['elem'].click()
-        transfer_form.select_target('Alice', company['detail'])
-        transfer_form.amount(company['detail']).send_keys('100\n')
+        transfer_form.select_target('Alice')
+        transfer_form.amount.send_keys('100\n')
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -219,10 +219,10 @@ class LogTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         player['row'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.shares(player['detail']).clear()
-        share_form.shares(player['detail']).send_keys('2')
-        share_form.select_company('C&O', player['detail'])
-        share_form.transfer_button(player['detail']).click()
+        share_form.shares.clear()
+        share_form.shares.send_keys('2')
+        share_form.select_company('C&O')
+        share_form.transfer_button.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -246,11 +246,11 @@ class LogTests(FunctionalTestCase):
         self.story('Alice opens the PRRs detail section and buys NYC')
         prr['row'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.shares(prr['detail']).clear()
-        share_form.shares(prr['detail']).send_keys('3')
-        share_form.select_company('NYC', prr['detail'])
-        share_form.select_source('bank', prr['detail'])
-        share_form.transfer_button(prr['detail']).click()
+        share_form.shares.clear()
+        share_form.shares.send_keys('3')
+        share_form.select_company('NYC')
+        share_form.select_source('bank')
+        share_form.transfer_button.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -277,11 +277,11 @@ class LogTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         player['row'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.shares(player['detail']).clear()
-        share_form.shares(player['detail']).send_keys('6')
-        share_form.select_company('B&O', player['detail'])
-        share_form.select_source('B&O', player['detail'])
-        share_form.transfer_button(player['detail']).click()
+        share_form.shares.clear()
+        share_form.shares.send_keys('6')
+        share_form.select_company('B&O')
+        share_form.select_source('B&O')
+        share_form.transfer_button.click()
 
         self.story('The page updates and t here is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -306,12 +306,12 @@ class LogTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         player['row'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.shares(player['detail']).clear()
-        share_form.shares(player['detail']).send_keys('4')
-        share_form.sell_share(player['detail']).click()
-        share_form.select_company('C&O', player['detail'])
-        share_form.select_source('bank', player['detail'])
-        share_form.transfer_button(player['detail']).click()
+        share_form.shares.clear()
+        share_form.shares.send_keys('4')
+        share_form.sell_share.click()
+        share_form.select_company('C&O')
+        share_form.select_source('bank')
+        share_form.transfer_button.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -334,10 +334,10 @@ class LogTests(FunctionalTestCase):
         self.story('Alice opens the CPRs detail section and sells shares')
         company['elem'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.sell_share(company['detail']).click()
-        share_form.select_company('CPR', company['detail'])
-        share_form.shares(company['detail']).clear()
-        share_form.shares(company['detail']).send_keys('2\n')
+        share_form.sell_share.click()
+        share_form.select_company('CPR')
+        share_form.shares.clear()
+        share_form.shares.send_keys('2\n')
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -364,11 +364,11 @@ class LogTests(FunctionalTestCase):
         player = game_page.get_players()[0]
         player['row'].click()
         share_form = game.ShareForm(self.browser)
-        share_form.sell_share(player['detail']).click()
-        share_form.select_company('B&M', player['detail'])
-        share_form.select_source('B&M', player['detail'])
-        share_form.shares(player['detail']).clear()
-        share_form.shares(player['detail']).send_keys('3\n')
+        share_form.sell_share.click()
+        share_form.select_company('B&M')
+        share_form.select_source('B&M')
+        share_form.shares.clear()
+        share_form.shares.send_keys('3\n')
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -388,9 +388,9 @@ class LogTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('70')
-        operate_form.full(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('70')
+        operate_form.full.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -413,9 +413,9 @@ class LogTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('80')
-        operate_form.withhold(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('80')
+        operate_form.withhold.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)
@@ -436,9 +436,9 @@ class LogTests(FunctionalTestCase):
         company = game_page.get_companies()[0]
         company['elem'].click()
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(company['detail']).clear()
-        operate_form.revenue(company['detail']).send_keys('90')
-        operate_form.half(company['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('90')
+        operate_form.half.click()
 
         self.story('The page updates and there is an entry in the log')
         self.assertEqual(len(game_page.log), 1)

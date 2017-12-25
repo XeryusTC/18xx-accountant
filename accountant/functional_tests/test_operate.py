@@ -24,12 +24,12 @@ class OperateTests(FunctionalTestCase):
         bno = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
         self.assertEqual('0',
-            operate_form.revenue(bno['detail']).get_attribute('value'))
+            operate_form.revenue.get_attribute('value'))
 
         self.story('The B&O operates for 140, pays full dividends')
-        operate_form.revenue(bno['detail']).clear()
-        operate_form.revenue(bno['detail']).send_keys('140')
-        operate_form.full(bno['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('140')
+        operate_form.full.click()
 
         self.story('The page updates and everyone receives their dividends')
         alice, bob = game_page.get_players()
@@ -60,9 +60,9 @@ class OperateTests(FunctionalTestCase):
         cno['elem'].click()
         cno = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(cno['detail']).clear()
-        operate_form.revenue(cno['detail']).send_keys('90')
-        operate_form.half(cno['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('90')
+        operate_form.half.click()
 
         self.story('The page updates and dividends have been paid out')
         alice, bob = game_page.get_players()
@@ -93,9 +93,9 @@ class OperateTests(FunctionalTestCase):
         erie['elem'].click()
         erie = game_page.get_companies()[0]  # Get DOM updates
         operate_form = game.OperateForm(self.browser)
-        operate_form.revenue(erie['detail']).clear()
-        operate_form.revenue(erie['detail']).send_keys('40')
-        operate_form.withhold(erie['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('40')
+        operate_form.withhold.click()
 
         self.story('The page updates and revenue has been withheld')
         alice, bob = game_page.get_players()

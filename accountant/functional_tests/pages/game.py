@@ -139,13 +139,13 @@ class AddCompanyPage(PageObject):
 
 
 class TransferForm(PageObject):
-    amount          = PageElement(name='amount',             context=True)
-    target          = MultiPageElement(name='target',        context=True)
-    labels          = MultiPageElement(css='label.transfer', context=True)
-    transfer_button = PageElement(name='transfer',           context=True)
+    amount          = PageElement(name='amount')
+    target          = MultiPageElement(name='target')
+    labels          = MultiPageElement(css='label.transfer')
+    transfer_button = PageElement(name='transfer')
 
-    def select_target(self, name, context):  # pragma: no cover
-        for radio in self.target(context):
+    def select_target(self, name):  # pragma: no cover
+        for radio in self.target:
             if radio.get_attribute('id') == 'target-{}'.format(name):
                 radio.click()
                 break
@@ -154,16 +154,16 @@ class TransferForm(PageObject):
 
 
 class ShareForm(PageObject):
-    shares          = PageElement(name='shares',                  context=True)
-    company         = MultiPageElement(css='label.company-label', context=True)
-    source          = MultiPageElement(css='label.source',        context=True)
-    transfer_button = PageElement(name='transfer-share',          context=True)
-    buy_share       = PageElement(id_='action-buy',               context=True)
-    sell_share      = PageElement(id_='action-sell',              context=True)
-    action          = PageElement(id_='action-text',              context=True)
+    shares          = PageElement(name='shares')
+    company         = MultiPageElement(css='label.company-label')
+    source          = MultiPageElement(css='label.source')
+    transfer_button = PageElement(name='transfer-share')
+    buy_share       = PageElement(id_='action-buy')
+    sell_share      = PageElement(id_='action-sell')
+    action          = PageElement(id_='action-text')
 
-    def select_company(self, name, context):  # pragma: no cover
-        for label in self.company(context):
+    def select_company(self, name):  # pragma: no cover
+        for label in self.company:
             if label.get_attribute('for') == 'company-{}'.format(name):
                 label.click()
                 break
@@ -171,8 +171,8 @@ class ShareForm(PageObject):
             raise AssertionError(
                 'No company called {} found in share list'.format(name))
 
-    def select_source(self, name, context):  # pragma: no cover
-        for label in self.source(context):
+    def select_source(self, name):  # pragma: no cover
+        for label in self.source:
             if label.get_attribute('for') == 'source-{}'.format(name):
                 label.click()
                 break
@@ -181,10 +181,10 @@ class ShareForm(PageObject):
 
 
 class OperateForm(PageObject):
-    revenue  = PageElement(name='revenue',  context=True)
-    full     = PageElement(name='full',     context=True)
-    half     = PageElement(name='half',     context=True)
-    withhold = PageElement(name='withhold', context=True)
+    revenue  = PageElement(name='revenue')
+    full     = PageElement(name='full')
+    half     = PageElement(name='half')
+    withhold = PageElement(name='withhold')
 
 
 class ErrorPage(PageObject):

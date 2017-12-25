@@ -20,7 +20,7 @@ class UndoTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        transfer_form.amount(alice['detail']).send_keys('50\n')
+        transfer_form.amount.send_keys('50\n')
 
         alice = game_page.get_players()[0]
         self.assertEqual(game_page.bank_cash.text, '1050')
@@ -61,7 +61,7 @@ class UndoTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         bno = game_page.get_companies()[0]
         bno['elem'].click()
-        transfer_form.amount(bno['detail']).send_keys('30\n')
+        transfer_form.amount.send_keys('30\n')
 
         bno = game_page.get_companies()[0]
         self.assertEqual(game_page.bank_cash.text, '12030')
@@ -101,8 +101,8 @@ class UndoTests(FunctionalTestCase):
         game_page.reload_game.click()
         alice = game_page.get_players()[0]
         alice['row'].click()
-        transfer_form.select_target('B&O', alice['detail'])
-        transfer_form.amount(alice['detail']).send_keys('40\n')
+        transfer_form.select_target('B&O')
+        transfer_form.amount.send_keys('40\n')
 
         self.story('Verify transfer happened')
         alice = game_page.get_players()[0]
@@ -142,8 +142,8 @@ class UndoTests(FunctionalTestCase):
         game_page.reload_game.click()
         bno = game_page.get_companies()[0]
         bno['elem'].click()
-        transfer_form.select_target('Alice', bno['detail'])
-        transfer_form.amount(bno['detail']).send_keys('20\n')
+        transfer_form.select_target('Alice')
+        transfer_form.amount.send_keys('20\n')
 
         self.story('Verify transfer happened')
         alice = game_page.get_players()[0]
@@ -184,10 +184,10 @@ class UndoTests(FunctionalTestCase):
         bno.set_value(10)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        share_form.select_company('B&O', alice['detail'])
-        share_form.select_source('ipo', alice['detail'])
-        share_form.shares(alice['detail']).clear()
-        share_form.shares(alice['detail']).send_keys('2\n')
+        share_form.select_company('B&O')
+        share_form.select_source('ipo')
+        share_form.shares.clear()
+        share_form.shares.send_keys('2\n')
 
         self.story('Verify that Alice bought the share')
         bno = game_page.get_companies()[0]
@@ -232,10 +232,10 @@ class UndoTests(FunctionalTestCase):
         bm, cpr = game_page.get_companies()
         cpr.set_value(20)
         bm['elem'].click()
-        share_form.select_company('CPR', bm['detail'])
-        share_form.select_source('bank', bm['detail'])
-        share_form.shares(bm['detail']).clear()
-        share_form.shares(bm['detail']).send_keys('4\n')
+        share_form.select_company('CPR')
+        share_form.select_source('bank')
+        share_form.shares.clear()
+        share_form.shares.send_keys('4\n')
 
         self.story('Verify that shares have been bought')
         bm, cpr = game_page.get_companies()
@@ -278,10 +278,10 @@ class UndoTests(FunctionalTestCase):
         co = game_page.get_companies()[0]
         co.set_value(30)
         alice['row'].click()
-        share_form.select_company('C&O', alice['detail'])
-        share_form.select_source('C&O', alice['detail'])
-        share_form.shares(alice['detail']).clear()
-        share_form.shares(alice['detail']).send_keys('6\n')
+        share_form.select_company('C&O')
+        share_form.select_source('C&O')
+        share_form.shares.clear()
+        share_form.shares.send_keys('6\n')
 
         self.story('Verify that shares have been bought')
         alice = game_page.get_players()[0]
@@ -323,9 +323,9 @@ class UndoTests(FunctionalTestCase):
         game_page.reload_game.click()
         bo = game_page.get_companies()[0]
         bo['elem'].click()
-        operate_form.revenue(bo['detail']).clear()
-        operate_form.revenue(bo['detail']).send_keys('80')
-        operate_form.full(bo['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('80')
+        operate_form.full.click()
 
         self.story('Verify that everyone has received money')
         alice, bob = game_page.get_players()
@@ -373,9 +373,9 @@ class UndoTests(FunctionalTestCase):
         game_page.reload_game.click()
         bo = game_page.get_companies()[0]
         bo['elem'].click()
-        operate_form.revenue(bo['detail']).clear()
-        operate_form.revenue(bo['detail']).send_keys('90')
-        operate_form.withhold(bo['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('90')
+        operate_form.withhold.click()
 
         self.story('Verify that only the B&O has received money')
         alice, bob = game_page.get_players()
@@ -423,9 +423,9 @@ class UndoTests(FunctionalTestCase):
         game_page.reload_game.click()
         bo = game_page.get_companies()[0]
         bo['elem'].click()
-        operate_form.revenue(bo['detail']).clear()
-        operate_form.revenue(bo['detail']).send_keys('100')
-        operate_form.half(bo['detail']).click()
+        operate_form.revenue.clear()
+        operate_form.revenue.send_keys('100')
+        operate_form.half.click()
 
         self.story('Verify that everyone received the correct amounts')
         alice, bob = game_page.get_players()
@@ -467,7 +467,7 @@ class UndoTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice = game_page.get_players()[0]
         alice['row'].click()
-        transfer_form.amount(alice['detail']).send_keys('50\n')
+        transfer_form.amount.send_keys('50\n')
 
         self.assertEqual(len(game_page.log), 2)
         self.assertRegex(game_page.log[-1].text,
@@ -555,7 +555,7 @@ class UndoTests(FunctionalTestCase):
         transfer_form = game.TransferForm(self.browser)
         alice, bob = game_page.get_players()
         alice['row'].click()
-        transfer_form.amount(alice['detail']).send_keys('60\n')
+        transfer_form.amount.send_keys('60\n')
 
         self.story('The transfer action has been done')
         self.assertEqual(len(game_page.log), 2)
@@ -564,7 +564,7 @@ class UndoTests(FunctionalTestCase):
         game_page.undo.click()
         alice, bob = game_page.get_players()
         bob['row'].click()
-        transfer_form.amount(bob['detail']).send_keys('60\n')
+        transfer_form.amount.send_keys('60\n')
 
         self.story("Alice's action doesn't show in the log")
         self.assertRegex(game_page.log[0].text,
