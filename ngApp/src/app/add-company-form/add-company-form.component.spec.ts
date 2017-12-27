@@ -78,7 +78,9 @@ describe('AddCompanyFormComponent', () => {
 			.and.returnValue(Promise.resolve(testColors));
 		fixture.detectChanges();
 		tick();
-		expect(component.colors).toEqual(testColors);
+		expect(component.colors.length).toEqual(testColors.length);
+		expect(component.colors[0]).toEqual(testColors[0]);
+		expect(component.colors[1]).toEqual(testColors[1]);
 	}));
 
 	it('Create a new company on submit', fakeAsync(() => {
