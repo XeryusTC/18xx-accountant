@@ -35,7 +35,7 @@ class LogTests(FunctionalTestCase):
         self.story('She returns to the game page and sees that an extra item '
                    'has been added to the log')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Added player Alice with 250 starting cash')
 
     def test_creating_company_adds_entry_to_log(self):
@@ -58,12 +58,12 @@ class LogTests(FunctionalTestCase):
         self.story('She returns to the game page and sees that an extra item '
                    'has been added to the log')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Added 4-share company B&O with 820 starting cash')
         self.assertIn('fg-yellow-600',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
         self.assertIn('bg-blue-700',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_transfering_money_from_player_to_bank_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -152,9 +152,9 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'B&M transfered 80 to the bank')
         self.assertIn('fg-amber-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
         self.assertIn('bg-red-900',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_transfering_money_from_company_to_company_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -177,7 +177,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'NNH transfered 90 to NYC')
         self.assertIn('fg-orange-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_transfering_money_from_company_to_player_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -200,7 +200,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'PRR transfered 100 to Alice')
         self.assertIn('fg-green-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_player_buying_share_from_IPO_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -257,7 +257,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'PRR bought 3 shares NYC from the bank for 20 each')
         self.assertIn('fg-green-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_player_buying_share_from_company_treasury_adds_log_entry(self):
         self.story('Alice is a user who starts a new game')
@@ -344,7 +344,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'CPR sold 2 shares CPR to the IPO for 50 each')
         self.assertIn('fg-red-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_player_selling_shares_to_company_adds_log_entry(self):
         self.story('Alice is a user who starts a game')
@@ -397,9 +397,9 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'CPR operates for 70 which is paid as dividends')
         self.assertIn('fg-red-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
         self.assertIn('bg-black',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_company_withholding_adds_log_entry(self):
         self.story('Create a game with a company')
@@ -422,7 +422,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Erie withholds 80')
         self.assertIn('bg-amber-300',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_company_paying_half_adds_log_entry(self):
         self.story('Create a game with a company')
@@ -445,7 +445,7 @@ class LogTests(FunctionalTestCase):
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'NNH operates for 90 of which it retains half')
         self.assertIn('bg-orange-500',
-            game_page.log[-1].get_attribute('class'))
+            game_page.log[0].get_attribute('class'))
 
     def test_editing_company_adds_log_entry(self):
         self.story('Create a game with a company')
@@ -467,4 +467,4 @@ class LogTests(FunctionalTestCase):
         self.assertEqual(len(game_page.log), 1)
         self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Company B&O has been edited')
-        self.assertIn('bg-blue-800', game_page.log[-1].get_attribute('class'))
+        self.assertIn('bg-blue-800', game_page.log[0].get_attribute('class'))

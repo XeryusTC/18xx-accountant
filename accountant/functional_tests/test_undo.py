@@ -26,7 +26,7 @@ class UndoTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '1050')
         self.assertEqual(alice['cash'].text, '50')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
         self.story('There is an undo button, once it is clicked the game is '
@@ -44,7 +44,7 @@ class UndoTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '1050')
         self.assertEqual(alice['cash'].text, '50')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
     def test_can_undo_company_transfering_money_to_bank(self):
@@ -67,7 +67,7 @@ class UndoTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '12030')
         self.assertEqual(bno['cash'].text, '970')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'B&O transfered 30 to the bank')
 
         self.story('Click the undo button, the game state is reverted')
@@ -83,7 +83,7 @@ class UndoTests(FunctionalTestCase):
         self.assertEqual(game_page.bank_cash.text, '12030')
         self.assertEqual(bno['cash'].text, '970')
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'B&O transfered 30 to the bank')
 
     def test_can_undo_player_transfering_money_to_company(self):
@@ -470,43 +470,43 @@ class UndoTests(FunctionalTestCase):
         transfer_form.amount.send_keys('50\n')
 
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
         self.story('Click the undo button, an item is removed from the log')
         game_page.undo.click()
         self.assertEqual(len(game_page.log), 1)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'New game started')
 
         self.story('Soft reload the page, the undone item is still not shown')
         game_page.reload_game.click()
         self.assertEqual(len(game_page.log), 1)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'New game started')
 
         self.story('Hard refresh the page, the undone item is still not shown')
         self.browser.refresh()
         self.assertEqual(len(game_page.log), 1)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'New game started')
 
         self.story('Click the redo button, the undone item is shown again')
         game_page.redo.click()
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
         self.story('Soft reload the page, the item is still there')
         game_page.reload_game.click()
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
         self.story('Hard refresh the page, the item is still visible')
         self.browser.refresh()
         self.assertEqual(len(game_page.log), 2)
-        self.assertRegex(game_page.log[-1].text,
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Alice transfered 50 to the bank')
 
     def test_undo_button_disabled_when_action_cant_be_undone(self):
@@ -567,16 +567,16 @@ class UndoTests(FunctionalTestCase):
         transfer_form.amount.send_keys('60\n')
 
         self.story("Alice's action doesn't show in the log")
-        self.assertRegex(game_page.log[0].text,
-            DATE_REGEX + 'New game started')
         self.assertRegex(game_page.log[1].text,
+            DATE_REGEX + 'New game started')
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Bob transfered 60 to the bank')
         self.assertEqual(len(game_page.log), 2)
 
         self.story("After soft refresh it still doesn't show")
         game_page.reload_game.click()
-        self.assertRegex(game_page.log[0].text,
-            DATE_REGEX + 'New game started')
         self.assertRegex(game_page.log[1].text,
+            DATE_REGEX + 'New game started')
+        self.assertRegex(game_page.log[0].text,
             DATE_REGEX + 'Bob transfered 60 to the bank')
         self.assertEqual(len(game_page.log), 2)

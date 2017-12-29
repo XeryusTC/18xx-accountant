@@ -114,5 +114,5 @@ class HomePageTest(FunctionalTestCase):
         gamepage.reload_game.click()
         self.assertEqual(len(gamepage.get_companies()), 1)
         self.assertEqual(gamepage.get_companies()[0]['name'].text, 'NNH')
-        self.assertRegex(gamepage.log[1].text,
+        self.assertRegex(gamepage.log[0].text,
             DATE_REGEX + 'Added 10-share company NNH with 0 starting cash')
