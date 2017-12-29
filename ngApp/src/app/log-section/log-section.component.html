@@ -8,7 +8,7 @@
 	<div class="log-container"
 		#logScroll [scrollTop]="logScroll.scrollHeight">
 		<div class="entry {{ entryColorClass(entry) }}"
-			*ngFor="let entry of gameState.log">
+			*ngFor="let entry of gameState.log | reverse">
 			[{{ entry.time | date:'d-M H:mm' }}] {{ entry.text }}
 		</div>
 	</div>

@@ -18,6 +18,7 @@ import { TransferShareService } from './transfer-share.service';
 import { UndoService }          from './undo.service';
 
 import { ValuesPipe } from './values.pipe';
+import { ReversePipe } from './reverse.pipe';
 
 import { AddCompanyComponent }  from './add-company/add-company.component';
 import { AddCompanyFormComponent }
@@ -66,6 +67,7 @@ import { EditCompanyFormComponent } from './edit-company-form/edit-company-form.
 		StartPageComponent,
 		TransferFormComponent,
 		ValuesPipe,
+		ReversePipe,
 		ErrorDisplayComponent,
 		LogSectionComponent,
 		SettingsSectionComponent,

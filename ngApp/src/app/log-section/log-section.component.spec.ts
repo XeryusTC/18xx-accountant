@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LogEntry }            from '../models/log-entry';
 import { GameStateService }    from '../game-state.service';
 import { LogSectionComponent } from './log-section.component';
+import { ReversePipe }         from '../reverse.pipe';
 
 describe('LogSectionComponent', () => {
 	let component: LogSectionComponent;
@@ -16,7 +17,7 @@ describe('LogSectionComponent', () => {
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
-			declarations: [ LogSectionComponent ],
+			declarations: [ LogSectionComponent, ReversePipe ],
 			providers: [
 				{provide: GameStateService, useValue: gameStateStub}
 			]
