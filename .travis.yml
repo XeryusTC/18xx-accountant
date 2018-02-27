@@ -32,7 +32,7 @@ env:
         - REVERSE=--reverse
 install:
     - pip install -r requirements/ci.txt
-    - npm install -g @angular/cli@1.6.2
+    - npm install -g @angular/cli@1.7.1
     - cd ngApp; npm install; cd ..
 before_script:
     - "export PATH=$PATH:/usr/lib/chromium-browser"
