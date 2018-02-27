@@ -34,7 +34,7 @@
 				<div *ngFor="let share of gameState.shareInfo(company)"
 					 class="share fg-{{ share.text_color }}
 							bg-{{ share.background_color }}">
-					{{ share.name }} {{ share.fraction * 100 }}%
+					{{ share.name }} {{ share.fraction.toFixed(3) * 100 }}%
 				</div>
 			</div>
 		</div>

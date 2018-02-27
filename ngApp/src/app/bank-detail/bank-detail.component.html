@@ -19,7 +19,7 @@
 					class="pool share fg-{{ company.text_color }}
 						bg-{{ company.background_color }}">
 					{{ company.name }}
-					{{ company.bank_shares * 100 / company.share_count }}%
+					{{ (company.bank_shares / company.share_count).toFixed(3) * 100 }}%
 				</div>
 			</ng-container>
 		</div>

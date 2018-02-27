@@ -883,3 +883,22 @@ class MiscellaneousShareTests(FunctionalTestCase):
         self.story('The page updates, but the value of the C&O is the same')
         company = game_page.get_companies()[0]  # Get DOM updates
         self.assertEqual(company['value'].get_attribute('value'), '67')
+
+    def test_share_holdings_rounded_to_one_decimal(self):
+        self.story('Create a game with a player and a company')
+        game_uuid = self.create_game()
+        alice = self.create_player(game_uuid, 'Alice')
+        prr = self.create_company(game_uuid, 'PRR', share_count=9,
+            bank_shares=1)
+        self.create_player_share(alice, prr, shares=1)
+        self.create_company_share(prr, prr, shares=1)
+        self.browser.get(self.server_url + '/game/' + game_uuid)
+        game_page = game.GamePage(self.browser)
+
+        self.story('The holdings are round to 11.1%')
+        alice = game_page.get_players()[0]
+        prr = game_page.get_companies()[0]
+        self.verify_player(alice, shares=['PRR 11.1%'])
+        self.verify_company(prr, shares=['PRR 11.1%'])
+        self.assertCountEqual(['PRR 11.1%'],
+            [s.text for s in game_page.bank_pool])
