@@ -1,30 +1,19 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import inspect
 import os
 from pytractor import webdriver
 from unipath import Path
-
-try:
-    from . import remote
-except ImportError:
-    pass  # Ignore error, we're most likely testing locally/running CI
-from core import factories
-from core import models
+import unittest
 
 DEFAULT_WAIT = 3
 SCREEN_DUMP_LOCATION = Path('screendumps')
 
-class FunctionalTestCase(StaticLiveServerTestCase):
+class FunctionalTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.against_staging = False
         cls._get_options()
-
-        if not cls.against_staging:
-            super(FunctionalTestCase, cls).setUpClass()
-            cls.server_url = cls.live_server_url
+        cls.server_url = 'http://localhost:4200'
 
     @classmethod
     def tearDownClass(cls):
@@ -36,10 +25,6 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         self.browser = self.webdriver(test_timeout=DEFAULT_WAIT)
         self.browser.implicitly_wait(DEFAULT_WAIT)
         self.browser.set_script_timeout(DEFAULT_WAIT)
-
-        if self.against_staging:
-            from . import remote
-            remote.flushdb(self.ansible_dir, self.inventory)
 
         if self.verbosity >= 2:
             print()  # Start stories on a fresh line
@@ -60,22 +45,10 @@ class FunctionalTestCase(StaticLiveServerTestCase):
             print('-', text)
 
     def create_game(self, **kwargs):
-        if self.against_staging:
-            return remote.creategame(self.ansible_dir, self.inventory,
-                **kwargs)[1]
-        else:
-            game = factories.GameFactory.create(**kwargs)
-            return str(game.pk)
+        self.fail('Implement creating a game')
 
     def create_player(self, game_uuid, name, **kwargs):
-        if self.against_staging:
-            return remote.createplayer(self.ansible_dir, self.inventory,
-                game_uuid, name, **kwargs)[1]
-        else:
-            game = models.Game.objects.get(pk=game_uuid)
-            company = factories.PlayerFactory.create(game=game, name=name,
-                **kwargs)
-            return str(company.pk)
+        self.fail('Implement creating a player')
 
     def create_company(self, game_uuid, name, **kwargs):
         if 'text' in kwargs:
@@ -84,36 +57,13 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         if 'background' in kwargs:
             kwargs['background_color'] = kwargs['background']
             del kwargs['background']
-        if self.against_staging:
-            return remote.createcompany(self.ansible_dir, self.inventory,
-                game=game_uuid, name=name, **kwargs)[1]
-        else:
-            game = models.Game.objects.get(pk=game_uuid)
-            company = factories.CompanyFactory.create(game=game, name=name,
-                **kwargs)
-            return str(company.pk)
+        self.fail('Implement creating a company')
 
     def create_player_share(self, owner, company, **kwargs):
-        if self.against_staging:
-            return remote.createplayershare(self.ansible_dir, self.inventory,
-                owner=owner, company=company, **kwargs)[1]
-        else:
-            owner = models.Player.objects.get(pk=owner)
-            company = models.Company.objects.get(pk=company)
-            share = factories.PlayerShareFactory.create(owner=owner,
-                company=company, **kwargs)
-            return str(share.pk)
+        self.fail('Implement creating a player share')
 
     def create_company_share(self, owner, company, **kwargs):
-        if self.against_staging:
-            return remote.createcompanyshare(self.ansible_dir, self.inventory,
-                owner=owner, company=company, **kwargs)[1]
-        else:
-            owner = models.Company.objects.get(pk=owner)
-            company = models.Company.objects.get(pk=company)
-            share = factories.CompanyShareFactory.create(owner=owner,
-                company=company, **kwargs)
-            return str(share.pk)
+        self.fail('Implement creating a company share')
 
     def verify_player(self, player, name=None, cash=None,
                       shares=None):  # pragma: no cover
@@ -175,9 +125,6 @@ class FunctionalTestCase(StaticLiveServerTestCase):
         for s in reversed(inspect.stack()):
             options = s[0].f_locals.get('options')
             if isinstance(options, dict):
-                cls.verbosity = int(options['verbosity'])
+                cls.verbosity = int(options.get('verbosity', 1))
                 if options['staging']:
                     cls.server_url = 'http://' + options['staging'][0]
-                    cls.inventory = Path(options['staging'][1])
-                    cls.ansible_dir = Path(options['ansible_directory'])
-                    cls.against_staging = True
