@@ -7,5 +7,38 @@ description: |
 types:
   game:
     type: object
+    default-access: read+insert+update
+    properties:
+        cash: integer
+  player:
+    type: object
+    default-access: read
+    properties:
+        game: game
+  company:
+    type: object
+    default-access: read
+    properties:
+        game: game
+  playershare:
+    type: object
+    default-access: read
+    properties:
+        game: game
+  companyshare:
+    type: object
+    default-access: read
+    properties:
+        game: game
+  logentry:
+    type: object
+    default-access: read
+    properties:
+        game: game
 
 /game:
+/player:
+/company:
+/playershare:
+/companyshare:
+/logentry:
