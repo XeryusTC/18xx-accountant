@@ -10,31 +10,51 @@ types:
     default-access: read+insert+update
     properties:
         cash: integer
+        pool_shares_pay: boolean
+        ipo_shares_pay: boolean
+        treasury_shares_pay: boolean
   player:
     type: object
-    default-access: read
+    default-access: read+insert+update
     properties:
         game: game
+        name: string
+        cash: integer
   company:
     type: object
-    default-access: read
+    default-access: read+insert+update
     properties:
         game: game
+        name: string
+        cash: integer
+        share_count: integer
+        text_color: string
+        background_color: string
   playershare:
     type: object
     default-access: read
     properties:
         game: game
+        owner: player
+        company: company
+        shares: integer
   companyshare:
     type: object
     default-access: read
     properties:
         game: game
+        owner: company
+        company: company
+        shares: integer
   logentry:
     type: object
     default-access: read
     properties:
         game: game
+        text: string
+        time: datetime
+        acting_company: company
+        is_undoable: boolean
 
 /game:
 /player:
