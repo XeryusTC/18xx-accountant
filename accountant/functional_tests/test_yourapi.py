@@ -13,5 +13,5 @@ class YourapiTests(FunctionalTestCase):
         uuid = self.browser.current_url.split('/')[-1]
         url = 'https://accountant-18xx.draft.yourapi.io/18xx/accountant/' \
             'game/' + uuid
-        response = requests.get(url, headers={'Authorization': self.auth_token})
+        response = requests.get(url)
         self.assertEqual(200, response.status_code, response.text)

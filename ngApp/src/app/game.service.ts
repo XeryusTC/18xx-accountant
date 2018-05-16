@@ -4,13 +4,12 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Game } from './models/game';
-import { base_url, token } from './yourapi_settings';
+import { base_url } from './yourapi_settings';
 
 @Injectable()
 export class GameService {
 	private gameUrl = base_url + "/game/";
 	private headers = new Headers({
-    'Authorization': token,
     'Content-Type': 'application/json'
 	});
 

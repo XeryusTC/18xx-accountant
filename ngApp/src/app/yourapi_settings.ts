@@ -1,4 +1,2 @@
 export const base_url: string =
   'https://accountant-18xx.draft.yourapi.io/18xx/accountant';
-export const token: string =
-  'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhY2NvdW50cy55b3VyYXBpLmlvIiwiaWF0IjoxNTI2MzkxNzY0LCJzdWIiOm51bGwsImVtYWlsIjoieGVyeXVzLnN0b2trZWxAYml6c2VydmljZXMubmwiLCJleHAiOjE1MzAwMjA1NjQsInNjb3BlcyI6WyJmdWxsOmFjY291bnRhbnQtMTh4eC8xOHh4L2FjY291bnRhbnQvKiJdfQ.7hKjXlngUKd-_i7QH_lAOUjAIS6VncTU4Y_N3M2MhLE';

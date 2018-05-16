@@ -4,13 +4,12 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { LogEntry } from './models/log-entry';
-import { base_url, token } from './yourapi_settings';
+import { base_url } from './yourapi_settings';
 
 @Injectable()
 export class LogService {
 	private logEntryUrl = base_url + '/logentry';
 	private headers = new Headers({
-    'Authorization': token,
     'Content-Type': 'application/json'
 	});
 

@@ -6,7 +6,7 @@ from pytractor import webdriver
 from unipath import Path
 import unittest
 
-DEFAULT_WAIT = 3
+DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = Path('screendumps')
 
 class FunctionalTestCase(unittest.TestCase):
@@ -15,7 +15,6 @@ class FunctionalTestCase(unittest.TestCase):
         cls.verbosity = 1
         cls._get_options()
         cls.server_url = 'http://localhost:4200'
-        cls.auth_token = os.environ.get('YOURAPI_TOKEN')
 
     def setUp(self):
         self.webdriver = webdriver.Chrome

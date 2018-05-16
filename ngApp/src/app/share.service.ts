@@ -4,14 +4,13 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Share } from './models/share';
-import { base_url, token } from './yourapi_settings';
+import { base_url } from './yourapi_settings';
 
 @Injectable()
 export class ShareService {
 	private playerShareUrl = base_url + "/playershare";
 	private companyShareUrl = base_url + "/companyshare";
   private headers = new Headers({
-    'Authorization': token,
     'Content-Type': 'application/json'
   });
 
