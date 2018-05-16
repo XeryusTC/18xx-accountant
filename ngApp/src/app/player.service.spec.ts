@@ -29,7 +29,7 @@ describe('PlayerService', () => {
 	it('getPlayer() queries the correct url', () => {
 		service.getPlayer('some-uuid');
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('api/player/some-uuid/', 'url valid');
+		expect(conn.request.url).toMatch(/player\/some-uuid$/, 'url valid');
 	});
 
 	it('getPlayer() returns a player on success', done => {
@@ -56,7 +56,7 @@ describe('PlayerService', () => {
 	it('getPlayerList() queries the correct url', () => {
 		service.getPlayerList('game-uuid');
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('/api/player/\\?game=game-uuid$',
+		expect(conn.request.url).toMatch(/player\?game=game-uuid$/,
 										 'url valid');
 	});
 
@@ -85,7 +85,7 @@ describe('PlayerService', () => {
 	it('create() queries the correct url', () => {
 		service.create(testPlayer);
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('api/player/', 'url valid');
+		expect(conn.request.url).toMatch(/player$/, 'url valid');
 	});
 
 	it('create() returns a player on success', done => {

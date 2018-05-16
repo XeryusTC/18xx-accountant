@@ -8,7 +8,7 @@ import { base_url } from './yourapi_settings';
 
 @Injectable()
 export class GameService {
-	private gameUrl = base_url + "/game/";
+	private gameUrl = base_url + "/game";
 	private headers = new Headers({
     'Content-Type': 'application/json'
 	});
@@ -29,7 +29,7 @@ export class GameService {
 	}
 
 	getGame(uuid: string): Promise<Game> {
-		return this.http.get(this.gameUrl + uuid + '/', {headers: this.headers})
+		return this.http.get(this.gameUrl + '/' + uuid, {headers: this.headers})
 			.toPromise()
 			.then(response => Game.fromJson(response.json()))
 			.catch(this.handleError);

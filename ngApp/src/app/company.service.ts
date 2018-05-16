@@ -44,7 +44,7 @@ export class CompanyService {
 
 	update(company: Company): Promise<Company> {
 		return this.http
-			.put(this.companyUrl + company.uuid, JSON.stringify(company),
+			.put(this.companyUrl + '/' + company.uuid, JSON.stringify(company),
 				 {headers: this.headers})
 			.toPromise().then(response => Company.fromJson(response.json()))
 			.catch(this.handleError);

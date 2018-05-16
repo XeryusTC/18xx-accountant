@@ -31,7 +31,7 @@ describe('LogService', () => {
 	it('getLog() queries the correct url', () => {
 		service.getLog('game-uuid');
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('api/logentry/\\?game=game-uuid',
+		expect(conn.request.url).toMatch(/logentry\?game=game-uuid$/,
 										 'url invalid');
 	});
 

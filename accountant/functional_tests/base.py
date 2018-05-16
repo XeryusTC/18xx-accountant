@@ -6,7 +6,7 @@ from pytractor import webdriver
 from unipath import Path
 import unittest
 
-DEFAULT_WAIT = 5
+DEFAULT_WAIT = 3
 SCREEN_DUMP_LOCATION = Path('screendumps')
 
 class FunctionalTestCase(unittest.TestCase):

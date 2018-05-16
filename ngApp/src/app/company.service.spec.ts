@@ -31,7 +31,7 @@ describe('CompanyService', () => {
 	it('getCompany() queries the correct url', () => {
 		service.getCompany('test-uuid');
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('/api/company/test-uuid/$',
+		expect(conn.request.url).toMatch(/company\/test-uuid$/,
 										 'url valid');
 	});
 
@@ -59,7 +59,7 @@ describe('CompanyService', () => {
 	it('getCompanyList() queries the correct url', () => {
 		service.getCompanyList('game-uuid');
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('/api/company/\\?game=game-uuid$',
+		expect(conn.request.url).toMatch(/company\?game=game-uuid$/,
 										 'url valid');
 	});
 
@@ -87,7 +87,7 @@ describe('CompanyService', () => {
 	it('create() queries the correct url', () => {
 		service.create(testCompany);
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('/api/company/$', 'url valid');
+		expect(conn.request.url).toMatch(/company$/, 'url valid');
 	});
 
 	it('create() returns a company on success', done => {
@@ -114,7 +114,7 @@ describe('CompanyService', () => {
 	it('update() queries the correct url', () => {
 		service.update(testCompany);
 		expect(conn).toBeDefined('no http service connection at all?');
-		expect(conn.request.url).toMatch('/api/company/test-uuid/$',
+		expect(conn.request.url).toMatch(/company\/test-uuid$/,
 										 'url valid');
 	});
 

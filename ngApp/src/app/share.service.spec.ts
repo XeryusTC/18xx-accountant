@@ -30,7 +30,7 @@ describe('ShareService', () => {
 	it('getPlayerShareList() queries the correct url for game', () => {
 		service.getPlayerShareList('game-uuid');
 		expect(conn).toBeDefined('no http service at all');
-		expect(conn.request.url).toMatch('/api/playershare/\\?game=game-uuid$',
+		expect(conn.request.url).toMatch(/playershare\?game=game-uuid$/,
 										 'url valid');
 	});
 
@@ -38,7 +38,7 @@ describe('ShareService', () => {
 		service.getPlayerShareList('player-uuid', 'player');
 		expect(conn).toBeDefined('no http service at all');
 		expect(conn.request.url)
-			.toMatch('/api/playershare/\\?player=player-uuid$', 'url valid');
+			.toMatch(/playershare\?player=player-uuid$/, 'url valid');
 	});
 
 
@@ -67,14 +67,14 @@ describe('ShareService', () => {
 		service.getCompanyShareList('game-uuid');
 		expect(conn).toBeDefined('no http service at all');
 		expect(conn.request.url)
-			.toMatch('/api/companyshare/\\?game=game-uuid$', 'url valid');
+			.toMatch(/companyshare\?game=game-uuid$/, 'url valid');
 	});
 
 	it('getCompanyShareList() queries the correct url for company', () => {
 		service.getCompanyShareList('company-uuid', 'company');
 		expect(conn).toBeDefined('no http service at all');
 		expect(conn.request.url)
-			.toMatch('/api/companyshare/\\?company=company-uuid$',
+			.toMatch(/companyshare\?company=company-uuid$/,
 					 'url valid');
 	});
 
