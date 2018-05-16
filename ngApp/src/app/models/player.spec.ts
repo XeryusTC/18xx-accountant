@@ -21,4 +21,13 @@ describe('Player model', () => {
 		expect(player.shares).toEqual(json.shares);
 		expect(player.share_set).toEqual(json.share_set);
 	});
+
+  it('fromJson should convert yourapi fields', () => {
+    let json = {
+      _href_: 'some_direct_url',
+      _id_: 'fake-uuid',
+    };
+    let player = Player.fromJson(json);
+    expect(player.uuid).toEqual(json._id_);
+  })
 });

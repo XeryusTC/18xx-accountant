@@ -15,4 +15,13 @@ describe('Share model', () => {
 		expect(share.company).toEqual(json.company);
 		expect(share.shares).toEqual(json.shares);
 	});
+
+  it('fromJson should convert yourapi fields', () => {
+    let json = {
+      _href_: 'some_direct_url',
+      _id_: 'fake-uuid',
+    };
+    let share = Share.fromJson(json);
+    expect(share.uuid).toEqual(json._id_);
+  })
 });

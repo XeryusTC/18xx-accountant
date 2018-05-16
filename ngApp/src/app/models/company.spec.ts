@@ -32,4 +32,13 @@ describe('Company model', () => {
 		// Value should be 0 (this is not stored on the server)
 		expect(company.value).toEqual(0);
 	});
+
+  it('fromJson should convert yourapi fields', () => {
+    let json = {
+      _href_: 'some_direct_url',
+      _id_: 'fake-uuid',
+    };
+    let company = Company.fromJson(json);
+    expect(company.uuid).toEqual(json._id_);
+  })
 });

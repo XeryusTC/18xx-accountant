@@ -7,7 +7,8 @@ export class Share {
 	) { }
 
 	static fromJson(obj): Share {
-		let share = new Share(obj.uuid, obj.owner, obj.company, obj.shares);
+	  let uuid = obj.uuid || obj._id_;
+		let share = new Share(uuid, obj.owner, obj.company, obj.shares);
 		return share;
 	}
 }

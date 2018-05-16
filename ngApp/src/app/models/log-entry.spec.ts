@@ -21,4 +21,13 @@ describe('LogEntry model', () => {
 		expect(logEntry.acting_company).toEqual(json.acting_company);
 		expect(logEntry.is_undoable).toEqual(json.is_undoable);
 	});
+
+  it('fromJson should convert yourapi fields', () => {
+    let json = {
+      _href_: 'some_direct_url',
+      _id_: 'fake-uuid',
+    };
+    let logEntry = LogEntry.fromJson(json);
+    expect(logEntry.uuid).toEqual(json._id_);
+  })
 });
