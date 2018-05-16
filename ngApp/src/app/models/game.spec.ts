@@ -23,4 +23,13 @@ describe ('Game model', () => {
 		expect(game.ipo_shares_pay).toEqual(json.ipo_shares_pay);
 		expect(game.treasury_shares_pay).toEqual(json.treasury_shares_pay);
 	});
+
+	it('fromJson should convert yourapi fields', () => {
+	  let json = {
+	    _href_: 'some_direct_url',
+      _id_: 'fake-uuid',
+    };
+	  let game = Game.fromJson(json);
+	  expect(game.uuid).toEqual(json._id_);
+  })
 });

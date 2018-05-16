@@ -10,7 +10,8 @@ export class Game {
 	) { }
 
 	static fromJson(obj) {
-		let game = new Game(obj.uuid, obj.cash, obj.pool_shares_pay,
+	  let uuid = obj.uuid || obj._id_;
+		let game = new Game(uuid, obj.cash, obj.pool_shares_pay,
 						    obj.ipo_shares_pay, obj.treasury_shares_pay);
 		game.companies = obj.companies;
 		game.players = obj.players;
