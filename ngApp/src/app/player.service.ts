@@ -4,23 +4,27 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Player } from './models/player';
+import { base_url, token } from './yourapi_settings';
 
 @Injectable()
 export class PlayerService {
-	private playerUrl = '/api/player/';
-	private headers = new Headers({'Content-Type': 'application/json'})
+	private playerUrl = base_url + '/player';
+	private headers = new Headers({
+    'Authorization': token,
+    'Content-Type': 'application/json'
+	});
 
 	constructor(private http: Http) { }
 
 	getPlayer(uuid: string): Promise<Player> {
-		return this.http.get(this.playerUrl + uuid + '/')
+		return this.http.get(this.playerUrl + '/' + uuid, {headers: this.headers})
 			.toPromise()
 			.then(response => Player.fromJson(response.json()))
 			.catch(this.handleError);
 	}
 
 	getPlayerList(gameUuid: string): Promise<Player[]> {
-		return this.http.get(this.playerUrl + '?game=' + gameUuid)
+		return this.http.get(this.playerUrl + '?game=' + gameUuid, {headers: this.headers})
 			.toPromise()
 			.then(response => {
 				let res = [];

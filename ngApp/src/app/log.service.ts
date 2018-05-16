@@ -4,16 +4,20 @@ import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { LogEntry } from './models/log-entry';
+import { base_url, token } from './yourapi_settings';
 
 @Injectable()
 export class LogService {
-	private logEntryUrl = '/api/logentry/';
-	private headers = new Headers({'Content-Type': 'application/json'})
+	private logEntryUrl = base_url + '/logentry';
+	private headers = new Headers({
+    'Authorization': token,
+    'Content-Type': 'application/json'
+	});
 
 	constructor(private http: Http) { }
 
 	getLog(gameUuid: string): Promise<LogEntry[]> {
-		return this.http.get(this.logEntryUrl + '?game=' + gameUuid)
+		return this.http.get(this.logEntryUrl + '?game=' + gameUuid, {headers: this.headers})
 			.toPromise()
 			.then(response => {
 				let res = [];
