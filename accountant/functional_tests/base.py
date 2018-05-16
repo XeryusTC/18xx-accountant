@@ -12,13 +12,10 @@ SCREEN_DUMP_LOCATION = Path('screendumps')
 class FunctionalTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.verbosity = 1
         cls._get_options()
         cls.server_url = 'http://localhost:4200'
-
-    @classmethod
-    def tearDownClass(cls):
-        if not cls.against_staging:
-            super(FunctionalTestCase, cls).tearDownClass()
+        cls.auth_token = os.environ.get('YOURAPI_TOKEN')
 
     def setUp(self):
         self.webdriver = webdriver.Chrome
@@ -34,7 +31,7 @@ class FunctionalTestCase(unittest.TestCase):
                 'TRAVIS' not in os.environ:  # pragma: no cover
             SCREEN_DUMP_LOCATION.mkdir()
             for ix, handle in enumerate(self.browser.window_handles):
-                self.browser.switch_to_window(handle)
+                self.browser.switch_to.window(handle)
                 filename = self._get_filename(ix)
                 self._take_screenshot(filename + '.png')
                 self._dump_html(filename + '.html')
