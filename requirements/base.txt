@@ -1,4 +1,4 @@
-Django==1.11.4
+Django==1.11.29
 Unipath==1.1
 psycopg2==2.7.3
 djangorestframework==3.5.3
